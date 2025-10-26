@@ -7,6 +7,6 @@ public class GameloopInstaller : ScriptableObjectInstaller<GameloopInstaller>
 {
     public override void InstallBindings()
     {
-        Container.Bind<IGameLoop>().To<GameLoop>().AsSingle().NonLazy();
+        Container.Bind<IGameLoopService>().To<GameLoopService>().AsSingle().NonLazy();
     }
 }

@@ -4,11 +4,11 @@ using Zenject;
 
 namespace Scripts.GameService
 {
-    public class GameLoop : IGameLoop
+    public class GameLoopService : IGameLoopService
     {
         public event Action OnStart = delegate { };
-        public event Action OnUpdate= delegate{ };
-        public event Action OnFixedUpdate = delegate { };
+        public event Action OnUpdateTick= delegate{ };
+        public event Action OnFixedUpdateTick = delegate { };
                                            
         [Inject]
         private void Construct()
@@ -23,12 +23,12 @@ namespace Scripts.GameService
 
         public void Update()
         {
-            OnUpdate?.Invoke();
+            OnUpdateTick?.Invoke();
         }
 
         public void FixedUpdate()
         {
-            OnFixedUpdate?.Invoke();
+            OnFixedUpdateTick?.Invoke();
         }
     }
 }

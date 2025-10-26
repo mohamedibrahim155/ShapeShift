@@ -8,9 +8,9 @@ namespace Scripts.GameService
     public class GameLoopView : MonoBehaviour
     {
 
-        private GameLoop _gameLoop;
+        private GameLoopService _gameLoop;
 
-        public void Initalize(GameLoop gameLoop)
+        public void Initalize(GameLoopService gameLoop)
         {
             _gameLoop = gameLoop;
         }

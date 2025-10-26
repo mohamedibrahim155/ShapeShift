@@ -9,6 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aafba1913e6a0484fa82f0d4b78696ce, type: 3}
-  m_Name: GameServiceInstaller
+  m_Script: {fileID: 11500000, guid: 9f81104957673a34e8c3433d851a252a, type: 3}
+  m_Name: PlayerConfig
   m_EditorClassIdentifier: 
+  m_PlayerView: {fileID: 3888930328552335185, guid: c482007f1964b5d46a46fa0b70cb6a3d, type: 3}
+  m_SwipeThreshold: 5
+  m_CurrentShapeIndex: 0

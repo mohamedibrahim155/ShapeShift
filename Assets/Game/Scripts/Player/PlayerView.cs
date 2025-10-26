@@ -1,8 +1,13 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using Zenject;
 
 public class PlayerView : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    [SerializeField] GameObject[] shapeTransforms;
+
+    [Inject] private PlayerConfig playerConfig;
     void Start()
     {
         
@@ -12,5 +17,15 @@ public class PlayerView : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void EnableShape(int shapeIndex)
+    {  
+         shapeTransforms[shapeIndex].SetActive(true);
+    }
+
+    public void DisableShape(int shapeIndex)
+    {
+         shapeTransforms[shapeIndex].SetActive(false);
     }
 }
