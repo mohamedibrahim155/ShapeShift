@@ -4,27 +4,27 @@ using UnityEngine;
 using Zenject;
 
 
-public enum ShapeType
+public enum EShapeType
 {
-    Sphere,
-    Cube,
-    Capsule,
-    Cylinder
+    SPHERE,
+    CUBE,
+    CAPSULE,
+    CYLINDER
 }
 public class PlayerCollisionListener : MonoBehaviour
 {
 
-    public static event Action<ShapeType> OnShapeCollision = delegate { };
-    [SerializeField] private ShapeType shapeType;
+    public static event Action<EShapeType, GameObject> OnShapeCollision = delegate { };
+    [SerializeField] private EShapeType shapeType;
 
 
     private void OnTriggerEnter(Collider other)
     {
-        OnShapeCollision?.Invoke(shapeType);
+        OnShapeCollision?.Invoke(shapeType, other.gameObject);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        OnShapeCollision?.Invoke(shapeType);
+        //OnShapeCollision?.Invoke(shapeType, collision.gameObject);
     }
 }

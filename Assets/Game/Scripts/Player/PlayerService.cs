@@ -76,7 +76,7 @@ namespace Scripts.Player
             m_PlayerConfig.m_CurrentShapeIndex = swapeIndex;
         }
 
-        private void ObstacleCollision(ShapeType shape)
+        private void ObstacleCollision(EShapeType shape, GameObject collisionObject)
         {
             // Logic to handle obstacle collision based on shape
 
@@ -101,6 +101,12 @@ namespace Scripts.Player
             PlayerCollisionListener.OnShapeCollision -= ObstacleCollision;
             m_PlayerInputService.OnSwipe -= ChangeShape;
 
+        }
+
+        private bool CheckCollision(EShapeType shape)
+        {
+            // Implement collision checking logic here
+            return false;
         }
     }
 }
