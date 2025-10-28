@@ -1,8 +1,10 @@
 
-using UnityEngine;
-using Zenject;
 using Scripts.GameService;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
+using Zenject;
 namespace Scripts.Player
 {
 
@@ -15,6 +17,10 @@ namespace Scripts.Player
         private IPLayerInputService m_PlayerInputService;
         private IGameLoopService m_GameloopService;
         private ICameraService m_CameraService;
+
+
+
+        private List<BlockView> m_ListOfBlocks;
 
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService, 
@@ -45,6 +51,8 @@ namespace Scripts.Player
             HandleCollision();
         }
 
+    
+
         private void InitializeCamera()
         {
             m_CameraService.SpawnCamera(Vector2.zero);
@@ -71,16 +79,21 @@ namespace Scripts.Player
 
             m_PlayerView.DisableShape(m_PlayerConfig.m_CurrentShapeIndex);
 
-            m_PlayerView.EnableShape(swapeIndex);
+            m_PlayerView.EnableShape((EShapeType)swapeIndex);
 
             m_PlayerConfig.m_CurrentShapeIndex = swapeIndex;
         }
 
         private void ObstacleCollision(EShapeType shape, GameObject collisionObject)
         {
-            // Logic to handle obstacle collision based on shape
+            bool isValid = CheckCollision(shape, collisionObject);
 
-            Debug.Log("Collided with shape: " + shape.ToString());
+            if (!isValid)
+            {
+                // Level Failed Condition
+                Debug.Log("Player Collided with different Shape. Level Failed!");
+                DestroyPlayer();
+            }
         }
 
         private void Update()
@@ -103,10 +116,38 @@ namespace Scripts.Player
 
         }
 
-        private bool CheckCollision(EShapeType shape)
+        private bool CheckCollision(EShapeType shapoType, GameObject collisionObject)
         {
             // Implement collision checking logic here
+
+            foreach (BlockView item in m_ListOfBlocks)
+            {
+                // finds object that collides
+                if (item.gameObject == collisionObject)
+                {
+                    // checks if the shape type matches the block type
+
+                    return (IsValidCollision(shapoType, item.BlockType));
+                }
+            }
+
             return false;
+        }
+
+        private bool IsValidCollision(EShapeType shapeType, EBlockType blockType)
+        {
+          
+            return (int) shapeType == (int) blockType;
+        }
+
+        public void RegisterBlockWall(BlockView wall)
+        {
+            if (m_ListOfBlocks == null)
+            {
+                m_ListOfBlocks = new List<BlockView>();
+            }
+            m_ListOfBlocks.Add(wall);
+            Debug.Log("Registered Block Wall. Total walls: " + m_ListOfBlocks.Count);
         }
     }
 }

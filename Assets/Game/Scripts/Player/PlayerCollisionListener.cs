@@ -6,10 +6,10 @@ using Zenject;
 
 public enum EShapeType
 {
-    SPHERE,
-    CUBE,
-    CAPSULE,
-    CYLINDER
+    CUBE = 0,
+    SPHERE = 1,
+    CYLINDER = 2,
+    CAPSULE = 3,
 }
 public class PlayerCollisionListener : MonoBehaviour
 {
