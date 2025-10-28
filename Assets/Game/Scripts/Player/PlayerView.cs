@@ -28,4 +28,6 @@ public class PlayerView : MonoBehaviour
     {
          shapeTransforms[shapeIndex].SetActive(false);
     }
+
+  
 }

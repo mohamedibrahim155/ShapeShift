@@ -14,14 +14,17 @@ namespace Scripts.Player
         private DiContainer m_Container;
         private IPLayerInputService m_PlayerInputService;
         private IGameLoopService m_GameloopService;
+        private ICameraService m_CameraService;
 
         [Inject]
-        private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService, IGameLoopService gameloopService)
+        private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService, 
+            IGameLoopService gameloopService, ICameraService cameraService)
         {
             m_PlayerConfig = playerConfig;
             m_Container = container;
             m_PlayerInputService = inputService;
             m_GameloopService = gameloopService;
+            m_CameraService = cameraService;
 
 
             m_GameloopService.OnUpdateTick += Update;
@@ -37,8 +40,16 @@ namespace Scripts.Player
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
 
+            InitializeCamera();
             HandleSwipe();
             HandleCollision();
+        }
+
+        private void InitializeCamera()
+        {
+            m_CameraService.SpawnCamera(Vector2.zero);
+            m_CameraService.SetCameraFollow(m_PlayerView.transform);
+            m_CameraService.SetCameraLookAt(m_PlayerView.transform);
         }
 
         // Set up collision handling
@@ -54,7 +65,8 @@ namespace Scripts.Player
 
         // Change the player's shape based on swipe direction
         private void ChangeShape(SwipeDirection swipeDirection)
-        { 
+        {
+            // index represents circle =1, cyl=2, triangle=3, pentagon=4
             int swapeIndex = (int)swipeDirection;
 
             m_PlayerView.DisableShape(m_PlayerConfig.m_CurrentShapeIndex);
@@ -73,11 +85,12 @@ namespace Scripts.Player
 
         private void Update()
         { 
-            
+         
         }
 
         private void FixedUpdate()
         {
+            //m_PlayerView.transform.position += Vector3.forward * 10 * Time.deltaTime;
         }
 
 
