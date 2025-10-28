@@ -13,8 +13,8 @@ public enum SwipeDirection
 public interface IPLayerInputService
 {
     event Action<SwipeDirection> OnSwipe;
-    public Vector2 endPosition { get; }
-    public Vector2 startTouchPosition { get; }
+     Vector2 endPosition { get; }
+     Vector2 startTouchPosition { get; }
 
     public abstract void UpdateInputs();
 }

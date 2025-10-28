@@ -19,22 +19,26 @@ public class CameraService : ICameraService
         m_Container = container;
     }
 
+    //sets the follow target for all cameras
     public void SetCameraFollow(Transform followTarget)
     {
-        CameraView.GetCamera(ECameraType.START_CAMERA).m_CinemachineCamera.Follow      = followTarget;
-        CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).m_CinemachineCamera.Follow     = followTarget;
-        CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).m_CinemachineCamera.Follow = followTarget;
+        CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.Follow      = followTarget;
+        CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).CinemachineCamera.Follow     = followTarget;
+        CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).CinemachineCamera.Follow = followTarget;
     }
 
+    //sets the look at target for all cameras
     public void SetCameraLookAt(Transform lookAtTransform)
     {
-         CameraView.GetCamera(ECameraType.START_CAMERA).m_CinemachineCamera.LookAt      = lookAtTransform;
-         CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).m_CinemachineCamera.LookAt     = lookAtTransform;
-         CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).m_CinemachineCamera.LookAt = lookAtTransform;
+         CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.LookAt      = lookAtTransform;
+         CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).CinemachineCamera.LookAt     = lookAtTransform;
+         CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).CinemachineCamera.LookAt = lookAtTransform;
     }
 
+    //spawns camera view at provided position
     public void SpawnCamera(Vector3 spawnPosition)
     {
+        //intializes camera view from prefab
         CameraView = m_Container.InstantiatePrefabForComponent<CameraView>(m_CameraConfig.CameraView);
         CameraView.transform.position = new Vector3(spawnPosition.x, spawnPosition.y, CameraView.transform.position.z);
         CameraView.Setup(m_CameraConfig);
@@ -49,19 +53,19 @@ public class CameraService : ICameraService
         switch (cameraID)
         {
             case ECameraType.START_CAMERA:
-                CameraView.GetCamera(ECameraType.START_CAMERA).m_CinemachineCamera.Priority      = 10;
-                CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).m_CinemachineCamera.Priority     =  0;
-                CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).m_CinemachineCamera.Priority =  0;
+                CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.Priority      = 10;
+                CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).CinemachineCamera.Priority     =  0;
+                CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).CinemachineCamera.Priority =  0;
                 break;
             case ECameraType.FOLLOW_CAMERA:
-                CameraView.GetCamera(ECameraType.START_CAMERA).m_CinemachineCamera.Priority       =  0;
-                CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).m_CinemachineCamera.Priority      = 10;
-                CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).m_CinemachineCamera.Priority  =  0;
+                CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.Priority       =  0;
+                CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).CinemachineCamera.Priority      = 10;
+                CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).CinemachineCamera.Priority  =  0;
                 break;
             case ECameraType.FINISHLINE_CAMERA:
-                 CameraView.GetCamera(ECameraType.START_CAMERA).m_CinemachineCamera.Priority       =  0;
-                 CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).m_CinemachineCamera.Priority      =  0;
-                 CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).m_CinemachineCamera.Priority  = 10;
+                 CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.Priority       =  0;
+                 CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).CinemachineCamera.Priority      =  0;
+                 CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).CinemachineCamera.Priority  = 10;
                 break;
             default:
                 break;

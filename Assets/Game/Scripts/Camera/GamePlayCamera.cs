@@ -2,9 +2,13 @@ using UnityEngine;
 using Unity.Cinemachine;
 public class GameplayCamera : MonoBehaviour
 {
-    public CinemachineCamera m_CinemachineCamera;
-    public CinemachineFollow m_Follow;
-    public CinemachineRotationComposer m_rotationComposer;
+    [SerializeField] private CinemachineCamera m_CinemachineCamera;
+    [SerializeField] private CinemachineFollow m_Follow;
+    [SerializeField] private CinemachineRotationComposer m_rotationComposer;
+
+    public CinemachineCamera CinemachineCamera => m_CinemachineCamera;
+    public CinemachineFollow Follow => m_Follow;
+    public CinemachineRotationComposer RotationComposer => m_rotationComposer;
 
     private void Reset()
     {

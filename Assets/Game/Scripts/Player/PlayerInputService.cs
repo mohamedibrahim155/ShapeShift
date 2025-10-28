@@ -25,7 +25,7 @@ public class PlayerInputService : IPLayerInputService
         m_GameloopService.OnUpdateTick += UpdateInputs;
     }
 
-
+    // Update touch inputs and detect swipe direction
     public void UpdateInputs()
     {
 #if UNITY_ANDROID || UNITY_EDITOR
@@ -51,11 +51,13 @@ public class PlayerInputService : IPLayerInputService
                 {
                     if (distance.x > 0)
                     {
+                       //Right Swipe
                         OnSwipe?.Invoke(SwipeDirection.RIGHT);
                         Debug.Log("Right");
                     }
                     else
                     {
+                        //Left Swipe
                         OnSwipe?.Invoke(SwipeDirection.LEFT);
 
                         Debug.Log("Left");
@@ -65,12 +67,14 @@ public class PlayerInputService : IPLayerInputService
                 {
                     if (distance.y > 0)
                     {
+                        //Up Swipe
                         OnSwipe?.Invoke(SwipeDirection.UP);
 
                         Debug.Log("Up");
                     }
                     else
                     {
+                        //Down Swipe
                         OnSwipe?.Invoke(SwipeDirection.DOWN);
                         Debug.Log("Down");
                     }
