@@ -1,5 +1,6 @@
 
 using Scripts.GameService;
+using Scripts.Score;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,25 +18,29 @@ namespace Scripts.Player
         private IPLayerInputService m_PlayerInputService;
         private IGameLoopService m_GameloopService;
         private ICameraService m_CameraService;
+        private IScoreService m_ScoreService;
 
 
 
         private List<BlockView> m_ListOfBlocks;
+        private const int PointsPerCorrectCollision = 10;
 
         [Inject]
-        private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService, 
-            IGameLoopService gameloopService, ICameraService cameraService)
+        private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService,
+            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService)
         {
             m_PlayerConfig = playerConfig;
             m_Container = container;
             m_PlayerInputService = inputService;
             m_GameloopService = gameloopService;
             m_CameraService = cameraService;
+            m_ScoreService = scoreService;
 
 
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
 
+            m_ScoreService.Reset();
             SpawnPlayer(Vector3.zero);
 
 
@@ -45,7 +50,7 @@ namespace Scripts.Player
         public void SpawnPlayer(Vector3 position)
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
-
+            m_PlayerView.ChangeShape(EShapeType.CUBE);
             InitializeCamera();
             HandleSwipe();
             HandleCollision();
@@ -68,20 +73,15 @@ namespace Scripts.Player
         // Set up swipe input handling
         private void HandleSwipe()
         {
-            m_PlayerInputService.OnSwipe += ChangeShape;
+            m_PlayerInputService.OnSwipe += Swipe;
         }
 
         // Change the player's shape based on swipe direction
-        private void ChangeShape(SwipeDirection swipeDirection)
+        private void Swipe(SwipeDirection swipeDirection)
         {
             // index represents circle =1, cyl=2, triangle=3, pentagon=4
             int swapeIndex = (int)swipeDirection;
-
-            m_PlayerView.DisableShape(m_PlayerConfig.m_CurrentShapeIndex);
-
-            m_PlayerView.EnableShape((EShapeType)swapeIndex);
-
-            m_PlayerConfig.m_CurrentShapeIndex = swapeIndex;
+            m_PlayerView.ChangeShape((EShapeType)swapeIndex);
         }
 
         private void ObstacleCollision(EShapeType shape, GameObject collisionObject)
@@ -93,7 +93,10 @@ namespace Scripts.Player
                 // Level Failed Condition
                 Debug.Log("Player Collided with different Shape. Level Failed!");
                 DestroyPlayer();
+                return;
             }
+
+            m_ScoreService.AddPoints(PointsPerCorrectCollision);
         }
 
         private void Update()
@@ -112,12 +115,24 @@ namespace Scripts.Player
             MonoBehaviour.Destroy(m_PlayerView.gameObject);
 
             PlayerCollisionListener.OnShapeCollision -= ObstacleCollision;
-            m_PlayerInputService.OnSwipe -= ChangeShape;
+            m_PlayerInputService.OnSwipe -= Swipe;
 
         }
 
         private bool CheckCollision(EShapeType shapoType, GameObject collisionObject)
         {
+
+            if (m_ListOfBlocks == null)
+            {
+                Debug.LogWarning("No registered blocks for collision checking.");
+                return false;
+            }
+
+            if (collisionObject == null)
+            {
+                return false;
+            }
+
             // Implement collision checking logic here
 
             foreach (BlockView item in m_ListOfBlocks)

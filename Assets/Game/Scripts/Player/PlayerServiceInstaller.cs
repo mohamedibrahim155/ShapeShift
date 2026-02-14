@@ -1,3 +1,4 @@
+using Scripts.Score;
 using UnityEngine;
 using Zenject;
 
@@ -12,6 +13,7 @@ namespace Scripts.Player
             Container.BindInstance(config);
             Container.Bind<IPlayerService>().To<PlayerService>().AsSingle().NonLazy();
             Container.Bind<IPLayerInputService>().To<PlayerInputService>().AsSingle().NonLazy();
+            Container.Bind<IScoreService>().To<ScoreService>().AsSingle().NonLazy();
         }
     }
 }

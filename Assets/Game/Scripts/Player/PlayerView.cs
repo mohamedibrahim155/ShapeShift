@@ -9,14 +9,6 @@ public class PlayerView : MonoBehaviour
     [SerializeField] GameObject[] shapeTransforms;
 
     [Inject] private PlayerConfig playerConfig;
-
-    private Dictionary<EShapeType, int> shapeTypeToIndex = new Dictionary<EShapeType, int>()
-    {
-        { EShapeType.CUBE, 0 },
-        { EShapeType.SPHERE, 1 },
-        { EShapeType.CYLINDER, 2 },
-        { EShapeType.CAPSULE, 3 }
-    };
     void Start()
     {
         
@@ -28,21 +20,26 @@ public class PlayerView : MonoBehaviour
         
     }
 
-    public void EnableShape(int shapeIndex)
-    {  
-         shapeTransforms[shapeIndex].SetActive(true);
-    }
-
     public void EnableShape(EShapeType shapeType)
     {
-        int shapeIndex = shapeTypeToIndex[shapeType];
+        int shapeIndex = (int)shapeType;
+
+        playerConfig.SetCurrentShape(shapeType);
+
         shapeTransforms[shapeIndex].SetActive(true);
+
+    }
+
+    public void ChangeShape(EShapeType eShapeType)
+    {
+        DisableShape(playerConfig.m_CurrentShapeType);
+        EnableShape(eShapeType);
     }
 
 
-    public void DisableShape(int shapeIndex)
+    public void DisableShape(EShapeType shapeIndex)
     {
-         shapeTransforms[shapeIndex].SetActive(false);
+         shapeTransforms[(int)shapeIndex].SetActive(false);
     }
 
   

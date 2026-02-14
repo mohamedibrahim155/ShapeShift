@@ -8,4 +8,12 @@ public class PlayerConfig : ScriptableObject
 
     [Header("Shapes")]
     public int m_CurrentShapeIndex = 0;
+    public EShapeType m_CurrentShapeType;
+
+
+    public void SetCurrentShape(EShapeType shapeType)
+    {
+        m_CurrentShapeIndex = (int)shapeType;
+        m_CurrentShapeType = shapeType;
+    }
 }
