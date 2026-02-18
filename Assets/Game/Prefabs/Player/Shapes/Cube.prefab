@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8007021914706324152}
   - component: {fileID: 3640136788021963331}
   - component: {fileID: 6980045597661803547}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a16a59677d9c2441b42f0098a181f21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shapeType: 0
 --- !u!54 &6980045597661803547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -159,7 +158,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7792001453721430301}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

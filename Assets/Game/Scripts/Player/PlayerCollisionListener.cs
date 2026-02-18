@@ -3,28 +3,20 @@ using System;
 using UnityEngine;
 using Zenject;
 
-
-public enum EShapeType
-{
-    CUBE = 0,
-    SPHERE = 1,
-    CYLINDER = 2,
-    TRIANGLE = 3,
-}
 public class PlayerCollisionListener : MonoBehaviour
 {
 
-    public static event Action<EShapeType, GameObject> OnShapeCollision = delegate { };
-    [SerializeField] private EShapeType shapeType;
+    //public static event Action<EShapeType, GameObject> OnShapeCollision = delegate { };
+    //[SerializeField] private EShapeType shapeType;
 
 
-    private void OnTriggerEnter(Collider other)
-    {
-        OnShapeCollision?.Invoke(shapeType, other.gameObject);
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    OnShapeCollision?.Invoke(shapeType, other.gameObject);
+    //}
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        //OnShapeCollision?.Invoke(shapeType, collision.gameObject);
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    //OnShapeCollision?.Invoke(shapeType, collision.gameObject);
+    //}
 }

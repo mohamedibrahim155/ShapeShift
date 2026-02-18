@@ -2,51 +2,106 @@ using System;
 using UnityEngine;
 using Zenject;
 using Scripts.GameService;
-public class PlayerInputService : IPLayerInputService
+using Unity.VisualScripting;
+
+namespace Scripts.Player
 {
-    public Vector2 endPosition { get; private set; }
-
-    public Vector2 startTouchPosition { get; private set; }
-
-    public event Action<SwipeDirection> OnSwipe;
-
-
-    private PlayerConfig m_PlayerConfig;
-    private IGameLoopService m_GameloopService;
-
-
-
-    [Inject]
-    private void Construct(PlayerConfig config, IGameLoopService gameloop)
+    public class PlayerInputService : IPLayerInputService
     {
-        m_PlayerConfig = config;
-        m_GameloopService = gameloop;
+        public Vector2 endPosition { get; private set; }
 
-        m_GameloopService.OnUpdateTick += UpdateInputs;
-    }
+        public Vector2 startTouchPosition { get; private set; }
 
-    // Update touch inputs and detect swipe direction
-    public void UpdateInputs()
-    {
-#if UNITY_ANDROID || UNITY_EDITOR
-        if (Input.touchCount == 1)
+        public event Action<SwipeDirection> OnSwipe;
+
+
+        private PlayerConfig m_PlayerConfig;
+        private IGameLoopService m_GameloopService;
+
+
+
+        [Inject]
+        private void Construct(PlayerConfig config, IGameLoopService gameloop)
         {
-            Touch touch = Input.GetTouch(0);
+            m_PlayerConfig = config;
+            m_GameloopService = gameloop;
 
-            if (touch.phase == TouchPhase.Began)
+            m_GameloopService.OnUpdateTick += UpdateInputs;
+        }
+
+        // Update touch inputs and detect swipe direction
+        public void UpdateInputs()
+        {
+#if UNITY_ANDROID || UNITY_EDITOR
+            if (Input.touchCount == 1)
             {
-                startTouchPosition = touch.position;
+                Touch touch = Input.GetTouch(0);
+
+                if (touch.phase == TouchPhase.Began)
+                {
+                    startTouchPosition = touch.position;
+                }
+                else if (touch.phase == TouchPhase.Ended)
+                {
+                    endPosition = touch.position;
+                    Vector2 distance = endPosition - startTouchPosition;
+
+                    if (distance.magnitude < m_PlayerConfig.m_SwipeThreshold * m_PlayerConfig.m_SwipeThreshold)
+                    {
+                        return;
+                    }
+
+                    if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
+                    {
+                        if (distance.x > 0)
+                        {
+                            //Right Swipe
+                            OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                            Debug.Log("Right");
+                        }
+                        else
+                        {
+                            //Left Swipe
+                            OnSwipe?.Invoke(SwipeDirection.LEFT);
+
+                            Debug.Log("Left");
+                        }
+                    }
+                    else
+                    {
+                        if (distance.y > 0)
+                        {
+                            //Up Swipe
+                            OnSwipe?.Invoke(SwipeDirection.UP);
+
+                            Debug.Log("Up");
+                        }
+                        else
+                        {
+                            //Down Swipe
+                            OnSwipe?.Invoke(SwipeDirection.DOWN);
+                            Debug.Log("Down");
+                        }
+                    }
+                }
+
             }
-            else if (touch.phase == TouchPhase.Ended)
-            {
-                endPosition = touch.position;
-                Vector2 distance = endPosition - startTouchPosition;
 
+#endif
+
+#if UNITY_EDITOR_WINDOWS || UNITY_STANDALONE
+            if (Input.GetMouseButtonDown(0))
+            {
+                startTouchPosition = Input.mousePosition;
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                endPosition = Input.mousePosition;
+                Vector2 distance = endPosition - startTouchPosition;
                 if (distance.magnitude < m_PlayerConfig.m_SwipeThreshold * m_PlayerConfig.m_SwipeThreshold)
                 {
                     return;
                 }
-
                 if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
                 {
                     if (distance.x > 0)
@@ -59,7 +114,6 @@ public class PlayerInputService : IPLayerInputService
                     {
                         //Left Swipe
                         OnSwipe?.Invoke(SwipeDirection.LEFT);
-
                         Debug.Log("Left");
                     }
                 }
@@ -69,7 +123,6 @@ public class PlayerInputService : IPLayerInputService
                     {
                         //Up Swipe
                         OnSwipe?.Invoke(SwipeDirection.UP);
-
                         Debug.Log("Up");
                     }
                     else
@@ -81,94 +134,51 @@ public class PlayerInputService : IPLayerInputService
                 }
             }
 
-        }
-
-#endif
-
-#if UNITY_EDITOR_WINDOWS || UNITY_STANDALONE
-        if (Input.GetMouseButtonDown(0))
-        {
-            startTouchPosition = Input.mousePosition;
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            endPosition = Input.mousePosition;
-            Vector2 distance = endPosition - startTouchPosition;
-            if (distance.magnitude < m_PlayerConfig.m_SwipeThreshold * m_PlayerConfig.m_SwipeThreshold)
+            Vector2 inputAxis = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            if (inputAxis.magnitude > 0.1f)
             {
-                return;
-            }
-            if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
-            {
-                if (distance.x > 0)
+                if (Mathf.Abs(inputAxis.x) > Mathf.Abs(inputAxis.y))
                 {
-                    //Right Swipe
-                    OnSwipe?.Invoke(SwipeDirection.RIGHT);
-                    Debug.Log("Right");
+                    if (inputAxis.x > 0)
+                    {
+                        //Right Swipe
+                        OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                        Debug.Log("Windows - Right");
+                    }
+                    else
+                    {
+                        //Left Swipe
+                        OnSwipe?.Invoke(SwipeDirection.LEFT);
+                        Debug.Log("Windows-Left");
+                    }
                 }
                 else
                 {
-                    //Left Swipe
-                    OnSwipe?.Invoke(SwipeDirection.LEFT);
-                    Debug.Log("Left");
+                    if (inputAxis.y > 0)
+                    {
+                        //Up Swipe
+                        OnSwipe?.Invoke(SwipeDirection.UP);
+                        Debug.Log("Windows-Up");
+                    }
+                    else
+                    {
+                        //Down Swipe
+                        OnSwipe?.Invoke(SwipeDirection.DOWN);
+                        Debug.Log("Windows-Down");
+                    }
                 }
             }
-            else
-            {
-                if (distance.y > 0)
-                {
-                    //Up Swipe
-                    OnSwipe?.Invoke(SwipeDirection.UP);
-                    Debug.Log("Up");
-                }
-                else
-                {
-                    //Down Swipe
-                    OnSwipe?.Invoke(SwipeDirection.DOWN);
-                    Debug.Log("Down");
-                }
-            }
-        }
-
-        Vector2 inputAxis = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        if (inputAxis.magnitude > 0.1f)
-        {
-            if (Mathf.Abs(inputAxis.x) > Mathf.Abs(inputAxis.y))
-            {
-                if (inputAxis.x > 0)
-                {
-                    //Right Swipe
-                    OnSwipe?.Invoke(SwipeDirection.RIGHT);
-                    Debug.Log("Windows - Right");
-                }
-                else
-                {
-                    //Left Swipe
-                    OnSwipe?.Invoke(SwipeDirection.LEFT);
-                    Debug.Log("Windows-Left");
-                }
-            }
-            else
-            {
-                if (inputAxis.y > 0)
-                {
-                    //Up Swipe
-                    OnSwipe?.Invoke(SwipeDirection.UP);
-                    Debug.Log("Windows-Up");
-                }
-                else
-                {
-                    //Down Swipe
-                    OnSwipe?.Invoke(SwipeDirection.DOWN);
-                    Debug.Log("Windows-Down");
-                }
-            }
-        }
 
 
 #endif
 
 
+        }
+
+        public void CleanUp()
+        {
+            m_GameloopService.OnUpdateTick -= UpdateInputs;
+        }
     }
 }
 

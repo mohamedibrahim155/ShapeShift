@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 841282746012807525}
   - component: {fileID: 9099118608416968604}
+  - component: {fileID: 7638842546406612253}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -47,12 +48,26 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.4841402, y: 1.3510016, z: 0.3161524}
   m_Center: {x: -0.006051779, y: 0.1966818, z: 0.000000029802322}
+--- !u!114 &7638842546406612253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3965212901800267169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487c3edbe301c8b4689c9ee4b998f5ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Block: {fileID: 611809791999238736}
+  _config: {fileID: 0}
 --- !u!1 &6969908026057269530
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,7 +77,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7081832430931039345}
-  - component: {fileID: 1496628681393780008}
+  - component: {fileID: 611809791999238736}
   m_Layer: 0
   m_Name: Triangle_Wall
   m_TagString: Untagged
@@ -87,7 +102,7 @@ Transform:
   - {fileID: 841282746012807525}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1496628681393780008
+--- !u!114 &611809791999238736
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,9 +114,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e95413f834d774691d91407b7e6803, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BlockType: 0
-  m_Collider:
-  - {fileID: 0}
+  m_BlockType: 3
+  m_Collider: {fileID: 9099118608416968604}
+  m_ColliderListener: {fileID: 7638842546406612253}
 --- !u!1 &7850791742795846477
 GameObject:
   m_ObjectHideFlags: 0

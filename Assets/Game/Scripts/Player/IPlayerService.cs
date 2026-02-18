@@ -7,5 +7,6 @@ namespace Scripts.Player
     {
         void SpawnPlayer(Vector3 position);
         void RegisterBlockWall(BlockView wall);
+        void CleanUp();
     }
 }
