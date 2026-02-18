@@ -42,4 +42,22 @@ public class PlayerView : MonoBehaviour
     {
          shapeTransforms[(int)shapeIndex].SetActive(false);
     }
+
+    public void SpawnShapes(DiContainer diContainer)
+    {
+       m_ShapeParent = new GameObject("ShapeParent").transform;
+       m_ShapeParent.SetParent(transform);
+
+        shapeTransforms = null;
+        shapeTransforms = new GameObject[playerConfig.m_ListOfShapes.Count];
+
+        foreach (ShapeConfig item in playerConfig.m_ListOfShapes)
+        {
+            GameObject shapeInstance = diContainer.InstantiatePrefab(item.m_ShapeView);
+            shapeInstance.transform.SetParent(m_ShapeParent);
+            shapeInstance.SetActive(false);
+            shapeTransforms[(int)item.m_ShapeType] = shapeInstance;
+        }
+    }
+
 }
