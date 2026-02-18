@@ -17,7 +17,7 @@ public class PlayerInputService : IPLayerInputService
 
 
     [Inject]
-    private void Construct(PlayerConfig config,  IGameLoopService gameloop)
+    private void Construct(PlayerConfig config, IGameLoopService gameloop)
     {
         m_PlayerConfig = config;
         m_GameloopService = gameloop;
@@ -42,7 +42,7 @@ public class PlayerInputService : IPLayerInputService
                 endPosition = touch.position;
                 Vector2 distance = endPosition - startTouchPosition;
 
-                if(distance.magnitude < m_PlayerConfig.m_SwipeThreshold * m_PlayerConfig.m_SwipeThreshold)
+                if (distance.magnitude < m_PlayerConfig.m_SwipeThreshold * m_PlayerConfig.m_SwipeThreshold)
                 {
                     return;
                 }
@@ -51,7 +51,7 @@ public class PlayerInputService : IPLayerInputService
                 {
                     if (distance.x > 0)
                     {
-                       //Right Swipe
+                        //Right Swipe
                         OnSwipe?.Invoke(SwipeDirection.RIGHT);
                         Debug.Log("Right");
                     }
@@ -84,6 +84,90 @@ public class PlayerInputService : IPLayerInputService
         }
 
 #endif
+
+#if UNITY_EDITOR_WINDOWS || UNITY_STANDALONE
+        if (Input.GetMouseButtonDown(0))
+        {
+            startTouchPosition = Input.mousePosition;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            endPosition = Input.mousePosition;
+            Vector2 distance = endPosition - startTouchPosition;
+            if (distance.magnitude < m_PlayerConfig.m_SwipeThreshold * m_PlayerConfig.m_SwipeThreshold)
+            {
+                return;
+            }
+            if (Mathf.Abs(distance.x) > Mathf.Abs(distance.y))
+            {
+                if (distance.x > 0)
+                {
+                    //Right Swipe
+                    OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                    Debug.Log("Right");
+                }
+                else
+                {
+                    //Left Swipe
+                    OnSwipe?.Invoke(SwipeDirection.LEFT);
+                    Debug.Log("Left");
+                }
+            }
+            else
+            {
+                if (distance.y > 0)
+                {
+                    //Up Swipe
+                    OnSwipe?.Invoke(SwipeDirection.UP);
+                    Debug.Log("Up");
+                }
+                else
+                {
+                    //Down Swipe
+                    OnSwipe?.Invoke(SwipeDirection.DOWN);
+                    Debug.Log("Down");
+                }
+            }
+        }
+
+        Vector2 inputAxis = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        if (inputAxis.magnitude > 0.1f)
+        {
+            if (Mathf.Abs(inputAxis.x) > Mathf.Abs(inputAxis.y))
+            {
+                if (inputAxis.x > 0)
+                {
+                    //Right Swipe
+                    OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                    Debug.Log("Windows - Right");
+                }
+                else
+                {
+                    //Left Swipe
+                    OnSwipe?.Invoke(SwipeDirection.LEFT);
+                    Debug.Log("Windows-Left");
+                }
+            }
+            else
+            {
+                if (inputAxis.y > 0)
+                {
+                    //Up Swipe
+                    OnSwipe?.Invoke(SwipeDirection.UP);
+                    Debug.Log("Windows-Up");
+                }
+                else
+                {
+                    //Down Swipe
+                    OnSwipe?.Invoke(SwipeDirection.DOWN);
+                    Debug.Log("Windows-Down");
+                }
+            }
+        }
+
+
+#endif
+
 
     }
 }
