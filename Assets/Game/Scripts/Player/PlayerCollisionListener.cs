@@ -9,7 +9,7 @@ public enum EShapeType
     CUBE = 0,
     SPHERE = 1,
     CYLINDER = 2,
-    CAPSULE = 3,
+    TRIANGLE = 3,
 }
 public class PlayerCollisionListener : MonoBehaviour
 {

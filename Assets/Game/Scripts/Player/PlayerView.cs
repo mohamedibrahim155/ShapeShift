@@ -5,8 +5,9 @@ using Zenject;
 
 public class PlayerView : MonoBehaviour
 {
+     public Transform m_ShapeParent;
 
-    [SerializeField] GameObject[] shapeTransforms;
+    [SerializeField] public GameObject[] shapeTransforms;
 
     [Inject] private PlayerConfig playerConfig;
     void Start()
@@ -41,6 +42,4 @@ public class PlayerView : MonoBehaviour
     {
          shapeTransforms[(int)shapeIndex].SetActive(false);
     }
-
-  
 }

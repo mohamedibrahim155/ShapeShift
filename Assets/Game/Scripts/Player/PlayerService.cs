@@ -50,10 +50,28 @@ namespace Scripts.Player
         public void SpawnPlayer(Vector3 position)
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
+            SpawnShapes(m_PlayerView);
             m_PlayerView.ChangeShape(EShapeType.CUBE);
             InitializeCamera();
             HandleSwipe();
             HandleCollision();
+        }
+
+        public void SpawnShapes(PlayerView playerView)
+        {
+            playerView.m_ShapeParent = new GameObject("ShapeParent").transform;
+            playerView.m_ShapeParent.SetParent(playerView.transform);
+
+            playerView.shapeTransforms = null;
+            playerView.shapeTransforms = new GameObject[m_PlayerConfig.m_ListOfShapes.Count];
+
+            foreach (ShapeConfig item in m_PlayerConfig.m_ListOfShapes)
+            {
+                GameObject shapeInstance = m_Container.InstantiatePrefab(item.m_ShapeView);
+                shapeInstance.transform.SetParent(playerView.m_ShapeParent);
+                shapeInstance.SetActive(false);
+                playerView.shapeTransforms[(int)item.m_ShapeType] = shapeInstance;
+            }
         }
 
     

@@ -1,11 +1,13 @@
 using Scripts.Player;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
 public class BlockView : MonoBehaviour
 {
     [SerializeField] private EBlockType m_BlockType;
-    [SerializeField] private Collider m_Collider;
+    [SerializeField] private List<Collider> m_Collider;
 
    private IPlayerService m_playerService;
 
@@ -27,7 +29,7 @@ public class BlockView : MonoBehaviour
 
     private void Reset()
     {
-        m_Collider = GetComponent<Collider>();
+        m_Collider = GetComponentsInChildren<Collider>().ToList();
     }
 
 }

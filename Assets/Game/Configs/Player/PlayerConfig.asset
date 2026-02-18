@@ -13,5 +13,15 @@ MonoBehaviour:
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
   m_PlayerView: {fileID: 3888930328552335185, guid: c482007f1964b5d46a46fa0b70cb6a3d, type: 3}
+  m_ListOfShapes:
+  - m_ShapeType: 0
+    m_ShapeView: {fileID: 5303291611297288244, guid: 191b3846413ef6548a2d25c980a14784, type: 3}
+  - m_ShapeType: 2
+    m_ShapeView: {fileID: 6600824217881722516, guid: 7153513840ab17d40aef26330da58dfb, type: 3}
+  - m_ShapeType: 1
+    m_ShapeView: {fileID: 7855596480995236085, guid: c76044a5ea6c3fd4d970d04792632406, type: 3}
+  - m_ShapeType: 3
+    m_ShapeView: {fileID: 6048532220548987992, guid: 366165b2cbbb06348a44f5563238930f, type: 3}
   m_SwipeThreshold: 5
   m_CurrentShapeIndex: 0
+  m_CurrentShapeType: 0
