@@ -9,7 +9,7 @@ namespace Scripts.Player
     {
         public Transform m_ShapeParent;
 
-        [SerializeField] public GameObject[] shapeTransforms;
+        [SerializeField] public List<ShapeView> shapeTransforms;
 
         [Inject] private PlayerConfig playerConfig;
 
@@ -19,7 +19,7 @@ namespace Scripts.Player
 
             playerConfig.SetCurrentShape(shapeType);
 
-            shapeTransforms[shapeIndex].SetActive(true);
+            shapeTransforms[shapeIndex].Show();
 
         }
 
@@ -32,7 +32,7 @@ namespace Scripts.Player
 
         public void DisableShape(EShapeType shapeIndex)
         {
-            shapeTransforms[(int)shapeIndex].SetActive(false);
+            shapeTransforms[(int)shapeIndex].Hide();
         }
 
         public void SpawnShapes(DiContainer diContainer)
@@ -40,16 +40,22 @@ namespace Scripts.Player
             m_ShapeParent = new GameObject("ShapeParent").transform;
             m_ShapeParent.SetParent(transform);
 
-            shapeTransforms = null;
-            shapeTransforms = new GameObject[playerConfig.m_ListOfShapes.Count];
+            shapeTransforms = new List<ShapeView>(new ShapeView[playerConfig.m_ListOfShapes.Count]);
 
             foreach (ShapeConfig item in playerConfig.m_ListOfShapes)
             {
-                GameObject shapeInstance = diContainer.InstantiatePrefab(item.m_ShapeView);
+                ShapeView shapeInstance = diContainer.InstantiatePrefabForComponent<ShapeView>(item.m_ShapeView);
                 shapeInstance.transform.SetParent(m_ShapeParent);
-                shapeInstance.SetActive(false);
+
+                shapeInstance.Hide();
+                shapeInstance.Setup(item.m_ShapeType, m_ShapeParent);
                 shapeTransforms[(int)item.m_ShapeType] = shapeInstance;
             }
+        }
+
+        public ShapeView GetShape(EShapeType shapeType)
+        {
+            return shapeTransforms[(int)shapeType];
         }
 
     }

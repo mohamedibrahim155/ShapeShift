@@ -19,6 +19,7 @@ namespace Scripts.Player
         private IGameLoopService m_GameloopService;
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
+        private PlayerStateMachine PlayerStateMachine;
 
 
 
@@ -43,6 +44,14 @@ namespace Scripts.Player
             m_ScoreService.Reset();
             SpawnPlayer(Vector3.zero);
 
+
+        }
+
+        void InitializeStateMachine(PlayerView view, PlayerConfig config)
+        {
+            PlayerStateMachine = new PlayerStateMachine(view, config);
+
+            //PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
 
         }
 
@@ -107,7 +116,7 @@ namespace Scripts.Player
 
         private void FixedUpdate()
         {
-            //m_PlayerView.transform.position += Vector3.forward * 10 * Time.deltaTime;
+           // m_PlayerView.transform.position += Vector3.forward * 10 * Time.deltaTime;
         }
 
 
@@ -115,10 +124,7 @@ namespace Scripts.Player
         {
             MonoBehaviour.Destroy(m_PlayerView.gameObject);
 
-            BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
-            m_PlayerInputService.OnSwipe -= Swipe;
-
-            m_PlayerInputService.CleanUp();
+            CleanUp();
 
         }
 
@@ -146,6 +152,8 @@ namespace Scripts.Player
             m_PlayerInputService.OnSwipe -= Swipe;
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
+
+            m_PlayerInputService.CleanUp();
         }
     }
 }

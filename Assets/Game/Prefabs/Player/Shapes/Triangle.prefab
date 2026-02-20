@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 100427511245635695}
+  - component: {fileID: 4119971641524525323}
   m_Layer: 6
   m_Name: Triangle
   m_TagString: Untagged
@@ -32,6 +33,21 @@ Transform:
   - {fileID: 7783123583231475357}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4119971641524525323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6048532220548987992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d067f7102a71f14593c4466ca0803d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Collider: {fileID: 9033523566773695588}
+  MeshRenderer: {fileID: 8873561755489050613}
+  Rigidbody: {fileID: 7734004733712902873}
 --- !u!1001 &7748879480252750198
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -163,5 +179,10 @@ Rigidbody:
 --- !u!4 &7783123583231475357 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8ffecdce7f7516c48adf8460703eb70f, type: 3}
+  m_PrefabInstance: {fileID: 7748879480252750198}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8873561755489050613 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8021837051761670525, guid: 8ffecdce7f7516c48adf8460703eb70f, type: 3}
   m_PrefabInstance: {fileID: 7748879480252750198}
   m_PrefabAsset: {fileID: 0}

@@ -17,7 +17,8 @@ public class BlockView : MonoBehaviour
     private void Construct(IPlayerService playerService,  BlockConfig config)
     {
         m_playerService =  playerService;
-        _config = config; 
+        _config = config;
+        m_playerService.RegisterBlockWall(this);
     }
 
     public EBlockType BlockType => m_BlockType;
@@ -25,22 +26,13 @@ public class BlockView : MonoBehaviour
 
     private void Start()
     {
-        if (m_playerService != null)
-        {
-            m_playerService.RegisterBlockWall(this);
-        }
+      
     }
 
     private void Reset()
     {
         m_Collider = GetComponentInChildren<Collider>();
         m_ColliderListener = GetComponentInChildren<BlockWallColliderView>();
-        m_ColliderListener.SetBlock(this);
-    }
-
-    public EBlockType GetShapeType()
-    {
-        return m_BlockType;
     }
 
 }

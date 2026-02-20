@@ -11,6 +11,7 @@ public class CameraService : ICameraService
 
     private CameraConfig m_CameraConfig;
     private DiContainer m_Container;
+    private CameraType currentCameraID;
 
     [Inject]
     private void Construct(CameraConfig config, DiContainer container)
@@ -71,7 +72,5 @@ public class CameraService : ICameraService
                 break;
         }
     }
-  
-
 
 }

@@ -8,7 +8,7 @@ namespace Scripts.Player
     public class ShapeConfig
     {
         public EShapeType m_ShapeType;
-        public GameObject m_ShapeView;
+        public ShapeView m_ShapeView;
     }
 
     [CreateAssetMenu(fileName = "PlayerConfig", menuName = "Scriptable Objects/Configs/Player")]

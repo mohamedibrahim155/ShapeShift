@@ -16,11 +16,6 @@ namespace Scripts.GameService
             new GameObject("GameLoop").AddComponent<GameLoopView>().Initalize(this);
         }
 
-        public void Start()
-        {
-            OnStart?.Invoke();
-        }
-
         public void Update()
         {
             OnUpdateTick?.Invoke();

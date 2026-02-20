@@ -15,9 +15,6 @@ namespace Scripts.GameService
             _gameLoop = gameLoop;
         }
 
-        public void Start() => _gameLoop.Start();
-
-
         public void Update() => _gameLoop.Update();
      
 
