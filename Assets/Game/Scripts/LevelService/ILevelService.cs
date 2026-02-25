@@ -1,7 +1,14 @@
+using System;
 using UnityEngine;
 
-public interface ILevelService
+namespace Scripts.Level
 {
-    void CreateLevel( int levelNo );
-    LevelView GetLevel( int levelNo );
+    public interface ILevelService
+    {
+        public event Action<LevelView> OnLevelCreated;
+        void CreateLevel(int levelNo);
+        LevelView GetLevel(int levelNo);
+
+
+    }
 }

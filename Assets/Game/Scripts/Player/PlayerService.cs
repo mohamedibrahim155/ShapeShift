@@ -1,5 +1,6 @@
 
 using Scripts.GameService;
+using Scripts.Level;
 using Scripts.Score;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace Scripts.Player
         private IGameLoopService m_GameloopService;
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
+        private ILevelService m_LevelService;
         private PlayerStateMachine PlayerStateMachine;
 
 
@@ -28,7 +30,8 @@ namespace Scripts.Player
 
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService,
-            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService)
+            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, ILevelService levelService)
+
         {
             m_PlayerConfig = playerConfig;
             m_Container = container;
@@ -36,13 +39,15 @@ namespace Scripts.Player
             m_GameloopService = gameloopService;
             m_CameraService = cameraService;
             m_ScoreService = scoreService;
+            m_LevelService = levelService;
 
 
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
 
             m_ScoreService.Reset();
-            SpawnPlayer(Vector3.zero);
+            SpawnLevel();
+            SpawnPlayer(playerConfig.m_SpawnPosition);
 
 
         }
@@ -60,10 +65,19 @@ namespace Scripts.Player
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
             m_PlayerView.SpawnShapes(m_Container);
+
+            m_PlayerView.transform.position = position;
+
             m_PlayerView.ChangeShape(EShapeType.CUBE);
+
             InitializeCamera();
             HandleSwipe();
             HandleCollision();
+        }
+
+        public void SpawnLevel()
+        {
+              m_LevelService.CreateLevel(0);
         }
 
 

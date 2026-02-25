@@ -23,6 +23,9 @@ namespace Scripts.Player
         public EShapeType m_CurrentShapeType;
 
 
+        [Header("Spawn position")]
+        public Vector3 m_SpawnPosition = Vector3.zero;
+
         public void SetCurrentShape(EShapeType shapeType)
         {
             m_CurrentShapeIndex = (int)shapeType;

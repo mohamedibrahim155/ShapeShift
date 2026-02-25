@@ -1,11 +1,17 @@
 using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "LevelInstaller", menuName = "Installers/LevelInstaller")]
-public class LevelInstaller : ScriptableObjectInstaller<LevelInstaller>
+namespace Scripts.Level
 {
-    public override void InstallBindings()
+
+    [CreateAssetMenu(fileName = "LevelInstaller", menuName = "Installers/LevelInstaller")]
+    public class LevelInstaller : ScriptableObjectInstaller<LevelInstaller>
     {
-        Container.Bind<ILevelService>().To<LevelService>().AsSingle().NonLazy();
+        public LevelConfig config;
+        public override void InstallBindings()
+        {
+            Container.BindInstances(config);
+            Container.Bind<ILevelService>().To<LevelService>().AsSingle().NonLazy();
+        }
     }
 }

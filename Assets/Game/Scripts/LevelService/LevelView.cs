@@ -1,21 +1,34 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using UnityEngine;
 
 public class LevelView : MonoBehaviour
 {
     public List<GameObject> m_LevelParts;
-    [SerializeField] private List<BlockView> m_Blocks;
+    [SerializeField] private Transform StartPoint;
+    [SerializeField] private Transform EndPoint;
+    [SerializeField] private Transform GroundTransform;
 
+    public Collider Collider;
 
-    private void Reset()
+    private List<BlockView> _blockViews = new List<BlockView>();
+
+    public void AddBlock(BlockView blockView)
     {
-        m_Blocks = GetComponentsInChildren <BlockView>().ToList();
+        _blockViews.Add(blockView);
     }
-    public BlockView GetViewAt(int index)
+
+    public BlockView GetBlock(int index)
     {
-        return m_Blocks[index];
+        return _blockViews[index];
     }
+
+    public void Reset()
+    {
+        Collider = GetComponentInChildren<Collider>();
+    }
+
 
 
 }

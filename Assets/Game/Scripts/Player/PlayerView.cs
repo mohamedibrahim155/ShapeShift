@@ -38,7 +38,7 @@ namespace Scripts.Player
         public void SpawnShapes(DiContainer diContainer)
         {
             m_ShapeParent = new GameObject("ShapeParent").transform;
-            m_ShapeParent.SetParent(transform);
+            m_ShapeParent.transform.parent = (transform);
 
             shapeTransforms = new List<ShapeView>(new ShapeView[playerConfig.m_ListOfShapes.Count]);
 
