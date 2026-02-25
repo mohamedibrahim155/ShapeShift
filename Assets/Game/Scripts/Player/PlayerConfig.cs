@@ -26,6 +26,9 @@ namespace Scripts.Player
         [Header("Spawn position")]
         public Vector3 m_SpawnPosition = Vector3.zero;
 
+        [Header("Speed")]
+        public float m_MoveSpeed = 5f;
+
         public void SetCurrentShape(EShapeType shapeType)
         {
             m_CurrentShapeIndex = (int)shapeType;

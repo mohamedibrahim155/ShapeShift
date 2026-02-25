@@ -56,7 +56,10 @@ namespace Scripts.Player
         {
             PlayerStateMachine = new PlayerStateMachine(view, config);
 
-            //PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
+            PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
+            PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
+
+
 
         }
 
@@ -70,9 +73,15 @@ namespace Scripts.Player
 
             m_PlayerView.ChangeShape(EShapeType.CUBE);
 
+            InitializeStateMachine(m_PlayerView, m_PlayerConfig);
+
             InitializeCamera();
             HandleSwipe();
             HandleCollision();
+
+            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
+
+            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
         }
 
         public void SpawnLevel()
@@ -124,13 +133,22 @@ namespace Scripts.Player
         }
 
         private void Update()
-        { 
-         
+        {
+            if (PlayerStateMachine!= null)
+            {
+                PlayerStateMachine.Update();
+
+            }
         }
 
         private void FixedUpdate()
         {
-           // m_PlayerView.transform.position += Vector3.forward * 10 * Time.deltaTime;
+
+            if (PlayerStateMachine != null)
+            {
+                PlayerStateMachine.FixedUpdate();
+            }
+        
         }
 
 
@@ -168,6 +186,11 @@ namespace Scripts.Player
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
 
             m_PlayerInputService.CleanUp();
+        }
+
+        private void OnGameStart()
+        {
+            
         }
     }
 }
