@@ -26,6 +26,7 @@ namespace Scripts.Player
 
 
         private List<BlockView> m_ListOfBlocks;
+        private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes =  new Dictionary<ESwipeDirection, ShapeView>();
         private const int PointsPerCorrectCollision = 10;
 
         [Inject]
@@ -73,6 +74,7 @@ namespace Scripts.Player
 
             m_PlayerView.ChangeShape(EShapeType.CUBE);
 
+
             InitializeStateMachine(m_PlayerView, m_PlayerConfig);
 
             InitializeCamera();
@@ -109,7 +111,7 @@ namespace Scripts.Player
         }
 
         // Change the player's shape based on swipe direction
-        private void Swipe(SwipeDirection swipeDirection)
+        private void Swipe(ESwipeDirection swipeDirection)
         {
             // index represents circle =1, cyl=2, triangle=3, pentagon=4
             int swapeIndex = (int)swipeDirection;

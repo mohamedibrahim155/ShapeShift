@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Scripts.Player
 {
-    public enum SwipeDirection
+    public enum ESwipeDirection
     {
         NONE = -1,
         UP = 0,
@@ -13,7 +13,7 @@ namespace Scripts.Player
     }
     public interface IPLayerInputService
     {
-        event Action<SwipeDirection> OnSwipe;
+        event Action<ESwipeDirection> OnSwipe;
         Vector2 endPosition { get; }
         Vector2 startTouchPosition { get; }
 

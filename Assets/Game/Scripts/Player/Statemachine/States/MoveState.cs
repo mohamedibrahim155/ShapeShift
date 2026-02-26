@@ -8,10 +8,10 @@ namespace Scripts.Player
         public override void OnEnterState() { }
         public override void OnStateExit() 
         {
-
+            PlayerView.Rigidbody.linearVelocity = Vector3.zero;
         }
         public override void Update() {
-            PlayerView.transform.position += PlayerView.transform.forward * PlayerConfig.m_MoveSpeed * Time.fixedDeltaTime;
+            PlayerView.Rigidbody.linearVelocity = PlayerView.transform.forward * PlayerConfig.m_MoveSpeed;
         }
         public override void FixedUpdate() 
         {

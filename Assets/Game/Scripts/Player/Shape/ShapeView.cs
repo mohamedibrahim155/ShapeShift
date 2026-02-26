@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 namespace Scripts.Player
@@ -9,6 +10,7 @@ namespace Scripts.Player
         public Rigidbody Rigidbody;
         public Transform ParentTransform;
         public EShapeType ShapeID;
+        public ESwipeDirection SwipeDirection { get; private set; }
         public void Reset()
         {
             Collider = GetComponentInChildren<Collider>();
@@ -26,9 +28,10 @@ namespace Scripts.Player
             gameObject.SetActive(false);
         }
 
-        public void Setup(EShapeType type, Transform parent)
+        public void Setup(EShapeType type, ESwipeDirection swipeDirection,Transform parent)
         {
             ShapeID = type;
+            SwipeDirection = swipeDirection;
             ParentTransform = parent;
         }
     }

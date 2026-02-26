@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using Scripts.GameService;
 
 namespace Scripts.Player
 {
@@ -8,6 +9,7 @@ namespace Scripts.Player
     public class ShapeConfig
     {
         public EShapeType m_ShapeType;
+        public ESwipeDirection m_SwipeDirection;
         public ShapeView m_ShapeView;
     }
 

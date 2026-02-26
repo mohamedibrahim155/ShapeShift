@@ -12,7 +12,7 @@ namespace Scripts.Player
 
         public Vector2 startTouchPosition { get; private set; }
 
-        public event Action<SwipeDirection> OnSwipe;
+        public event Action<ESwipeDirection> OnSwipe;
 
 
         private PlayerConfig m_PlayerConfig;
@@ -56,13 +56,13 @@ namespace Scripts.Player
                         if (distance.x > 0)
                         {
                             //Right Swipe
-                            OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                            OnSwipe?.Invoke(ESwipeDirection.RIGHT);
                             Debug.Log("Right");
                         }
                         else
                         {
                             //Left Swipe
-                            OnSwipe?.Invoke(SwipeDirection.LEFT);
+                            OnSwipe?.Invoke(ESwipeDirection.LEFT);
 
                             Debug.Log("Left");
                         }
@@ -72,14 +72,14 @@ namespace Scripts.Player
                         if (distance.y > 0)
                         {
                             //Up Swipe
-                            OnSwipe?.Invoke(SwipeDirection.UP);
+                            OnSwipe?.Invoke(ESwipeDirection.UP);
 
                             Debug.Log("Up");
                         }
                         else
                         {
                             //Down Swipe
-                            OnSwipe?.Invoke(SwipeDirection.DOWN);
+                            OnSwipe?.Invoke(ESwipeDirection.DOWN);
                             Debug.Log("Down");
                         }
                     }
@@ -107,13 +107,13 @@ namespace Scripts.Player
                     if (distance.x > 0)
                     {
                         //Right Swipe
-                        OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                        OnSwipe?.Invoke(ESwipeDirection.RIGHT);
                         Debug.Log("Right");
                     }
                     else
                     {
                         //Left Swipe
-                        OnSwipe?.Invoke(SwipeDirection.LEFT);
+                        OnSwipe?.Invoke(ESwipeDirection.LEFT);
                         Debug.Log("Left");
                     }
                 }
@@ -122,13 +122,13 @@ namespace Scripts.Player
                     if (distance.y > 0)
                     {
                         //Up Swipe
-                        OnSwipe?.Invoke(SwipeDirection.UP);
+                        OnSwipe?.Invoke(ESwipeDirection.UP);
                         Debug.Log("Up");
                     }
                     else
                     {
                         //Down Swipe
-                        OnSwipe?.Invoke(SwipeDirection.DOWN);
+                        OnSwipe?.Invoke(ESwipeDirection.DOWN);
                         Debug.Log("Down");
                     }
                 }
@@ -142,13 +142,13 @@ namespace Scripts.Player
                     if (inputAxis.x > 0)
                     {
                         //Right Swipe
-                        OnSwipe?.Invoke(SwipeDirection.RIGHT);
+                        OnSwipe?.Invoke(ESwipeDirection.RIGHT);
                         Debug.Log("Windows - Right");
                     }
                     else
                     {
                         //Left Swipe
-                        OnSwipe?.Invoke(SwipeDirection.LEFT);
+                        OnSwipe?.Invoke(ESwipeDirection.LEFT);
                         Debug.Log("Windows-Left");
                     }
                 }
@@ -157,13 +157,13 @@ namespace Scripts.Player
                     if (inputAxis.y > 0)
                     {
                         //Up Swipe
-                        OnSwipe?.Invoke(SwipeDirection.UP);
+                        OnSwipe?.Invoke(ESwipeDirection.UP);
                         Debug.Log("Windows-Up");
                     }
                     else
                     {
                         //Down Swipe
-                        OnSwipe?.Invoke(SwipeDirection.DOWN);
+                        OnSwipe?.Invoke(ESwipeDirection.DOWN);
                         Debug.Log("Windows-Down");
                     }
                 }
