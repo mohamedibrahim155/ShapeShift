@@ -36,8 +36,6 @@ namespace Scripts.Player
 
         }
 
-        public override void OnDestroy() { }
-
         private void EnableKinematicPhysics(bool value)
         {
             PlayerView.Rigidbody.isKinematic = value;

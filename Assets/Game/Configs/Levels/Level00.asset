@@ -15,7 +15,9 @@ MonoBehaviour:
   LevelPrefabs:
   - {fileID: -5278672913420126557, guid: 6b7554339aa39a048a41f996b26c3b80, type: 3}
   - {fileID: -5278672913420126557, guid: 06d4be5eab2600549a43e12a75e09f9e, type: 3}
-  - {fileID: -5278672913420126557, guid: 72231512f4c970a4eb0b475fafe74409, type: 3}
+  - {fileID: -5278672913420126557, guid: dd9bfe03d35c73949a23bf1b1a1fc2e0, type: 3}
+  - {fileID: -5278672913420126557, guid: 1dc1e211207c1424fb31be2012c3d5b7, type: 3}
+  - {fileID: -5278672913420126557, guid: 1a2eae96db5904343b2d44acca9285f2, type: 3}
   - {fileID: -5278672913420126557, guid: cf820c20bfb05624d800a431d3b85c9a, type: 3}
   BlockZSpacing: 4
   MaxBlockIterationPerSpawnPoint: 4

@@ -30,7 +30,7 @@ MonoBehaviour:
   m_CurrentShapeIndex: 0
   m_CurrentShapeType: 0
   m_SpawnPosition: {x: 0, y: 0, z: -4}
-  m_MoveSpeed: 20
+  m_MoveSpeed: 10
   m_FallTimer: 1
   m_GroundCheckDistance: 5
   m_GroundLayer:
