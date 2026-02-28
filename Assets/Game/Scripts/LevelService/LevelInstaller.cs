@@ -1,5 +1,6 @@
 using UnityEngine;
 using Zenject;
+using System.Collections.Generic;
 
 namespace Scripts.Level
 {
@@ -7,10 +8,10 @@ namespace Scripts.Level
     [CreateAssetMenu(fileName = "LevelInstaller", menuName = "Installers/LevelInstaller")]
     public class LevelInstaller : ScriptableObjectInstaller<LevelInstaller>
     {
-        public LevelConfig config;
+        public List<LevelConfig> Levelsconfig;
         public override void InstallBindings()
         {
-            Container.BindInstances(config);
+            Container.BindInstances(Levelsconfig);
             Container.Bind<ILevelService>().To<LevelService>().AsSingle().NonLazy();
         }
     }

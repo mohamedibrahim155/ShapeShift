@@ -5,14 +5,12 @@ using UnityEngine;
 
 public class LevelView : MonoBehaviour
 {
-    public List<GameObject> m_LevelParts;
-    [SerializeField] private Transform StartPoint;
-    [SerializeField] private Transform EndPoint;
-    [SerializeField] private Transform GroundTransform;
 
     public Collider Collider;
-
+    public MeshRenderer MeshRenderer;
     private List<BlockView> _blockViews = new List<BlockView>();
+
+    [SerializeField] private Vector3 Size;
 
     public void AddBlock(BlockView blockView)
     {
@@ -27,6 +25,20 @@ public class LevelView : MonoBehaviour
     public void Reset()
     {
         Collider = GetComponentInChildren<Collider>();
+        MeshRenderer = GetComponent<MeshRenderer>();
+    }
+
+    private void OnDrawGizmos()
+    {
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(transform.position, Size);
+    }
+
+    public float GetZBounds()
+    {
+       Bounds bounds = MeshRenderer.bounds;
+        return bounds.size.z;
     }
 
 

@@ -28,14 +28,13 @@ namespace Scripts.Player
         public override void DrawGizmos() 
         {
                 base.DrawGizmos();
-            Debug.Log("asdad");
                 Gizmos.color = Color.red;
                 Gizmos.DrawLine(PlayerView.transform.position, PlayerView.transform.position + Vector3.down * PlayerConfig.m_GroundCheckDistance);
         }
 
         private bool IsGrounded()
         {
-            return Physics.Raycast(PlayerView.transform.position, Vector3.down, PlayerConfig.m_GroundCheckDistance);
+            return Physics.Raycast(PlayerView.transform.position, Vector3.down, PlayerConfig.m_GroundCheckDistance, PlayerConfig.m_GroundLayer);
         }
 
     }

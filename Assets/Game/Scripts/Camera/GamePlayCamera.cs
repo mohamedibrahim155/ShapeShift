@@ -25,4 +25,15 @@ public class GameplayCamera : MonoBehaviour
         m_rotationComposer.TargetOffset = cameraSettings.TargetOffset;
         m_rotationComposer.Composition.ScreenPosition = cameraSettings.ScreenPosition;
     }
+
+    // Call this when you respawn / set a new player
+ 
+
+    public void SetCameraEnabled(bool state)
+    {
+        gameObject.SetActive(state);
+        m_CinemachineCamera.enabled = state;
+
+    }
+
 }

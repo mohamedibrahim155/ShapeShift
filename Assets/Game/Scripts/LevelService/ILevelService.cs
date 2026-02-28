@@ -5,9 +5,9 @@ namespace Scripts.Level
 {
     public interface ILevelService
     {
-        public event Action<LevelView> OnLevelCreated;
+        public event Action OnLevelCreated;
         void CreateLevel(int levelNo);
-        LevelView GetLevel(int levelNo);
+        LevelConfig GetLevel(int levelNo);
 
 
     }

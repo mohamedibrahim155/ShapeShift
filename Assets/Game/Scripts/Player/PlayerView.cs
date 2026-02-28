@@ -90,5 +90,13 @@ namespace Scripts.Player
             Rigidbody = GetComponent<Rigidbody>();
         }
 
+        public void DisbaleColliders()
+        {
+            foreach (var item in ShapeViews)
+            {
+                item.Value.Collider.enabled = false;
+            }
+        }
+
     }
 }

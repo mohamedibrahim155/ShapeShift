@@ -60,7 +60,7 @@ namespace Scripts.Player
 
             PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
             PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
-            PlayerStateMachine.AddState(EPlayerStates.FALL, new FallState());
+            PlayerStateMachine.AddState(EPlayerStates.FALL, m_Container.Instantiate<FallState>());
 
 
 
@@ -184,7 +184,6 @@ namespace Scripts.Player
                 m_ListOfBlocks = new List<BlockView>();
             }
             m_ListOfBlocks.Add(wall);
-            Debug.Log("Registered Block Wall. Total walls: " + m_ListOfBlocks.Count);
         }
 
         public void CleanUp()

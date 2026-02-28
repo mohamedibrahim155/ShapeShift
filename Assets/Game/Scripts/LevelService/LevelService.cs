@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using Zenject;
 
@@ -8,16 +7,17 @@ namespace Scripts.Level
 {
     public class LevelService : ILevelService
     {
-        private  LevelConfig _levelConfig;
+        private  List<LevelConfig> _levelConfig;
         private  BlockConfig _blockConfig;
         private DiContainer _container;
+        private List<LevelView> _currentLevels = new List<LevelView>();
 
-        private List<LevelView> LevelList = new List<LevelView>();
+        public event Action OnLevelCreated = delegate { };
 
-        public event Action<LevelView> OnLevelCreated = delegate { };
+
 
         [Inject]
-        public void Setup(LevelConfig config, DiContainer container, BlockConfig blockConfig )
+        public void Setup(List<LevelConfig> config, DiContainer container, BlockConfig blockConfig )
         {
             _levelConfig = config;
             _container = container;
@@ -26,61 +26,43 @@ namespace Scripts.Level
 
         public void CreateLevel(int levelNo)
         {
-            LevelView levelView = _container.InstantiatePrefabForComponent<LevelView>(_levelConfig.LevelViewPrefab);
+            Transform LevelParent =  new GameObject("LEVEL").transform;
+            List<LevelView> currentLevelGorund = _levelConfig[levelNo].LevelPrefabs;
 
-            levelView.transform.position = Vector3.zero;
+            Vector3 chunkPosition = Vector3.zero;
+            for (int i = 0; i < currentLevelGorund.Count; i++)
+            {
 
-            LevelList.Add(levelView);
+                LevelView levelToCreate = currentLevelGorund[i];
 
-            SpawnBlocksForLevel(levelView);
+                if (i > 0)
+                {
+                    chunkPosition.z += levelToCreate.GetZBounds() / 2;
+                }
 
-            OnLevelCreated.Invoke(levelView);
+                LevelView levelView = _container.InstantiatePrefabForComponent<LevelView>(currentLevelGorund[i], LevelParent);
+
+              
+                levelView.transform.position = chunkPosition;
+
+                chunkPosition.z += levelView.GetZBounds() / 2;
+
+                _currentLevels.Add(levelView);
+            }
+
+
+            OnLevelCreated.Invoke();
         }
 
 
-        public LevelView GetLevel(int levelNo)
+        public LevelConfig GetLevel(int levelNo)
         {
-            return LevelList[levelNo];
+            return _levelConfig[levelNo];
         }
 
         public void SpawnBlocksForLevel(LevelView view)
         {
             if (view == null) return;
-
-            if (view.m_LevelParts != null)
-            {
-
-                foreach (GameObject spawnPoint in view.m_LevelParts)
-                {
-
-                    float ZSpacing = _levelConfig.BlockZSpacing;
-                    Vector3 intialPosition =  new Vector3(spawnPoint.transform.position.x, 0 , spawnPoint.transform.position.z );
-
-                    Collider collider = view.Collider;
-                    float MaxZ = collider.bounds.max.z;
-                    for (int i = 0; i < _levelConfig.MaxBlockIterationPerSpawnPoint; i++)
-                    {
-                        float nextZ = intialPosition.z + ZSpacing;
-
-                        if (nextZ > MaxZ)
-                        {
-                            break;
-                        }
-                        int randomBlock = UnityEngine.Random.Range(0, _blockConfig.Blocks.Count);
-                        BlockView blockInstance = _container.InstantiatePrefabForComponent<BlockView>(_blockConfig.Blocks[randomBlock]);
-                        blockInstance.transform.parent = spawnPoint.transform;
-
-                        blockInstance.transform.position = intialPosition;
-                        intialPosition = blockInstance.transform.position + new Vector3(0, 0, ZSpacing);
-
-                        view.AddBlock(blockInstance);
-
-                    }
-
-                }
-
-
-            }
 
         }
     }

@@ -28,10 +28,13 @@ namespace Scripts.Player
         [Header("Spawn position")]
         public Vector3 m_SpawnPosition = Vector3.zero;
 
-        [Header("Speed")]
+        [Header("MoveData")]
         public float m_MoveSpeed = 5f;
-        public float m_GroundCheckDistance = 5;
         public float m_FallTimer = .5f;
+
+        [Header("GroundCheck")]
+        public float m_GroundCheckDistance = 5;
+        public LayerMask m_GroundLayer;
 
         public void SetCurrentShape(EShapeType shapeType)
         {

@@ -49,7 +49,6 @@ public class CameraView : MonoBehaviour
     //sets camera settings based on config data
     private void SetCameraSettings()
     {
-
         m_StartGameplayCamera.SetCameraSettings(m_CameraConfig.StartCameraSettings);
         m_FollowGameplayCamera.SetCameraSettings(m_CameraConfig.FollowCameraSettings);
         m_FinishLineGameplayCamera.SetCameraSettings(m_CameraConfig.FinishCameraSettings);
