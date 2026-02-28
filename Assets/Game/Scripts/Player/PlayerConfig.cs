@@ -30,6 +30,8 @@ namespace Scripts.Player
 
         [Header("Speed")]
         public float m_MoveSpeed = 5f;
+        public float m_GroundCheckDistance = 5;
+        public float m_FallTimer = .5f;
 
         public void SetCurrentShape(EShapeType shapeType)
         {

@@ -19,7 +19,12 @@ namespace Scripts.GameService
      
 
         public void FixedUpdate() => _gameLoop.FixedUpdate();
-       
+
+        public void OnDrawGizmos()
+        {
+            _gameLoop.OnGizmosDrawTick();
+        }
+
     }
 
 }

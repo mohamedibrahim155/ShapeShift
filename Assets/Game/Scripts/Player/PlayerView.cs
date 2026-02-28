@@ -38,6 +38,12 @@ namespace Scripts.Player
             EnableShape(eShapeType);
         }
 
+        public void ChangeShapeForDirection(ESwipeDirection swipeDirection)
+        {
+            DisableShape(playerConfig.m_CurrentShapeType);
+            EnableShape(swipeDirection);
+        }
+
 
         public void DisableShape(EShapeType shapeIndex)
         {

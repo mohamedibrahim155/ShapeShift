@@ -9,7 +9,9 @@ namespace Scripts.GameService
         public event Action OnStart = delegate { };
         public event Action OnUpdateTick= delegate{ };
         public event Action OnFixedUpdateTick = delegate { };
-                                           
+        public event Action OnGizemosTick = delegate { };
+
+
         [Inject]
         private void Construct()
         {
@@ -24,6 +26,11 @@ namespace Scripts.GameService
         public void FixedUpdate()
         {
             OnFixedUpdateTick?.Invoke();
+        }
+
+        public void OnGizmosDrawTick()
+        {
+            OnGizemosTick?.Invoke();
         }
     }
 }

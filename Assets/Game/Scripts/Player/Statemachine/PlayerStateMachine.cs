@@ -45,10 +45,18 @@ namespace Scripts.Player
         public void Update() 
         {
             GetCurrentState().Update();
+
         }
         public void FixedUpdate()
         {
             GetCurrentState().FixedUpdate();
+        }
+
+        public void DrawGizmos() 
+        {
+
+            GetCurrentState().DrawGizmos();
+            
         }
 
         public BaseState GetCurrentState() => ListOfStates[CurrentStateID];

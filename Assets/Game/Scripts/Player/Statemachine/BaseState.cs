@@ -9,6 +9,7 @@ namespace Scripts.Player
         public virtual void Update() { }
         public virtual void FixedUpdate() { }
         public virtual void OnDestroy() { }
+        public virtual void DrawGizmos() { }
 
 
 
@@ -24,6 +25,8 @@ namespace Scripts.Player
         protected PlayerView PlayerView;
         protected PlayerConfig PlayerConfig;
         protected PlayerStateMachine StateMachine;
+
+        public bool ShowDebug { get; set; } = false;
 
     }
 }

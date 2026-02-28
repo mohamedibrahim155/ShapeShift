@@ -5,7 +5,8 @@ namespace Scripts.GameService
 {
     public interface IGameLoopService
     {
-         event Action OnUpdateTick;
-         event Action OnFixedUpdateTick;
+        event Action OnUpdateTick;
+        event Action OnFixedUpdateTick;
+        event Action OnGizemosTick;
     }
 }

@@ -45,6 +45,7 @@ namespace Scripts.Player
 
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
+            m_GameloopService.OnGizemosTick += OnGizmosDraw;
 
             m_ScoreService.Reset();
             SpawnLevel();
@@ -59,6 +60,7 @@ namespace Scripts.Player
 
             PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
             PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
+            PlayerStateMachine.AddState(EPlayerStates.FALL, new FallState());
 
 
 
@@ -113,9 +115,7 @@ namespace Scripts.Player
         // Change the player's shape based on swipe direction
         private void Swipe(ESwipeDirection swipeDirection)
         {
-            // index represents circle =1, cyl=2, triangle=3, pentagon=4
-            int swapeIndex = (int)swipeDirection;
-            m_PlayerView.ChangeShape((EShapeType)swapeIndex);
+          m_PlayerView.ChangeShapeForDirection(swipeDirection);
         }
 
         private void OnBlockCollision(BlockView block)
@@ -139,7 +139,6 @@ namespace Scripts.Player
             if (PlayerStateMachine!= null)
             {
                 PlayerStateMachine.Update();
-
             }
         }
 
@@ -151,6 +150,14 @@ namespace Scripts.Player
                 PlayerStateMachine.FixedUpdate();
             }
         
+        }
+
+        private void OnGizmosDraw()
+        {
+            if (PlayerStateMachine != null)
+            {
+                PlayerStateMachine.DrawGizmos();
+            }
         }
 
 

@@ -7,6 +7,7 @@ namespace Scripts.Player
         NONE,
         IDLE,
         MOVE,
+        FALL,
         STOP,
         SWAPPING_SHAPE
     }
