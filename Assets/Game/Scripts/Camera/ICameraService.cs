@@ -8,6 +8,7 @@ public interface ICameraService  {
     public abstract void SetCameraFollow(Transform followTarget);
 
     public abstract void EnableCamera(ECameraType type);
+    public abstract void Cleanup();
    
     public CameraView CameraView { get; }
 }

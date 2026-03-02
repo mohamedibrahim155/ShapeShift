@@ -3,6 +3,7 @@ using Scripts.GameService;
 using Scripts.Level;
 using Scripts.Score;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
@@ -12,6 +13,9 @@ namespace Scripts.Player
 
     public class PlayerService : IPlayerService
     {
+
+        private bool _finishLineReached;
+        private float _currentWaitTime;
 
         private PlayerConfig m_PlayerConfig;
         private PlayerView m_PlayerView;
@@ -43,15 +47,9 @@ namespace Scripts.Player
             m_LevelService = levelService;
 
 
-            m_GameloopService.OnUpdateTick += Update;
-            m_GameloopService.OnFixedUpdateTick += FixedUpdate;
-            m_GameloopService.OnGizemosTick += OnGizmosDraw;
-
-            m_ScoreService.Reset();
-            SpawnLevel();
-            SpawnPlayer(playerConfig.m_SpawnPosition);
 
 
+            OnInitialize();
         }
 
         void InitializeStateMachine(PlayerView view, PlayerConfig config)
@@ -61,9 +59,21 @@ namespace Scripts.Player
             PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
             PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
             PlayerStateMachine.AddState(EPlayerStates.FALL, m_Container.Instantiate<FallState>());
+        }
 
+        void OnInitialize()
+        {
+            _currentWaitTime = 0;
+            m_PlayerConfig.m_HasPlayerFinished = false;
 
+            m_GameloopService.OnUpdateTick += Update;
+            m_GameloopService.OnFixedUpdateTick += FixedUpdate;
+            m_GameloopService.OnGizemosTick += OnGizmosDraw;
+            m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
 
+            m_ScoreService.Reset();
+            SpawnLevel();
+            SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
         }
 
         // Spawn the player at the specified position and set up input and collision handling
@@ -105,7 +115,9 @@ namespace Scripts.Player
         private void HandleCollision()
         {
             BlockWallColliderView.OnBlockCollision += OnBlockCollision;
+            m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
         }
+
         // Set up swipe input handling
         private void HandleSwipe()
         {
@@ -136,10 +148,16 @@ namespace Scripts.Player
 
         private void Update()
         {
+            // update inputs
+            m_PlayerInputService.UpdateInputs();
+
+            // update states
             if (PlayerStateMachine!= null)
             {
                 PlayerStateMachine.Update();
             }
+
+            CheckFinishPoint();
         }
 
         private void FixedUpdate()
@@ -160,15 +178,45 @@ namespace Scripts.Player
             }
         }
 
+        private void OnPlayerReachedFinishLine()
+        {
+            m_PlayerConfig.m_HasPlayerFinished = true;
+
+            // change to idle
+            PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
+            m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
+            
+        }
+
+
+        private void Reset()
+        {
+            DestroyPlayer();
+            OnInitialize();
+        }
+
 
         private void DestroyPlayer()
         {
             MonoBehaviour.Destroy(m_PlayerView.gameObject);
-
             CleanUp();
 
         }
 
+
+        public void CheckFinishPoint()
+        {
+            if (m_PlayerConfig.m_HasPlayerFinished)
+            {
+                if (_currentWaitTime  > m_PlayerConfig.m_FinishLineWaitTimer)
+                {
+
+                    Reset();
+                    return;
+                }
+                _currentWaitTime += Time.deltaTime;
+            }
+        }
      
 
         private bool IsValidCollision(EShapeType shapeType, EBlockType blockType)
@@ -194,6 +242,8 @@ namespace Scripts.Player
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
 
             m_PlayerInputService.CleanUp();
+            m_CameraService.Cleanup();
+            m_LevelService.Cleanup();
         }
 
         private void OnGameStart()

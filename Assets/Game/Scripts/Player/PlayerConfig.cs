@@ -36,6 +36,11 @@ namespace Scripts.Player
         public float m_GroundCheckDistance = 5;
         public LayerMask m_GroundLayer;
 
+        public LayerMask m_PlayerLayer;
+
+        public float m_FinishLineWaitTimer =2;
+        public bool m_HasPlayerFinished = false;
+
         public void SetCurrentShape(EShapeType shapeType)
         {
             m_CurrentShapeIndex = (int)shapeType;

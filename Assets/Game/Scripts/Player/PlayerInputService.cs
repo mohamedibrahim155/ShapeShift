@@ -16,7 +16,6 @@ namespace Scripts.Player
 
 
         private PlayerConfig m_PlayerConfig;
-        private IGameLoopService m_GameloopService;
 
 
 
@@ -24,9 +23,6 @@ namespace Scripts.Player
         private void Construct(PlayerConfig config, IGameLoopService gameloop)
         {
             m_PlayerConfig = config;
-            m_GameloopService = gameloop;
-
-            m_GameloopService.OnUpdateTick += UpdateInputs;
         }
 
         // Update touch inputs and detect swipe direction
@@ -177,7 +173,6 @@ namespace Scripts.Player
 
         public void CleanUp()
         {
-            m_GameloopService.OnUpdateTick -= UpdateInputs;
         }
     }
 }

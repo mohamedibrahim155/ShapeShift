@@ -73,4 +73,13 @@ public class CameraService : ICameraService
         }
     }
 
+    //sets the follow target for all cameras
+    public void  Cleanup()
+    {
+        if (CameraView!= null)
+        {
+            GameObject.Destroy(CameraView.gameObject);
+        }
+    }
+
 }

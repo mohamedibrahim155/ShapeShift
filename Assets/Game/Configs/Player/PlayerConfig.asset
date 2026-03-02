@@ -36,3 +36,6 @@ MonoBehaviour:
   m_GroundLayer:
     serializedVersion: 2
     m_Bits: 128
+  m_PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 64
