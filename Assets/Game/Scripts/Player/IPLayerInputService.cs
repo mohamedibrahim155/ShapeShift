@@ -19,5 +19,7 @@ namespace Scripts.Player
 
         public abstract void UpdateInputs();
         public abstract void CleanUp();
+
+        public abstract void EnableInput(bool isActive);
     }
 }

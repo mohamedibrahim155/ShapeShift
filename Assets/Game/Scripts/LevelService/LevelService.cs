@@ -12,6 +12,7 @@ namespace Scripts.Level
         private DiContainer _container;
         private List<LevelView> _currentLevels = new List<LevelView>();
         private Transform _levelParent;
+        private int _currentLevelIndex = 0;
 
         public event Action OnLevelCreated = delegate { };
         public event Action OnLevelCompleted = delegate { };
@@ -78,6 +79,7 @@ namespace Scripts.Level
         public void InvokeLevelCompleted()
         {
             OnLevelCompleted.Invoke();
+            _currentLevelIndex++;
         }
 
         public void Cleanup()
@@ -89,6 +91,12 @@ namespace Scripts.Level
 
             _currentLevels.Clear();
 
+        }
+
+        public int GetNextLevel()
+        {
+            int nextlevel = _currentLevelIndex %_levelConfig.Count;
+            return nextlevel;
         }
     }
 }

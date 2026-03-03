@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b55dcf9ed49b674ea69ed4ccaee3752, type: 3}
+  m_Name: Level00 2
+  m_EditorClassIdentifier: 
+  LevelPrefabs:
+  - {fileID: -5278672913420126557, guid: 6b7554339aa39a048a41f996b26c3b80, type: 3}
+  - {fileID: -5278672913420126557, guid: 06d4be5eab2600549a43e12a75e09f9e, type: 3}
+  - {fileID: -5278672913420126557, guid: 72231512f4c970a4eb0b475fafe74409, type: 3}
+  - {fileID: -5278672913420126557, guid: 06d4be5eab2600549a43e12a75e09f9e, type: 3}
+  - {fileID: -5278672913420126557, guid: 06d4be5eab2600549a43e12a75e09f9e, type: 3}
+  - {fileID: -5278672913420126557, guid: cf820c20bfb05624d800a431d3b85c9a, type: 3}
+  BlockZSpacing: 4
+  MaxBlockIterationPerSpawnPoint: 4

@@ -10,6 +10,8 @@ namespace Scripts.Level
         void CreateLevel(int levelNo);
         LevelConfig GetLevel(int levelNo);
 
+        int GetNextLevel();
+
         void InvokeLevelCompleted();
 
         void Cleanup();

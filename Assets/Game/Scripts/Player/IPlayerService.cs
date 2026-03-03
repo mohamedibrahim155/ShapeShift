@@ -8,6 +8,8 @@ namespace Scripts.Player
         void SpawnPlayer(Vector3 position);
         void SpawnCamera(Vector3 spawnPosition);
         void RegisterBlockWall(BlockView wall);
+
+        void Reset();
         void CleanUp();
 
         public  abstract void StartGame();

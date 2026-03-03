@@ -15,9 +15,6 @@ namespace Scripts.Player
     public class PlayerService : IPlayerService
     {
 
-        private bool _finishLineReached;
-        private float _currentWaitTime;
-
         private PlayerConfig m_PlayerConfig;
         private PlayerView m_PlayerView;
         private DiContainer m_Container;
@@ -54,34 +51,13 @@ namespace Scripts.Player
 
             OnInitialize();
         }
-        public void StartGame()
+
+        private void OnInitialize()
         {
-            m_UIService.CloseWindow(EWindowID.MinMenu);
-
-            InitializeStateMachine(m_PlayerView, m_PlayerConfig);
-
-            HandleSwipe();
-            HandleCollision();
-
-
-            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
-
-            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
-        }
-        void InitializeStateMachine(PlayerView view, PlayerConfig config)
-        {
-            PlayerStateMachine = new PlayerStateMachine(view, config);
-
-            PlayerStateMachine.AddState(EPlayerStates.IDLE, new IdleState());
-            PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
-            PlayerStateMachine.AddState(EPlayerStates.FALL, m_Container.Instantiate<FallState>());
-        }
-
-        void OnInitialize()
-        {
-            _currentWaitTime = 0;
+            //resets player state for new game or level retry
             m_PlayerConfig.m_HasPlayerFinished = false;
 
+            //subscribes events
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
             m_GameloopService.OnGizemosTick += OnGizmosDraw;
@@ -94,7 +70,34 @@ namespace Scripts.Player
 
             //spaen camera after player is spawned to ensure it has a reference
             SpawnCamera(Vector3.zero);
+
         }
+        public void StartGame()
+        {
+            m_UIService.CloseWindow(EWindowID.MinMenu);
+
+            InitializeStateMachine(m_PlayerView, m_PlayerConfig);
+
+            m_PlayerInputService.EnableInput(true);
+
+            HandleSwipe();
+            HandleCollision();
+
+
+            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
+
+            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
+        }
+        private void InitializeStateMachine(PlayerView view, PlayerConfig config)
+        {
+            PlayerStateMachine = new PlayerStateMachine(view, config);
+
+            PlayerStateMachine.AddState(EPlayerStates.IDLE, m_Container.Instantiate<IdleState>());
+            PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
+            PlayerStateMachine.AddState(EPlayerStates.FALL, m_Container.Instantiate<FallState>());
+        }
+
+       
 
         // Spawn the player at the specified position and set up input and collision handling
         public void SpawnPlayer(Vector3 position)
@@ -108,7 +111,8 @@ namespace Scripts.Player
 
         public void SpawnLevel()
         {
-              m_LevelService.CreateLevel(0);
+            int nextLevel = m_LevelService.GetNextLevel();
+            m_LevelService.CreateLevel(nextLevel);
         }
 
 
@@ -123,7 +127,6 @@ namespace Scripts.Player
         private void HandleCollision()
         {
             BlockWallColliderView.OnBlockCollision += OnBlockCollision;
-            m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
         }
 
         // Set up swipe input handling
@@ -164,7 +167,6 @@ namespace Scripts.Player
                 PlayerStateMachine.Update();
             }
 
-            CheckFinishPoint();
         }
 
         private void FixedUpdate()
@@ -192,11 +194,12 @@ namespace Scripts.Player
             // change to idle
             PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
+            m_PlayerInputService.EnableInput(false);
             
         }
 
 
-        private void Reset()
+        public void Reset()
         {
             DestroyPlayer();
             OnInitialize();
@@ -210,21 +213,6 @@ namespace Scripts.Player
             MonoBehaviour.Destroy(m_PlayerView.gameObject);
             CleanUp();
 
-        }
-
-
-        public void CheckFinishPoint()
-        {
-            if (m_PlayerConfig.m_HasPlayerFinished)
-            {
-                if (_currentWaitTime  > m_PlayerConfig.m_FinishLineWaitTimer)
-                {
-
-                    Reset();
-                    return;
-                }
-                _currentWaitTime += Time.deltaTime;
-            }
         }
      
 
@@ -253,11 +241,6 @@ namespace Scripts.Player
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
             m_LevelService.Cleanup();
-        }
-
-        private void OnGameStart()
-        {
-            
         }
     }
 }

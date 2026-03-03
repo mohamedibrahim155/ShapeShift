@@ -8,6 +8,7 @@ namespace Scripts.Player
 {
     public class PlayerInputService : IPLayerInputService
     {
+        private bool _isInputEnabled = true;
         public Vector2 endPosition { get; private set; }
 
         public Vector2 startTouchPosition { get; private set; }
@@ -28,6 +29,8 @@ namespace Scripts.Player
         // Update touch inputs and detect swipe direction
         public void UpdateInputs()
         {
+            if (!_isInputEnabled) return;
+
 #if UNITY_ANDROID || UNITY_EDITOR
             if (Input.touchCount == 1)
             {
@@ -173,6 +176,11 @@ namespace Scripts.Player
 
         public void CleanUp()
         {
+        }
+
+        public void EnableInput(bool isActive)
+        {
+            _isInputEnabled = isActive;
         }
     }
 }
