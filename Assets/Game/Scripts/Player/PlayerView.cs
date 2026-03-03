@@ -15,6 +15,10 @@ namespace Scripts.Player
 
         [Inject] private PlayerConfig playerConfig;
 
+
+        private void Start()
+        {
+        }
         public void EnableShape(EShapeType shapeType)
         {
             playerConfig.SetCurrentShape(shapeType);

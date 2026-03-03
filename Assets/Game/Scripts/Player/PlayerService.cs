@@ -2,6 +2,7 @@
 using Scripts.GameService;
 using Scripts.Level;
 using Scripts.Score;
+using Scripts.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace Scripts.Player
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
         private ILevelService m_LevelService;
+        private IUiService m_UIService;
         private PlayerStateMachine PlayerStateMachine;
 
 
@@ -35,7 +37,7 @@ namespace Scripts.Player
 
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService,
-            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, ILevelService levelService)
+            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, ILevelService levelService, IUiService uiService)
 
         {
             m_PlayerConfig = playerConfig;
@@ -45,13 +47,27 @@ namespace Scripts.Player
             m_CameraService = cameraService;
             m_ScoreService = scoreService;
             m_LevelService = levelService;
+            m_UIService = uiService;
 
 
 
 
             OnInitialize();
         }
+        public void StartGame()
+        {
+            m_UIService.CloseWindow(EWindowID.MinMenu);
 
+            InitializeStateMachine(m_PlayerView, m_PlayerConfig);
+
+            HandleSwipe();
+            HandleCollision();
+
+
+            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
+
+            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
+        }
         void InitializeStateMachine(PlayerView view, PlayerConfig config)
         {
             PlayerStateMachine = new PlayerStateMachine(view, config);
@@ -72,8 +88,12 @@ namespace Scripts.Player
             m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
 
             m_ScoreService.Reset();
+
             SpawnLevel();
             SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
+
+            //spaen camera after player is spawned to ensure it has a reference
+            SpawnCamera(Vector3.zero);
         }
 
         // Spawn the player at the specified position and set up input and collision handling
@@ -81,21 +101,9 @@ namespace Scripts.Player
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
             m_PlayerView.SpawnShapes(m_Container);
-
             m_PlayerView.transform.position = position;
 
             m_PlayerView.ChangeShape(EShapeType.CUBE);
-
-
-            InitializeStateMachine(m_PlayerView, m_PlayerConfig);
-
-            InitializeCamera();
-            HandleSwipe();
-            HandleCollision();
-
-            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
-
-            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
         }
 
         public void SpawnLevel()
@@ -104,9 +112,9 @@ namespace Scripts.Player
         }
 
 
-        private void InitializeCamera()
+        public void SpawnCamera(Vector3 spawnPosition)
         {
-            m_CameraService.SpawnCamera(Vector2.zero);
+            m_CameraService.SpawnCamera(spawnPosition);
             m_CameraService.SetCameraFollow(m_PlayerView.transform);
             m_CameraService.SetCameraLookAt(m_PlayerView.transform);
         }
@@ -134,7 +142,6 @@ namespace Scripts.Player
         {
             bool isValid = IsValidCollision(m_PlayerConfig.m_CurrentShapeType, block.BlockType);
 
-            Debug.Log($"Collision: {isValid}, Player: {m_PlayerConfig.m_CurrentShapeType}, Block: {block.BlockType}");
             if (!isValid)
             {
                 // Level Failed Condition
@@ -193,6 +200,8 @@ namespace Scripts.Player
         {
             DestroyPlayer();
             OnInitialize();
+
+            m_UIService.OpenWindow(EWindowID.MinMenu);
         }
 
 

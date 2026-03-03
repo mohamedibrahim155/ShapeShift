@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04896d097f8b5b9459712b45c528beec, type: 3}
+  m_Name: UIInstaller
+  m_EditorClassIdentifier: 
+  UIConfig: {fileID: 11400000, guid: 9d7481860fe9ac44685c4db442696ca2, type: 2}
