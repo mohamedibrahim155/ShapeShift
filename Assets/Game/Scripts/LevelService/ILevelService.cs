@@ -12,6 +12,7 @@ namespace Scripts.Level
 
         int GetNextLevel();
 
+        void SpawnLevel();
         void InvokeLevelCompleted();
 
         void Cleanup();

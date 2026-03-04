@@ -1,3 +1,4 @@
+using Scripts.UI;
 using UnityEngine;
 using Zenject;
 
@@ -7,7 +8,7 @@ namespace Scripts.Player
     {
         private float waitTimer;
 
-        [Inject] private IPlayerService m_PlayerService;
+        [Inject] private IUiService uiService;
         public override void OnEnterState() 
         {
             waitTimer = 0f;
@@ -22,16 +23,7 @@ namespace Scripts.Player
 
         private void HandleLevelFinished()
         {
-            if (PlayerConfig.m_HasPlayerFinished)
-            {
-                if (waitTimer > PlayerConfig.m_FinishLineWaitTimer)
-                {
-                    m_PlayerService.Reset();
-                    return;
-                }
-
-                waitTimer += Time.deltaTime;
-            }
+           
 
         }
     }

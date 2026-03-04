@@ -111,8 +111,7 @@ namespace Scripts.Player
 
         public void SpawnLevel()
         {
-            int nextLevel = m_LevelService.GetNextLevel();
-            m_LevelService.CreateLevel(nextLevel);
+            m_LevelService.SpawnLevel();
         }
 
 
@@ -195,7 +194,9 @@ namespace Scripts.Player
             PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
             m_PlayerInputService.EnableInput(false);
-            
+
+            // show win screen
+            m_UIService.GetWindow(EWindowID.LevelCompleted).Open();
         }
 
 

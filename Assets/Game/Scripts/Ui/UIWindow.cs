@@ -20,10 +20,17 @@ namespace Scripts.UI
         public virtual void Open() 
         {
             gameObject.SetActive(true);
+            canvasGroup.alpha = 1f;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = false;
         }
         public virtual void Close() 
         {
             gameObject.SetActive(false);
+
+            canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
         }
     }
 }

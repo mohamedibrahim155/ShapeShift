@@ -98,5 +98,11 @@ namespace Scripts.Level
             int nextlevel = _currentLevelIndex %_levelConfig.Count;
             return nextlevel;
         }
+
+        public void SpawnLevel()
+        {
+            int nextLevel = GetNextLevel();
+            CreateLevel(nextLevel);
+        }
     }
 }
