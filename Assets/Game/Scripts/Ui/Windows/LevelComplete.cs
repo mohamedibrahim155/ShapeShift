@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using TMPro;
+using Scripts.Level;
 namespace Scripts.UI
 {
     public class LevelComplete : UIWindow
@@ -14,12 +15,14 @@ namespace Scripts.UI
 
         private IPlayerService m_PlayerService;
         private IUiService m_UIService;
+        private ILevelService m_LevelService;
 
         [Inject]
-        private void Construct(IPlayerService playerService, IUiService uiService)
+        private void Construct(IPlayerService playerService, IUiService uiService, ILevelService levelService)
         {
             m_PlayerService = playerService;
             m_UIService = uiService;
+            m_LevelService = levelService;
 
             NextLevelButton.onClick.AddListener(OnNextLevelClicked);
             RemoveAdsButton.onClick.AddListener(OnRemoveAdsClicked);
@@ -29,6 +32,9 @@ namespace Scripts.UI
         private void OnNextLevelClicked()
         {
             Debug.Log("Next level Pressed");
+
+            Close();
+            SpawnNextLevel();
 
         }
 
@@ -43,9 +49,21 @@ namespace Scripts.UI
             LevelNumberTextField.text = $"Level {levelNumber}";
         }
 
+        public override void Open(float time)
+        {
+            int currentLevel = m_LevelService.GetCurrentLevel();
+            UpdateLevelText(currentLevel);
+
+            base.Open(time);
+        }
+
         private void SpawnNextLevel()
         {
-            m_PlayerService.StartGame();
+            int GetNextLevel = m_LevelService.GetCurrentLevel();
+
+            m_LevelService.UpdateLevel(GetNextLevel + 1);
+
+            m_PlayerService.Reset();
         }
 
     }

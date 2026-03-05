@@ -1,6 +1,7 @@
 using Scripts.UI;
 using UnityEngine;
 using Zenject;
+using DG.Tweening;
 
 namespace Scripts.UI
 {
@@ -17,18 +18,18 @@ namespace Scripts.UI
         }
 
 
-        public virtual void Open() 
+        public virtual void Open(float time = 0.5f) 
         {
             gameObject.SetActive(true);
-            canvasGroup.alpha = 1f;
+            canvasGroup.DOFade(1, time);
             canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = false;
+            canvasGroup.blocksRaycasts = true;
         }
-        public virtual void Close() 
+        public virtual void Close(float time = 0.5f) 
         {
             gameObject.SetActive(false);
 
-            canvasGroup.alpha = 0f;
+            canvasGroup.DOFade(0, time);
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8697ba9bc2d8a794bb9cd110b9cfb444, type: 3}
   m_Name: UIConfig
   m_EditorClassIdentifier: 
-  m_CanvasView: {fileID: 5594237463430077832, guid: 804bb04033637c749bb5d17bdd42fa8d, type: 3}
+  m_CanvasView: {fileID: 6196926336110237376, guid: 804bb04033637c749bb5d17bdd42fa8d, type: 3}

@@ -37,17 +37,18 @@ namespace Scripts.UI
         }
         private void CachedWindows()
         {
+            Debug.Log("Caching Windows");
             foreach (var window in m_UiCanvasView.m_ListofWindows)
             {
                 m_ListOfWindowsCached.Add(window.ID, window);
 
-                if (window.m_OpenOnStart)
+                if (GetWindow(window.ID).m_OpenOnStart)
                 {
-                    window.Open();
+                    GetWindow(window.ID).Open(0);
                 }
                 else
                 {
-                    window.Close();
+                    GetWindow(window.ID).Close(0);
                 }
             }
         }

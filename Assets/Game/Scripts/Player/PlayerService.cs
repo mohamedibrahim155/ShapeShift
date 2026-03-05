@@ -61,7 +61,7 @@ namespace Scripts.Player
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
             m_GameloopService.OnGizemosTick += OnGizmosDraw;
-            m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
+            m_LevelService.OnLevelCompleted +=  _ => OnPlayerReachedFinishLine();
 
             m_ScoreService.Reset();
 
@@ -111,7 +111,9 @@ namespace Scripts.Player
 
         public void SpawnLevel()
         {
-            m_LevelService.SpawnLevel();
+            int currentLevel = m_LevelService.GetCurrentLevel();
+
+            m_LevelService.SpawnLevel(currentLevel);
         }
 
 
@@ -196,7 +198,7 @@ namespace Scripts.Player
             m_PlayerInputService.EnableInput(false);
 
             // show win screen
-            m_UIService.GetWindow(EWindowID.LevelCompleted).Open();
+            m_UIService.GetWindow(EWindowID.LevelCompleted).Open(1);
         }
 
 

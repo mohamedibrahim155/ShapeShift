@@ -885,6 +885,7 @@ GameObject:
   - component: {fileID: 7401029844333698295}
   - component: {fileID: 1021282400832559258}
   - component: {fileID: 8605847440275915288}
+  - component: {fileID: 5815513597644688395}
   m_Layer: 5
   m_Name: LevelCompleteCanvas
   m_TagString: Untagged
@@ -987,6 +988,25 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5815513597644688395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5537428549261352710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eb217ace6abb764a9d407c2f9f8df6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 3
+  m_OpenOnStart: 0
+  canvasGroup: {fileID: 8605847440275915288}
+  NextLevelButton: {fileID: 5082142793316871881}
+  RemoveAdsButton: {fileID: 1393027849093442172}
+  LevelNumberTextField: {fileID: 643614509887713668}
+  TotalCoinsTextField: {fileID: 1530024143787484885}
 --- !u!1 &5669334179001269019
 GameObject:
   m_ObjectHideFlags: 0
@@ -2100,6 +2120,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4634220115171823182}
   m_SourcePrefab: {fileID: 100100000, guid: 26ca5e1170ffe4d42804a1c31268b45d, type: 3}
+--- !u!114 &1530024143787484885 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5108552035041849574, guid: 26ca5e1170ffe4d42804a1c31268b45d, type: 3}
+  m_PrefabInstance: {fileID: 6043414913835980339}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2079126375548440319 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5693693094684793036, guid: 26ca5e1170ffe4d42804a1c31268b45d, type: 3}

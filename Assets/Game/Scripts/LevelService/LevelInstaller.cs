@@ -8,7 +8,7 @@ namespace Scripts.Level
     [CreateAssetMenu(fileName = "LevelInstaller", menuName = "Installers/LevelInstaller")]
     public class LevelInstaller : ScriptableObjectInstaller<LevelInstaller>
     {
-        public List<LevelConfig> Levelsconfig;
+        public LevelListData Levelsconfig;
         public override void InstallBindings()
         {
             Container.BindInstances(Levelsconfig);

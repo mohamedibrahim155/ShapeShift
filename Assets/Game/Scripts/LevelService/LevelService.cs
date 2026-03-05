@@ -7,36 +7,40 @@ namespace Scripts.Level
 {
     public class LevelService : ILevelService
     {
-        private List<LevelConfig> _levelConfig;
-        private BlockConfig _blockConfig;
-        private DiContainer _container;
+        private LevelListData m_LevelConfigPresets;
+        private BlockConfig m_BlockConfig;
+        private DiContainer m_Container;
         private List<LevelView> _currentLevels = new List<LevelView>();
         private Transform _levelParent;
         private int _currentLevelIndex = 0;
 
         public event Action OnLevelCreated = delegate { };
-        public event Action OnLevelCompleted = delegate { };
+        public event Action<int> OnLevelCompleted = delegate { };
 
 
 
         [Inject]
-        public void Setup(List<LevelConfig> config, DiContainer container, BlockConfig blockConfig)
+        public void Setup(LevelListData config, DiContainer container, BlockConfig blockConfig)
         {
-            _levelConfig = config;
-            _container = container;
-            _blockConfig = blockConfig;
+            m_LevelConfigPresets = config;
+            m_Container = container;
+            m_BlockConfig = blockConfig;
         }
 
-        public void CreateLevel(int levelNo)
+        public void CreateLevel(int levelNumber)
         {
             if (_levelParent == null)
             {
                 _levelParent = new GameObject("LEVEL").transform;
             }
 
-            _levelParent.name = $"LEVEL_{levelNo}";
+            _levelParent.name = $"LEVEL_{levelNumber}";
 
-            List<LevelView> currentLevelGorund = _levelConfig[levelNo].LevelPrefabs;
+            int idx = levelNumber < 1   ? 1 : levelNumber-1;
+
+            Debug.Log($"Creating level {idx}");
+
+            List<LevelView> currentLevelGorund = GetLevel(GetWrappedLevelIndex(idx)).ListOfChunks;
 
             Vector3 chunkPosition = Vector3.zero;
             for (int i = 0; i < currentLevelGorund.Count; i++)
@@ -50,7 +54,7 @@ namespace Scripts.Level
                     chunkPosition.z += levelToCreate.GetZBounds() / 2;
                 }
 
-                LevelView levelView = _container.InstantiatePrefabForComponent<LevelView>(currentLevelGorund[i], _levelParent);
+                LevelView levelView = m_Container.InstantiatePrefabForComponent<LevelView>(currentLevelGorund[i], _levelParent);
 
 
                 levelView.transform.position = chunkPosition;
@@ -65,9 +69,9 @@ namespace Scripts.Level
         }
 
 
-        public LevelConfig GetLevel(int levelNo)
+        public LevelConfig GetLevel(int index)
         {
-            return _levelConfig[levelNo];
+            return m_LevelConfigPresets.m_Levels[index];
         }
 
         public void SpawnBlocksForLevel(LevelView view)
@@ -78,8 +82,7 @@ namespace Scripts.Level
 
         public void InvokeLevelCompleted()
         {
-            OnLevelCompleted.Invoke();
-            _currentLevelIndex++;
+            OnLevelCompleted.Invoke(m_LevelConfigPresets.m_CurrentLevelIndex);
         }
 
         public void Cleanup()
@@ -93,16 +96,25 @@ namespace Scripts.Level
 
         }
 
-        public int GetNextLevel()
+        public int GetWrappedLevelIndex(int levelNumber)
         {
-            int nextlevel = _currentLevelIndex %_levelConfig.Count;
-            return nextlevel;
+            return levelNumber % m_LevelConfigPresets.m_Levels.Count;
         }
 
-        public void SpawnLevel()
+        public void SpawnLevel(int levelNumber)
         {
-            int nextLevel = GetNextLevel();
-            CreateLevel(nextLevel);
+            int currentLevel = GetWrappedLevelIndex(levelNumber);
+            CreateLevel(levelNumber);
+        }
+
+        public int GetCurrentLevel()
+        {
+            return m_LevelConfigPresets.m_CurrentLevelIndex;
+        }
+
+        public void UpdateLevel(int levelNo)
+        {
+            m_LevelConfigPresets.m_CurrentLevelIndex = levelNo;
         }
     }
 }
