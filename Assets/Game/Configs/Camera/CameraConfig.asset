@@ -22,6 +22,7 @@ MonoBehaviour:
     ScreenPosition: {x: 0.11, y: 0.15}
     TargetOffset: {x: 0.91, y: 1, z: 0}
   FinishCameraSettings:
-    FollowOffset: {x: 6.5, y: 3.5, z: -10}
+    FollowOffset: {x: 0, y: 0, z: 0}
     ScreenPosition: {x: 0, y: 0}
-    TargetOffset: {x: 0, y: 0, z: 0}
+    TargetOffset: {x: 0, y: 1, z: 0}
+  m_RotationSpeed: 20

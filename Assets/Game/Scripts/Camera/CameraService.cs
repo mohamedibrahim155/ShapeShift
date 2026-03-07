@@ -31,7 +31,7 @@ public class CameraService : ICameraService
     //sets the look at target for all cameras
     public void SetCameraLookAt(Transform lookAtTransform)
     {
-         CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.LookAt      = lookAtTransform;
+        CameraView.GetCamera(ECameraType.START_CAMERA).CinemachineCamera.LookAt      = lookAtTransform;
          CameraView.GetCamera(ECameraType.FOLLOW_CAMERA).CinemachineCamera.LookAt     = lookAtTransform;
          CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA).CinemachineCamera.LookAt = lookAtTransform;
     }
@@ -72,6 +72,16 @@ public class CameraService : ICameraService
                 break;
         }
     }
+
+    public void ActivateFinishLineCamera(Transform playerTarget)
+    {
+        EnableCamera(ECameraType.FINISHLINE_CAMERA);
+
+        FinishLineCamera finishLineCamera = (FinishLineCamera)CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA);
+
+       finishLineCamera.ActivateFinishCamera(playerTarget);
+    }
+
 
     //sets the follow target for all cameras
     public void  Cleanup()

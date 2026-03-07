@@ -199,6 +199,9 @@ namespace Scripts.Player
 
             // show win screen
             m_UIService.GetWindow(EWindowID.LevelCompleted).Open(1);
+
+            //Activate rotating camera around player at finish line
+            m_CameraService.ActivateFinishLineCamera(m_PlayerView.transform);
         }
 
 

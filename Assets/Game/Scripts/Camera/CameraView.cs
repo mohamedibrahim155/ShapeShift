@@ -10,11 +10,13 @@ public class CameraView : MonoBehaviour
     [SerializeField] private GameplayCamera m_StartGameplayCamera;
     [SerializeField] private GameplayCamera m_FollowGameplayCamera;
     [SerializeField] private GameplayCamera m_FinishLineGameplayCamera;
+    [SerializeField] private CinemachineBrain m_CinemachineBrain;
 
     private CameraConfig m_CameraConfig;
     private void Reset()
     {
         m_Camera = GetComponentInChildren<Camera>();
+        m_CinemachineBrain = GetComponentInChildren<CinemachineBrain>();
         m_StartGameplayCamera = transform.GetChild(1).GetComponent<GameplayCamera>();
         m_FollowGameplayCamera = transform.GetChild(2).GetComponent<GameplayCamera>();
         m_FinishLineGameplayCamera = transform.GetChild(3).GetComponent<GameplayCamera>();
@@ -52,6 +54,11 @@ public class CameraView : MonoBehaviour
         m_StartGameplayCamera.SetCameraSettings(m_CameraConfig.StartCameraSettings);
         m_FollowGameplayCamera.SetCameraSettings(m_CameraConfig.FollowCameraSettings);
         m_FinishLineGameplayCamera.SetCameraSettings(m_CameraConfig.FinishCameraSettings);
+    }
+
+    public CinemachineBrain GetCinemachineBrain()
+    {
+        return m_CinemachineBrain;
     }
 
 }

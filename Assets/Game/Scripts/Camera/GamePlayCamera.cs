@@ -19,9 +19,10 @@ public class GameplayCamera : MonoBehaviour
 
 
     //sets camera settings based on provided camera settings data
-    public void SetCameraSettings(CinimachineCameraSettings cameraSettings)
+    public virtual void SetCameraSettings(CinimachineCameraSettings cameraSettings)
     {
-        m_Follow.FollowOffset = cameraSettings.FollowOffset;
+        if (m_Follow != null)
+            m_Follow.FollowOffset = cameraSettings.FollowOffset;
         m_rotationComposer.TargetOffset = cameraSettings.TargetOffset;
         m_rotationComposer.Composition.ScreenPosition = cameraSettings.ScreenPosition;
     }

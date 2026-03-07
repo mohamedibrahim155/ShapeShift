@@ -21,4 +21,6 @@ public class CameraConfig : ScriptableObject
     public CinimachineCameraSettings FollowCameraSettings;
     //Finish of endline  camera positions
     public CinimachineCameraSettings FinishCameraSettings;
+
+    public float m_RotationSpeed = 100f;
 }

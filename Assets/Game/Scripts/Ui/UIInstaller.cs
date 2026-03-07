@@ -11,7 +11,7 @@ namespace Scripts.UI
         public override void InstallBindings()
         {
             Container.BindInstances(UIConfig);
-            Container.Bind<IUiService>().To<UIService>().AsSingle();
+            Container.Bind<IUiService>().To<UIService>().AsSingle().NonLazy();
         }
     }
 }
