@@ -103,7 +103,7 @@ namespace Scripts.Player
         public void SpawnPlayer(Vector3 position)
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
-            m_PlayerView.SpawnShapes(m_Container);
+            m_PlayerView.Initialize(m_PlayerConfig);
             m_PlayerView.transform.position = position;
 
             m_PlayerView.ChangeShape(EShapeType.CUBE);

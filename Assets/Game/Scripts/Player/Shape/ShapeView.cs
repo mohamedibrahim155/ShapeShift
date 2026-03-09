@@ -9,8 +9,11 @@ namespace Scripts.Player
         public MeshRenderer MeshRenderer;
         public Rigidbody Rigidbody;
         public Transform ParentTransform;
-        public EShapeType ShapeID;
-        public ESwipeDirection SwipeDirection { get; private set; }
+        public EShapeType ShapeID { get { return ShapeType; } }
+        public ESwipeDirection SwipeDirection { get { return SwipeDir; } }
+
+        [SerializeField] private EShapeType ShapeType; 
+        [SerializeField] private ESwipeDirection SwipeDir;
         public void Reset()
         {
             Collider = GetComponentInChildren<Collider>();
@@ -26,13 +29,6 @@ namespace Scripts.Player
         public void Hide()
         {
             gameObject.SetActive(false);
-        }
-
-        public void Setup(EShapeType type, ESwipeDirection swipeDirection,Transform parent)
-        {
-            ShapeID = type;
-            SwipeDirection = swipeDirection;
-            ParentTransform = parent;
         }
     }
 }

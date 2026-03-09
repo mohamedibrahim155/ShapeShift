@@ -25,4 +25,4 @@ MonoBehaviour:
     FollowOffset: {x: 0, y: 0, z: 0}
     ScreenPosition: {x: 0, y: 0}
     TargetOffset: {x: 0, y: 1, z: 0}
-  m_RotationSpeed: 20
+  m_RotationSpeed: 15

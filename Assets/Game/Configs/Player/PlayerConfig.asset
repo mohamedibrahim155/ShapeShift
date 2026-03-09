@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f81104957673a34e8c3433d851a252a, type: 3}
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
-  m_PlayerView: {fileID: 3888930328552335185, guid: c482007f1964b5d46a46fa0b70cb6a3d, type: 3}
+  m_PlayerView: {fileID: 8341816651178654687, guid: f8eb94f1391a2d6428d9a1bb745e8fb7, type: 3}
   m_ListOfShapes:
   - m_ShapeType: 0
     m_SwipeDirection: 1
@@ -27,8 +27,8 @@ MonoBehaviour:
     m_SwipeDirection: 3
     m_ShapeView: {fileID: 4119971641524525323, guid: 366165b2cbbb06348a44f5563238930f, type: 3}
   m_SwipeThreshold: 5
-  m_CurrentShapeIndex: 1
-  m_CurrentShapeType: 1
+  m_CurrentShapeIndex: 0
+  m_CurrentShapeType: 0
   m_SpawnPosition: {x: 0, y: 0, z: -4}
   m_MoveSpeed: 10
   m_FallTimer: 1

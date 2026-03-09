@@ -1,20 +1,22 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Zenject;
 
 namespace Scripts.Player
 {
     public class PlayerView : MonoBehaviour
     {
-         public Rigidbody Rigidbody;
+        [Header("References")]
+        public Rigidbody Rigidbody;
         public Transform m_ShapeParent;
+        public Animator Animator;
 
-        [SerializeField] public Dictionary<EShapeType,ShapeView> ShapeViews = new();
-        [SerializeField] public Dictionary<ESwipeDirection,ShapeView> ShapesViewByDirections = new();
 
-        [Inject] private PlayerConfig playerConfig;
-
+        private PlayerConfig playerConfig;
+        private Dictionary<EShapeType,ShapeView> ShapeViews = new();
+        private Dictionary<ESwipeDirection,ShapeView> ShapesViewByDirections = new();
+        private List<ShapeView> shapesList = new List<ShapeView>();
 
         private void Start()
         {
@@ -23,16 +25,18 @@ namespace Scripts.Player
         {
             playerConfig.SetCurrentShape(shapeType);
 
-            ShapeViews[shapeType].Show();
-
+            GetShape(shapeType).Show();
         }
 
         public void EnableShape(ESwipeDirection direction)
         {
             ShapeView currentshape = GetShape(direction);
+            EShapeType ID = currentshape.ShapeID;
 
-            playerConfig.SetCurrentShape(currentshape.ShapeID);
-            ShapesViewByDirections[direction].Show();
+            //Sets ID
+            playerConfig.SetCurrentShape(ID);
+
+            currentshape.Show();
 
         }
 
@@ -51,33 +55,31 @@ namespace Scripts.Player
 
         public void DisableShape(EShapeType shapeIndex)
         {
-            ShapeViews[shapeIndex].Hide();
+            ShapeView currentshape = GetShape(shapeIndex);
+
+            currentshape.Hide();
         }
 
-        public void SpawnShapes(DiContainer diContainer)
+        public void Initialize(PlayerConfig config)
         {
-            m_ShapeParent = new GameObject("ShapeParent").transform;
-            m_ShapeParent.transform.parent = (transform);
+            playerConfig = config;
 
-
-            foreach (ShapeConfig item in playerConfig.m_ListOfShapes)
+            foreach (ShapeView shape in shapesList)
             {
-                ShapeView shapeInstance = diContainer.InstantiatePrefabForComponent<ShapeView>(item.m_ShapeView);
-                shapeInstance.transform.SetParent(m_ShapeParent);
+                AddShape(shape);
+            }
 
-                AddShape(shapeInstance, item);
-
-                shapeInstance.Hide();
-
+            //Disable all shapes at the start of the game
+            foreach (var item in ShapeViews)
+            {
+                item.Value.Hide();
             }
         }
 
-        private void AddShape(ShapeView shapeInstance, ShapeConfig shapeConfig)
+        private void AddShape(ShapeView view)
         {
-            shapeInstance.Setup(shapeConfig.m_ShapeType, shapeConfig.m_SwipeDirection, m_ShapeParent);
-
-            ShapeViews.Add(shapeConfig.m_ShapeType, shapeInstance);
-            ShapesViewByDirections.Add(shapeConfig.m_SwipeDirection, shapeInstance);
+            ShapeViews.Add(view.ShapeID, view);
+            ShapesViewByDirections.Add(view.SwipeDirection, view);
         }
 
         public ShapeView GetShape(EShapeType shapeType)
@@ -92,6 +94,8 @@ namespace Scripts.Player
         private void Reset()
         {
             Rigidbody = GetComponent<Rigidbody>();
+            Animator = GetComponent<Animator>();
+            shapesList = GetComponentsInChildren<ShapeView>().ToList();
         }
 
         public void DisbaleColliders()
