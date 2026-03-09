@@ -49,7 +49,8 @@ MonoBehaviour:
   MeshRenderer: {fileID: 8873561755489050613}
   Rigidbody: {fileID: 7734004733712902873}
   ParentTransform: {fileID: 0}
-  ShapeID: 0
+  ShapeType: 3
+  SwipeDir: 3
 --- !u!1001 &7748879480252750198
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -39,7 +39,7 @@ namespace Scripts.Player
         private void EnableKinematicPhysics(bool value)
         {
             PlayerView.Rigidbody.isKinematic = value;
-            foreach (var item in PlayerView.ShapeViews)
+            foreach (var item in PlayerView.GetShapes())
             {
                 item.Value.Rigidbody.isKinematic = value;
                 item.Value.Rigidbody.constraints = RigidbodyConstraints.None;

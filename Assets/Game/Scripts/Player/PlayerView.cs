@@ -16,7 +16,7 @@ namespace Scripts.Player
         private PlayerConfig playerConfig;
         private Dictionary<EShapeType,ShapeView> ShapeViews = new();
         private Dictionary<ESwipeDirection,ShapeView> ShapesViewByDirections = new();
-        private List<ShapeView> shapesList = new List<ShapeView>();
+        [SerializeField] private List<ShapeView> shapesList = new List<ShapeView>();
 
         private void Start()
         {
@@ -104,6 +104,11 @@ namespace Scripts.Player
             {
                 item.Value.Collider.enabled = false;
             }
+        }
+
+        public Dictionary<EShapeType, ShapeView> GetShapes()
+        {
+            return ShapeViews;
         }
 
     }

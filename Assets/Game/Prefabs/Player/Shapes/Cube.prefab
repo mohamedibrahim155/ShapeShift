@@ -198,4 +198,5 @@ MonoBehaviour:
   MeshRenderer: {fileID: 6611038453796330548}
   Rigidbody: {fileID: 6980045597661803547}
   ParentTransform: {fileID: 0}
-  ShapeID: 0
+  ShapeType: 0
+  SwipeDir: 1

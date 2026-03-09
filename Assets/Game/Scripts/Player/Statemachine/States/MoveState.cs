@@ -5,13 +5,18 @@ namespace Scripts.Player
     public class MoveState : BaseState
     {
 
+        private Vector3 playerForward;
+        private float playerMoveSpeed;
         public override void OnEnterState() 
         {
             ShowDebug = true;
+
+            playerForward = PlayerView.transform.forward;
+            playerMoveSpeed = PlayerConfig.m_MoveSpeed;
         }
         public override void OnStateExit() 
         {
-            PlayerView.Rigidbody.linearVelocity = Vector3.zero;
+            UpdatePlayerMovement(Vector3.zero);
         }
         public override void Update() {
            
@@ -23,7 +28,8 @@ namespace Scripts.Player
                 StateMachine.ChangeState(EPlayerStates.FALL);
                 return;
             }
-            PlayerView.Rigidbody.linearVelocity = PlayerView.transform.forward * PlayerConfig.m_MoveSpeed;
+
+            UpdatePlayerMovement(playerForward * playerMoveSpeed);
         }
         public override void DrawGizmos() 
         {
@@ -35,6 +41,19 @@ namespace Scripts.Player
         private bool IsGrounded()
         {
             return Physics.Raycast(PlayerView.transform.position, Vector3.down, PlayerConfig.m_GroundCheckDistance, PlayerConfig.m_GroundLayer);
+        }
+
+        private void UpdatePlayerMovement(Vector3 velocity)
+        {
+
+            PlayerView.Rigidbody.linearVelocity = velocity;
+
+        }
+
+        private void UpdatePlayerBasedOnPosition(Vector3 direction)
+        {
+            PlayerView.transform.position +=   direction   * Time.deltaTime;
+
         }
 
     }
