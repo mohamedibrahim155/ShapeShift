@@ -70,7 +70,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360990118025832428}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 98ac713ba50567642a3012d104028630, type: 2}
   m_CullingMode: 0
@@ -101,9 +101,14 @@ MonoBehaviour:
   Animator: {fileID: 7724258455726184950}
   shapesList:
   - {fileID: 1566301897153740526}
-  - {fileID: 5867562517041898849}
+  - {fileID: 2822228684648214146}
   - {fileID: 3566219712918632042}
   - {fileID: 8433350603929836959}
+  m_TransitionDuration: 0.2
+  m_DirectionalStretch: 1.2
+  m_CrossAxisSquash: 0.85
+  m_StartingScale: 0.05
+  m_UseAnimatorTransition: 0
 --- !u!1 &1469314640630543559
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,10 +241,61 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
+--- !u!1 &2038605289991368698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1094485963878620960}
+  - component: {fileID: 2822228684648214146}
+  m_Layer: 0
+  m_Name: Cylinder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1094485963878620960
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2038605289991368698}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 243607528735926829}
+  m_Father: {fileID: 4950837891630632030}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2822228684648214146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2038605289991368698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d067f7102a71f14593c4466ca0803d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Collider: {fileID: 7451723951277311607}
+  MeshRenderer: {fileID: 3905047037870025854}
+  Rigidbody: {fileID: 5922389503071635259}
+  ParentTransform: {fileID: 4950837891630632030}
+  ShapeType: 2
+  SwipeDir: 0
 --- !u!1 &2047051154149351348
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,9 +309,8 @@ GameObject:
   - component: {fileID: 3905047037870025854}
   - component: {fileID: 7451723951277311607}
   - component: {fileID: 5922389503071635259}
-  - component: {fileID: 5867562517041898849}
   m_Layer: 6
-  m_Name: Cylinder(Clone)
+  m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -274,7 +329,7 @@ Transform:
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4950837891630632030}
+  m_Father: {fileID: 1094485963878620960}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7956553373608977637
 MeshFilter:
@@ -375,27 +430,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
---- !u!114 &5867562517041898849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047051154149351348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d067f7102a71f14593c4466ca0803d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Collider: {fileID: 7451723951277311607}
-  MeshRenderer: {fileID: 3905047037870025854}
-  Rigidbody: {fileID: 5922389503071635259}
-  ParentTransform: {fileID: 4950837891630632030}
-  ShapeID: 2
 --- !u!1 &2081270632921424469
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,12 +445,12 @@ GameObject:
   - component: {fileID: 8622803798887754249}
   - component: {fileID: 1566301897153740526}
   m_Layer: 6
-  m_Name: Cube(Clone)
+  m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8622803798887754249
 Transform:
   m_ObjectHideFlags: 0
@@ -445,7 +483,8 @@ MonoBehaviour:
   MeshRenderer: {fileID: 2909880851700936875}
   Rigidbody: {fileID: 4923252502597937971}
   ParentTransform: {fileID: 4950837891630632030}
-  ShapeID: 0
+  ShapeType: 0
+  SwipeDir: 1
 --- !u!1 &5774864579642517596
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,7 +515,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8622803798887754249}
-  - {fileID: 243607528735926829}
+  - {fileID: 1094485963878620960}
   - {fileID: 2790771060471410725}
   - {fileID: 7793518190169270822}
   m_Father: {fileID: 8710323231378397831}
@@ -492,12 +531,12 @@ GameObject:
   - component: {fileID: 7793518190169270822}
   - component: {fileID: 8433350603929836959}
   m_Layer: 6
-  m_Name: Triangle(Clone)
+  m_Name: Triangle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7793518190169270822
 Transform:
   m_ObjectHideFlags: 0
@@ -530,7 +569,8 @@ MonoBehaviour:
   MeshRenderer: {fileID: 676934065833032975}
   Rigidbody: {fileID: 5940653721258557585}
   ParentTransform: {fileID: 4950837891630632030}
-  ShapeID: 3
+  ShapeType: 3
+  SwipeDir: 3
 --- !u!1 &6027468311632049326
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,12 +582,12 @@ GameObject:
   - component: {fileID: 2790771060471410725}
   - component: {fileID: 3566219712918632042}
   m_Layer: 6
-  m_Name: Sphere(Clone)
+  m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2790771060471410725
 Transform:
   m_ObjectHideFlags: 0
@@ -580,7 +620,8 @@ MonoBehaviour:
   MeshRenderer: {fileID: 3729931736737794950}
   Rigidbody: {fileID: 1206302275231360621}
   ParentTransform: {fileID: 4950837891630632030}
-  ShapeID: 1
+  ShapeType: 1
+  SwipeDir: 2
 --- !u!1 &6571681337229281664
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,7 +754,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
@@ -894,7 +935,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0

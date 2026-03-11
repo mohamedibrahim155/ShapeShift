@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f81104957673a34e8c3433d851a252a, type: 3}
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
-  m_PlayerView: {fileID: 8341816651178654687, guid: f8eb94f1391a2d6428d9a1bb745e8fb7, type: 3}
+  m_PlayerView: {fileID: 2433380100633399089, guid: f8eb94f1391a2d6428d9a1bb745e8fb7, type: 3}
   m_ListOfShapes:
   - m_ShapeType: 0
     m_SwipeDirection: 1

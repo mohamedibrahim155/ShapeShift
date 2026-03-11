@@ -41,6 +41,13 @@ namespace Scripts.Player
         public float m_FinishLineWaitTimer =2;
         public bool m_HasPlayerFinished = false;
 
+
+        [Header("Shape Transition")]
+        public float m_TransitionDuration = 0.2f;
+        public float m_DirectionalStretch = 1.2f;
+        public float m_CrossAxisSquash = 0.85f;
+        public float m_StartingScale = 0.05f;
+
         public void SetCurrentShape(EShapeType shapeType)
         {
             m_CurrentShapeIndex = (int)shapeType;
