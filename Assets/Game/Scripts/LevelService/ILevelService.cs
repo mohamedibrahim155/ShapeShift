@@ -6,7 +6,8 @@ namespace Scripts.Level
     public interface ILevelService
     {
         public event Action OnLevelCreated;
-        public event Action<int> OnLevelCompleted;
+        public event Action OnLevelCompleted;
+        public event Action OnLevelFailed;
         void CreateLevel(int levelNo);
         LevelConfig GetLevel(int levelNo);
 
@@ -16,7 +17,9 @@ namespace Scripts.Level
         int GetCurrentLevel();
 
         void SpawnLevel(int levelNumber);
+        void SpawnNextLevel();
         void InvokeLevelCompleted();
+        void InvokeLevelFailed();
 
         void Cleanup();
     }

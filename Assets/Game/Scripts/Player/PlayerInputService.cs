@@ -18,12 +18,13 @@ namespace Scripts.Player
 
         private PlayerConfig m_PlayerConfig;
 
-
+        private IGameLoopService m_GameLoopService;
 
         [Inject]
         private void Construct(PlayerConfig config, IGameLoopService gameloop)
         {
             m_PlayerConfig = config;
+            m_GameLoopService = gameloop;
         }
 
         // Update touch inputs and detect swipe direction
@@ -176,11 +177,26 @@ namespace Scripts.Player
 
         public void CleanUp()
         {
+            DestroyInputController();
         }
 
         public void EnableInput(bool isActive)
         {
             _isInputEnabled = isActive;
+        }
+
+        public void SpawnInputController()
+        {
+            m_GameLoopService.OnUpdateTick += UpdateInputs;
+
+            _isInputEnabled = true;
+        }
+
+        public void DestroyInputController()
+        {
+            m_GameLoopService.OnUpdateTick -= UpdateInputs;
+            _isInputEnabled = false;
+
         }
     }
 }

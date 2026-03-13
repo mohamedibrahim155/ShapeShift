@@ -5,13 +5,16 @@ namespace Scripts.Player
 {
     public interface IPlayerService
     {
+        public event Action OnPlayerFinishedLevel;
+        public event Action OnPlayerDied;
         void SpawnPlayer(Vector3 position);
-        void SpawnCamera(Vector3 spawnPosition);
+        void InitializeCamera(Vector3 spawnPosition);
         void RegisterBlockWall(BlockView wall);
 
         void Reset();
         void CleanUp();
 
         public  abstract void StartGame();
+        public abstract void InvokePlayerDeath();
     }
 }

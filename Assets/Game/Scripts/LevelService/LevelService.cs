@@ -15,7 +15,8 @@ namespace Scripts.Level
         private int _currentLevelIndex = 0;
 
         public event Action OnLevelCreated = delegate { };
-        public event Action<int> OnLevelCompleted = delegate { };
+        public event Action OnLevelCompleted = delegate { };
+        public event Action OnLevelFailed = delegate { };
 
 
 
@@ -25,8 +26,10 @@ namespace Scripts.Level
             m_LevelConfigPresets = config;
             m_Container = container;
             m_BlockConfig = blockConfig;
-        }
 
+
+            SpawnLevel(GetCurrentLevel());
+        }
         public void CreateLevel(int levelNumber)
         {
             if (_levelParent == null)
@@ -38,7 +41,7 @@ namespace Scripts.Level
 
             int idx = levelNumber < 1   ? 1 : levelNumber-1;
 
-            Debug.Log($"Creating level {idx}");
+            Debug.Log($"Creating level {idx}" +  _currentLevels.Count);
 
             List<LevelView> currentLevelGorund = GetLevel(GetWrappedLevelIndex(idx)).ListOfChunks;
 
@@ -82,19 +85,14 @@ namespace Scripts.Level
 
         public void InvokeLevelCompleted()
         {
-            OnLevelCompleted.Invoke(m_LevelConfigPresets.m_CurrentLevelIndex);
+            OnLevelCompleted.Invoke();
         }
-
-        public void Cleanup()
+        public void InvokeLevelFailed()
         {
-            foreach (LevelView levelView in _currentLevels)
-            {
-                GameObject.Destroy(levelView.gameObject);
-            }
-
-            _currentLevels.Clear();
-
+            OnLevelFailed.Invoke();
         }
+
+
 
         public int GetWrappedLevelIndex(int levelNumber)
         {
@@ -107,6 +105,13 @@ namespace Scripts.Level
             CreateLevel(levelNumber);
         }
 
+        public void SpawnNextLevel()
+        {
+            int nextLevelID = GetCurrentLevel() + 1;
+            UpdateLevel(nextLevelID);
+            SpawnLevel(nextLevelID);
+        }
+
         public int GetCurrentLevel()
         {
             return m_LevelConfigPresets.m_CurrentLevelIndex;
@@ -115,6 +120,17 @@ namespace Scripts.Level
         public void UpdateLevel(int levelNo)
         {
             m_LevelConfigPresets.m_CurrentLevelIndex = levelNo;
+        }
+
+        public void Cleanup()
+        {
+            foreach (LevelView levelView in _currentLevels)
+            {
+                GameObject.Destroy(levelView.gameObject);
+            }
+
+            _currentLevels.Clear();
+
         }
     }
 }

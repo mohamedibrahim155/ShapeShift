@@ -33,5 +33,6 @@ namespace Scripts.UI
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }
+
     }
 }

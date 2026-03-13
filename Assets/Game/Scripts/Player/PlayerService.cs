@@ -23,18 +23,20 @@ namespace Scripts.Player
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
         private ILevelService m_LevelService;
-        private IUiService m_UIService;
         private PlayerStateMachine PlayerStateMachine;
 
 
 
         private List<BlockView> m_ListOfBlocks;
-        private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes =  new Dictionary<ESwipeDirection, ShapeView>();
+        private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PointsPerCorrectCollision = 10;
 
+        public event Action OnPlayerFinishedLevel = delegate { };
+        public event Action OnPlayerDied = delegate { };
+
         [Inject]
-        private void Construct(PlayerConfig playerConfig, DiContainer container , IPLayerInputService inputService,
-            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, ILevelService levelService, IUiService uiService)
+        private void Construct(PlayerConfig playerConfig, DiContainer container, IPLayerInputService inputService,
+            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, ILevelService levelService)
 
         {
             m_PlayerConfig = playerConfig;
@@ -44,102 +46,90 @@ namespace Scripts.Player
             m_CameraService = cameraService;
             m_ScoreService = scoreService;
             m_LevelService = levelService;
-            m_UIService = uiService;
 
 
-
-
-            OnInitialize();
+            Initialize();
         }
 
-        private void OnInitialize()
+        private void Initialize()
         {
             //resets player state for new game or level retry
             m_PlayerConfig.m_HasPlayerFinished = false;
 
             //subscribes events
+            InitializeEvents();
+
+            SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
+        }
+
+        private void InitializeEvents()
+        {
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
             m_GameloopService.OnGizemosTick += OnGizmosDraw;
-            m_LevelService.OnLevelCompleted +=  _ => OnPlayerReachedFinishLine();
+            m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
+
+
 
             m_ScoreService.Reset();
-
-            SpawnLevel();
-            SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
-
-            //spaen camera after player is spawned to ensure it has a reference
-            SpawnCamera(Vector3.zero);
-
         }
+
         public void StartGame()
         {
-            m_UIService.CloseWindow(EWindowID.MinMenu);
-
-            InitializeStateMachine(m_PlayerView, m_PlayerConfig);
-
-            m_PlayerInputService.EnableInput(true);
-
-            HandleSwipe();
-            HandleCollision();
-
+            m_PlayerInputService.OnSwipe += Swipe;
+            BlockWallColliderView.OnBlockCollision += OnBlockCollision;
 
             PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
 
             m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
         }
-        private void InitializeStateMachine(PlayerView view, PlayerConfig config)
+        private void InitializeStateMachine()
         {
-            PlayerStateMachine = new PlayerStateMachine(view, config);
+            PlayerStateMachine = new PlayerStateMachine(m_PlayerView, m_PlayerConfig);
 
             PlayerStateMachine.AddState(EPlayerStates.IDLE, m_Container.Instantiate<IdleState>());
             PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
             PlayerStateMachine.AddState(EPlayerStates.FALL, m_Container.Instantiate<FallState>());
+
+            PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
+
         }
 
-       
+
 
         // Spawn the player at the specified position and set up input and collision handling
         public void SpawnPlayer(Vector3 position)
         {
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
-            m_PlayerView.Initialize(m_PlayerConfig);
-            m_PlayerView.transform.position = position;
+            m_PlayerView.Initialize(m_PlayerConfig, position);
 
-            m_PlayerView.ChangeShape(EShapeType.CUBE);
+            //spawns Input
+            m_PlayerInputService.SpawnInputController();
+            InitializeStateMachine();
+            InitializeCamera(Vector3.zero);
+            Init();
+
         }
 
-        public void SpawnLevel()
+        private void Init()
         {
-            int currentLevel = m_LevelService.GetCurrentLevel();
-
-            m_LevelService.SpawnLevel(currentLevel);
+            m_PlayerView.ChangeShape(EShapeType.CUBE);
+            PlayerStateMachine.GetCurrentState().OnEnterState();
         }
 
 
-        public void SpawnCamera(Vector3 spawnPosition)
+        public void InitializeCamera(Vector3 spawnPosition)
         {
             m_CameraService.SpawnCamera(spawnPosition);
             m_CameraService.SetCameraFollow(m_PlayerView.transform);
             m_CameraService.SetCameraLookAt(m_PlayerView.transform);
         }
 
-        // Set up collision handling
-        private void HandleCollision()
-        {
-            BlockWallColliderView.OnBlockCollision += OnBlockCollision;
-        }
-
-        // Set up swipe input handling
-        private void HandleSwipe()
-        {
-            m_PlayerInputService.OnSwipe += Swipe;
-        }
 
         // Change the player's shape based on swipe direction
         private void Swipe(ESwipeDirection swipeDirection)
         {
-          m_PlayerView.ChangeShapeForDirection(swipeDirection);
+            m_PlayerView.ChangeShapeForDirection(swipeDirection);
         }
 
         private void OnBlockCollision(BlockView block)
@@ -150,7 +140,8 @@ namespace Scripts.Player
             {
                 // Level Failed Condition
                 Debug.Log("Player Collided with different Shape. Level Failed!");
-                //DestroyPlayer();
+
+                InvokePlayerDeath();
                 return;
             }
 
@@ -163,7 +154,7 @@ namespace Scripts.Player
             m_PlayerInputService.UpdateInputs();
 
             // update states
-            if (PlayerStateMachine!= null)
+            if (PlayerStateMachine != null)
             {
                 PlayerStateMachine.Update();
             }
@@ -177,7 +168,7 @@ namespace Scripts.Player
             {
                 PlayerStateMachine.FixedUpdate();
             }
-        
+
         }
 
         private void OnGizmosDraw()
@@ -195,37 +186,33 @@ namespace Scripts.Player
             // change to idle
             PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
-            m_PlayerInputService.EnableInput(false);
-
-            // show win screen
-            m_UIService.GetWindow(EWindowID.LevelCompleted).Open(1);
+            m_PlayerInputService.DestroyInputController();
 
             //Activate rotating camera around player at finish line
             m_CameraService.ActivateFinishLineCamera(m_PlayerView.transform);
+
+            OnPlayerFinishedLevel?.Invoke();
         }
 
 
         public void Reset()
         {
             DestroyPlayer();
-            OnInitialize();
-
-            m_UIService.OpenWindow(EWindowID.MinMenu);
+            CleanUp();
+            Initialize();
         }
 
 
         private void DestroyPlayer()
         {
             MonoBehaviour.Destroy(m_PlayerView.gameObject);
-            CleanUp();
-
         }
-     
+
 
         private bool IsValidCollision(EShapeType shapeType, EBlockType blockType)
         {
-          
-            return (int) shapeType == (int) blockType;
+
+            return (int)shapeType == (int)blockType;
         }
 
         public void RegisterBlockWall(BlockView wall)
@@ -239,14 +226,29 @@ namespace Scripts.Player
 
         public void CleanUp()
         {
-            BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
-            m_PlayerInputService.OnSwipe -= Swipe;
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
 
+            BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
+            m_PlayerInputService.OnSwipe -= Swipe;
+
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
-            m_LevelService.Cleanup();
         }
+
+        public void InvokePlayerDeath()
+        {
+            FailedLevel();
+
+            OnPlayerDied.Invoke();
+        }
+
+        private void FailedLevel()
+        {
+            PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
+            m_PlayerInputService.EnableInput(false);
+            m_LevelService.InvokeLevelFailed();
+        } 
+            
     }
 }

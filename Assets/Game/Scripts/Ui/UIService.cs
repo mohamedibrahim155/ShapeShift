@@ -8,7 +8,7 @@ using Zenject;
 
 namespace Scripts.UI
 {
-    public class UIService : IUiService
+    public class UIService : IUIService
     {
 
         private Dictionary<EWindowID, UIWindow> m_ListOfWindowsCached   = new Dictionary<EWindowID, UIWindow>();
@@ -33,6 +33,7 @@ namespace Scripts.UI
 
         private void SpawnMainCanvas()
         {
+            Debug.Log("Spawning main canvas");
             m_UiCanvasView = m_Container.InstantiatePrefabForComponent<UICanvasView>(m_UiConfig.m_CanvasView);
         }
         private void CachedWindows()
@@ -58,14 +59,14 @@ namespace Scripts.UI
           
         }
 
-        public void OpenWindow(EWindowID ID)
+        public void OpenWindow(EWindowID ID, float time = 0.5f)
         {
-            m_ListOfWindowsCached[ID].Open();
+            m_ListOfWindowsCached[ID].Open(time);
         }
 
-        public void CloseWindow(EWindowID ID)
+        public void CloseWindow(EWindowID ID, float time = 0.5f)
         {
-            m_ListOfWindowsCached[ID].Close();
+            m_ListOfWindowsCached[ID].Close(time);
         }
 
         public UIWindow GetWindow(EWindowID ID)

@@ -13,10 +13,10 @@ namespace Scripts.UI
         [SerializeField] private Button QuitButton;
 
         private IPlayerService m_PlayerService;
-        private IUiService m_UIService;
+        private IUIService m_UIService;
 
         [Inject]
-        private void Construct(IPlayerService playerService, IUiService uiService)
+        private void Construct(IPlayerService playerService, IUIService uiService)
         {
             m_PlayerService = playerService;
             m_UIService = uiService;
@@ -37,6 +37,8 @@ namespace Scripts.UI
         {
             Debug.Log("Play Button Pressed");
             m_PlayerService.StartGame();
+
+            Close();
         }
 
     }

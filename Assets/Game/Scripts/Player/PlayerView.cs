@@ -63,10 +63,11 @@ namespace Scripts.Player
             currentshape.Hide();
         }
 
-        public void Initialize(PlayerConfig config)
+        public void Initialize(PlayerConfig config, Vector3 spawnPosition)
         {
             playerConfig = config;
 
+            transform.position = spawnPosition;
 
             ShapeViews.Clear();
             ShapesViewByDirections.Clear();

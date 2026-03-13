@@ -21,5 +21,7 @@ namespace Scripts.Player
         public abstract void CleanUp();
 
         public abstract void EnableInput(bool isActive);
+        public abstract void DestroyInputController();
+        public abstract void SpawnInputController();
     }
 }
