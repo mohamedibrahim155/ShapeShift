@@ -59,6 +59,24 @@ namespace Scripts.Player
             
         }
 
+        public void RemoveState(EPlayerStates stateID)
+        {
+            if (ListOfStates.ContainsKey(stateID))
+            {
+                ListOfStates[stateID].OnDestroy();
+                ListOfStates.Remove(stateID);
+            }
+        }
+
+        public void CleanUp()
+        {
+            foreach (var state in ListOfStates.Values)
+            {
+                state.OnDestroy();
+            }
+            ListOfStates.Clear();
+        }
+
         public BaseState GetCurrentState() => ListOfStates[CurrentStateID];
     }
 }

@@ -68,21 +68,13 @@ namespace Scripts.Player
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
             m_GameloopService.OnGizemosTick += OnGizmosDraw;
             m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
-
-
+            m_PlayerInputService.OnSwipe += Swipe;
+            BlockWallColliderView.OnBlockCollision += OnBlockCollision;
 
             m_ScoreService.Reset();
         }
 
-        public void StartGame()
-        {
-            m_PlayerInputService.OnSwipe += Swipe;
-            BlockWallColliderView.OnBlockCollision += OnBlockCollision;
-
-            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
-
-            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
-        }
+    
         private void InitializeStateMachine()
         {
             PlayerStateMachine = new PlayerStateMachine(m_PlayerView, m_PlayerConfig);
@@ -103,8 +95,7 @@ namespace Scripts.Player
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
             m_PlayerView.Initialize(m_PlayerConfig, position);
 
-            //spawns Input
-            m_PlayerInputService.SpawnInputController();
+
             InitializeStateMachine();
             InitializeCamera(Vector3.zero);
             Init();
@@ -113,7 +104,7 @@ namespace Scripts.Player
 
         private void Init()
         {
-            m_PlayerView.ChangeShape(EShapeType.CUBE);
+            m_PlayerView.EnableShape(EShapeType.CUBE);
             PlayerStateMachine.GetCurrentState().OnEnterState();
         }
 
@@ -123,6 +114,15 @@ namespace Scripts.Player
             m_CameraService.SpawnCamera(spawnPosition);
             m_CameraService.SetCameraFollow(m_PlayerView.transform);
             m_CameraService.SetCameraLookAt(m_PlayerView.transform);
+        }
+
+        public void StartGame()
+        {
+            //spawns Input
+            m_PlayerInputService.SpawnInputController();
+            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
+
+            m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
         }
 
 
@@ -234,6 +234,8 @@ namespace Scripts.Player
 
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
+
+            PlayerStateMachine.CleanUp();
         }
 
         public void InvokePlayerDeath()

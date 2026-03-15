@@ -101,12 +101,6 @@ namespace Scripts.Player
             return ShapesViewByDirections[direction];
         }
 
-        private void Reset()
-        {
-            Rigidbody = GetComponent<Rigidbody>();
-            shapesList = GetComponentsInChildren<ShapeView>().ToList();
-        }
-
         public void DisbaleColliders()
         {
             foreach (var item in ShapeViews)
@@ -232,5 +226,13 @@ namespace Scripts.Player
 
             shape.Collider.enabled = enabled;
         }
+
+
+        private void Reset()
+        {
+            Rigidbody = GetComponent<Rigidbody>();
+            shapesList = GetComponentsInChildren<ShapeView>().ToList();
+        }
+
     }
 }
