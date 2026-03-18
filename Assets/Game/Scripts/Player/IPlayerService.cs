@@ -16,5 +16,8 @@ namespace Scripts.Player
 
         public  abstract void StartGame();
         public abstract void InvokePlayerDeath();
+
+        public float GetPlayerProgressedDistance();
+        public float GetTotalProgressedDistance();
     }
 }

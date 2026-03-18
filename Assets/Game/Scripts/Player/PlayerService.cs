@@ -74,7 +74,7 @@ namespace Scripts.Player
             m_ScoreService.Reset();
         }
 
-    
+
         private void InitializeStateMachine()
         {
             PlayerStateMachine = new PlayerStateMachine(m_PlayerView, m_PlayerConfig);
@@ -250,7 +250,22 @@ namespace Scripts.Player
             PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_PlayerInputService.EnableInput(false);
             m_LevelService.InvokeLevelFailed();
-        } 
-            
+        }
+
+        public float GetPlayerProgressedDistance()
+        {
+            if (m_PlayerView == null || m_LevelService.FinishLineView == null)
+                return 0f;
+
+            return Vector3.Distance(m_PlayerView.transform.position, m_LevelService.FinishLineView.transform.position);
+
+        }
+
+        public float GetTotalProgressedDistance()
+        {
+            if (m_LevelService.FinishLineView == null)
+                return 0f;
+            return Vector3.Distance(m_PlayerConfig.m_SpawnPosition, m_LevelService.FinishLineView.transform.position);
+        }
     }
 }

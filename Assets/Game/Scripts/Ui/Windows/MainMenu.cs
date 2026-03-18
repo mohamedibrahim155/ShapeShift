@@ -37,7 +37,7 @@ namespace Scripts.UI
         {
             Debug.Log("Play Button Pressed");
             m_PlayerService.StartGame();
-
+            m_UIService.OpenWindow(EWindowID.Gameplay);
             Close();
         }
 

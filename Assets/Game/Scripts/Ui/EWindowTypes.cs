@@ -5,6 +5,7 @@ namespace Scripts.UI
     public enum EWindowID 
     {
         MinMenu,
+        Gameplay,
         GamePaused,
         Settings,
         LevelCompleted,

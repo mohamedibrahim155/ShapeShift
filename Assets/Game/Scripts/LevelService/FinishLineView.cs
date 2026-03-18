@@ -13,8 +13,17 @@ namespace Scripts.Level
         public Collider Collider;
 
 
-        [Inject] private PlayerConfig _config;
-        [Inject] private ILevelService _levelService;
+       private PlayerConfig _config;
+       private ILevelService _levelService;
+
+        [Inject]
+        public void Construct(ILevelService levelService, PlayerConfig config)
+        {
+            _levelService = levelService;
+            _config = config;
+
+            _levelService.InitializeFinishLine(this);
+        }
 
         private void Reset()
         {

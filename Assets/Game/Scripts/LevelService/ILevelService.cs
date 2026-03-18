@@ -8,6 +8,8 @@ namespace Scripts.Level
         public event Action OnLevelCreated;
         public event Action OnLevelCompleted;
         public event Action OnLevelFailed;
+
+        public FinishLine FinishLineView { get; }
         void CreateLevel(int levelNo);
         LevelConfig GetLevel(int levelNo);
 
@@ -20,6 +22,8 @@ namespace Scripts.Level
         void SpawnNextLevel();
         void InvokeLevelCompleted();
         void InvokeLevelFailed();
+
+        void InitializeFinishLine(FinishLine view);
 
         void Cleanup();
     }

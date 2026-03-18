@@ -18,6 +18,7 @@ namespace Scripts.Level
         public event Action OnLevelCompleted = delegate { };
         public event Action OnLevelFailed = delegate { };
 
+        public FinishLine FinishLineView { get; private set; }
 
 
         [Inject]
@@ -70,6 +71,12 @@ namespace Scripts.Level
 
             OnLevelCreated.Invoke();
         }
+
+        public void InitializeFinishLine(FinishLine view)
+        {
+            FinishLineView = view;
+        }
+
 
 
         public LevelConfig GetLevel(int index)
