@@ -8,9 +8,11 @@ namespace Scripts.UI
     public class UIInstaller : ScriptableObjectInstaller<UIInstaller>
     {
         public UIConfig UIConfig;
+        public ButtonConfig buttonConfig;
         public override void InstallBindings()
         {
             Container.BindInstances(UIConfig);
+            Container.BindInstances(buttonConfig);
             Container.Bind<IUIService>().To<UIService>().AsSingle().NonLazy();
             Container.Bind<PlayerProgressController>().AsSingle().NonLazy();
         }

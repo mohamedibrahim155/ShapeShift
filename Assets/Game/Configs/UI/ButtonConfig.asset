@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04896d097f8b5b9459712b45c528beec, type: 3}
-  m_Name: UIInstaller
+  m_Script: {fileID: 11500000, guid: 154c25b2c05f64e45a670dead5295905, type: 3}
+  m_Name: ButtonConfig
   m_EditorClassIdentifier: 
-  UIConfig: {fileID: 11400000, guid: 9d7481860fe9ac44685c4db442696ca2, type: 2}
-  buttonConfig: {fileID: 11400000, guid: 8c5b6e4040c87fc42b99b09d470ef4c1, type: 2}
+  m_ScaleFactor: 0.9
+  m_Duration: 0.1
