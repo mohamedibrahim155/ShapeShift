@@ -11,23 +11,6 @@ namespace Scripts.UI
     {
         [SerializeField] private Slider Slider;
 
-
-        private IPlayerService m_PlayerService;
-        private IUIService m_UIService;
-        private ILevelService m_LevelService;
-        private IGameLoopService m_GameLoop;
-
-        [Inject]
-        private void Construct(IPlayerService playerService, IUIService uiService, ILevelService levelService, IGameLoopService gameLoop)
-        {
-            m_PlayerService = playerService;
-            m_UIService = uiService;
-
-            m_GameLoop = gameLoop;
-
-            m_GameLoop.OnUpdateTick += OnGameLoopUpdate;
-        }
-
         public void Reset()
         {
             base.Reset();
@@ -35,44 +18,16 @@ namespace Scripts.UI
             Slider = GetComponentInChildren<Slider>();
         }
 
-        private void OnDestroy()
+        public void ResetProgress()
         {
-            m_GameLoop.OnUpdateTick -= OnGameLoopUpdate;
+            SetProgress(0);
         }
+      
 
-
-        private void ResetSlider()
+        public void SetProgress(float progress01)
         {
-            Slider.value = 0;
+            Slider.value = Mathf.Clamp01(progress01);
         }
-        private void OnGameLoopUpdate()
-        {
-            float playerDistance = m_PlayerService.GetPlayerProgressedDistance();
-            float totalDistance = m_PlayerService.GetTotalProgressedDistance();
-
-            float playerProgress = (totalDistance - playerDistance) / totalDistance;
-
-
-            if (playerProgress > 0)
-            {
-                if (playerDistance < 0.001f)
-                {
-                    Slider.value = 1;
-                    m_GameLoop.OnUpdateTick -= OnGameLoopUpdate;
-
-                }
-                Slider.value = Mathf.Clamp(playerProgress, 0, 1);
-            }
-            else
-            {
-                ResetSlider();
-            }
-        }
-
-
     }
-     
-  
-
        
 }

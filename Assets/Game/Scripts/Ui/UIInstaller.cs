@@ -12,6 +12,7 @@ namespace Scripts.UI
         {
             Container.BindInstances(UIConfig);
             Container.Bind<IUIService>().To<UIService>().AsSingle().NonLazy();
+            Container.Bind<PlayerProgressController>().AsSingle().NonLazy();
         }
     }
 }
