@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Zenject;
 using TMPro;
 using Scripts.Level;
+using System.Collections;
 namespace Scripts.UI
 {
     public class LevelCompleteWindow : UIWindow
@@ -32,21 +33,18 @@ namespace Scripts.UI
             m_LevelService.OnLevelCompleted += OpenLevelCompleteScreen;
         }
 
-        private void OpenLevelCompleteScreen()
+        private IEnumerator DelayOpenCallback(float waitTime)
         {
-            Debug.Log("Opend the level complete screen");
+            yield return new WaitForSeconds(waitTime);
             Open();
         }
-
-        private void OnDisable()
+        private void OpenLevelCompleteScreen()
         {
-           // m_LevelService.OnLevelCompleted -= OpenLevelCompleteScreen;
+            StartCoroutine(DelayOpenCallback(1));
         }
 
         private void FailedLevelButtonClicked()
         {
-            Debug.Log("Next level Pressed");
-
             Close();
             SpawnNextLevel();
         }
@@ -54,7 +52,6 @@ namespace Scripts.UI
         private void OnRemoveAdsClicked()
         {
             Debug.Log("Remove ads Pressed");
-            //m_PlayerService.StartGame();
         }
 
         public void UpdateLevelText(int levelNumber)

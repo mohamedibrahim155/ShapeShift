@@ -313,6 +313,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelFailedCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5537428549261352710, guid: aeabe7d74c3645a40b91616ac8e4a224, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6546823558370954707, guid: aeabe7d74c3645a40b91616ac8e4a224, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -477,6 +481,10 @@ PrefabInstance:
     - target: {fileID: 7019139031094996895, guid: 9a3f62df35e011b4dbaa2c9d87785a33, type: 3}
       propertyPath: m_Name
       value: GameCanvasView
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019139031094996895, guid: 9a3f62df35e011b4dbaa2c9d87785a33, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8558987841340501917, guid: 9a3f62df35e011b4dbaa2c9d87785a33, type: 3}
       propertyPath: m_AnchorMax.y
@@ -883,6 +891,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelCompleteCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5537428549261352710, guid: f468311285f72d54c9cf26ff765dfc44, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5815513597644688395, guid: f468311285f72d54c9cf26ff765dfc44, type: 3}
       propertyPath: TotalCoinsTextField
       value: 
@@ -934,6 +946,10 @@ PrefabInstance:
     - target: {fileID: 7357125836327478812, guid: f468311285f72d54c9cf26ff765dfc44, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8605847440275915288, guid: f468311285f72d54c9cf26ff765dfc44, type: 3}
+      propertyPath: m_Alpha
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

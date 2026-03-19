@@ -20,14 +20,12 @@ namespace Scripts.UI
 
         public virtual void Open(float time = 0.5f) 
         {
-            gameObject.SetActive(true);
             canvasGroup.DOFade(1, time);
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
         }
         public virtual void Close(float time = 0.5f) 
         {
-            gameObject.SetActive(false);
 
             canvasGroup.DOFade(0, time);
             canvasGroup.interactable = false;
