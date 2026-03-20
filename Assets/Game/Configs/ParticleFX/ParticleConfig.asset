@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: ParticleConfig
   m_EditorClassIdentifier: 
   m_MinLifeTime: 0.5
-  m_GrowSize: 10
+  m_PoolGrowSize: 10
   m_ParticlePrefabView: {fileID: 3448633983070766808, guid: 973b563e92badfc48bf9058778dcb7f7, type: 3}
   m_ParticlePrefabs:
   - m_Type: 0
+    m_ScaleFactor: 1
     m_ParticleSystem: {fileID: 19800004, guid: 7867af58a6ec48846ae807eb4022fbaa, type: 3}
     m_MaxParticleCount: 3
   - m_Type: 1
+    m_ScaleFactor: 0.4
     m_ParticleSystem: {fileID: 9169966119468206341, guid: ed962e35f7fa6f34f8d27aa6d19ea293, type: 3}
     m_MaxParticleCount: 5

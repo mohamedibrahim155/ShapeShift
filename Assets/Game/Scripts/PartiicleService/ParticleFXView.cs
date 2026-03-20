@@ -16,19 +16,26 @@ namespace Scripts.Particle
 
         private ParticleConfig _config;
         private IParticleService _particleService;
+        private ParticleFXData _particleFXData;
 
-        private void Awake()
-        {
-            _particleSystem = GetComponentInChildren<ParticleSystem>();
-        }
-        public void Setup(ParticleConfig particleConfig, IParticleService particleService, ParticleSystem particleSystem)
+        public void Setup(ParticleConfig particleConfig, IParticleService particleService, ParticleFXData particleFXData)
         {
             _config = particleConfig;
             _particleService = particleService;
-            this._particleSystem = particleSystem;
+            _particleFXData = particleFXData;
+
+            SpawnParticle();
+        }
+
+        private void SpawnParticle()
+        {
+            _particleSystem = ParticleSystem.Instantiate(_particleFXData.m_ParticleSystem);
+            _particleSystem.transform.parent = transform;
         }
         public void Show()
         {
+            _particleSystem.transform.localScale = Vector3.one * _particleFXData.m_ScaleFactor;
+
             gameObject.SetActive(true);
             m_IsAlive = true;
             _particleSystem.Play();

@@ -6,7 +6,7 @@ namespace Scripts.Particle
     public interface IParticleService
     {
         public ParticleConfig ParticleConfig { get; }
-        public Dictionary<EParticleType, ParticleSystem> ParticleTypes { get; }
+        public Dictionary<EParticleType, ParticleFXData> ParticleTypes { get; }
 
         public void InitializeDictionary();
 
