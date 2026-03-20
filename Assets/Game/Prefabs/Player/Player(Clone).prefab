@@ -98,17 +98,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: -1382556244174407030}
   m_ShapeParent: {fileID: 4950837891630632030}
-  Animator: {fileID: 7724258455726184950}
   shapesList:
   - {fileID: 1566301897153740526}
   - {fileID: 2822228684648214146}
   - {fileID: 3566219712918632042}
   - {fileID: 8433350603929836959}
-  m_TransitionDuration: 0.2
-  m_DirectionalStretch: 1.2
-  m_CrossAxisSquash: 0.85
-  m_StartingScale: 0.05
-  m_UseAnimatorTransition: 0
 --- !u!1 &1469314640630543559
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,7 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1094485963878620960}
   - component: {fileID: 2822228684648214146}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
