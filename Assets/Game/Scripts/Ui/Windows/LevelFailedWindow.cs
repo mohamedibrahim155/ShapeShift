@@ -5,12 +5,15 @@ using Zenject;
 using TMPro;
 using Scripts.Level;
 using System.Collections;
+using DG.Tweening;
 namespace Scripts.UI
 {
     public class LevelFailedWindow : UIWindow
     {
         [SerializeField] private Button RetryButton;
         [SerializeField] private TextMeshProUGUI TotalCoinsTextField;
+        [SerializeField] private GameObject LevelFailedBanner;
+        [SerializeField] private TextMeshProUGUI LevelFailedTextField;
 
         private IPlayerService m_PlayerService;
         private IUIService m_UIService;
@@ -30,14 +33,15 @@ namespace Scripts.UI
 
         private void OpenLevelFailedWindow()
         {
-            Debug.Log("Level Failed Window Opened");
             StartCoroutine(DelayOpenCallback(0.25f));
         }
 
         private IEnumerator DelayOpenCallback(float waitTime)
         {
+            ResetBanner();
             yield return new WaitForSeconds(waitTime);
             Open();
+            AnimateBanner();
         }
 
         private void RetryButtonClicked()
@@ -68,6 +72,23 @@ namespace Scripts.UI
             m_LevelService.OnLevelFailed -= OpenLevelFailedWindow;
 
             RetryButton.onClick.RemoveListener(RetryButtonClicked);
+        }
+
+        private void AnimateBanner()
+        {
+            LevelFailedBanner.transform.DOScale(Vector3.one, 0.3f).OnComplete(() => AnimateLevelText());
+
+        }
+
+        private void AnimateLevelText()
+        {
+            LevelFailedTextField.transform.DOScale(Vector3.one, 0.2f);
+        }
+
+        private void ResetBanner()
+        {
+            LevelFailedBanner.transform.localScale = Vector3.zero;
+            LevelFailedTextField.transform.localScale = Vector3.zero;
         }
    
 
