@@ -9,15 +9,16 @@ namespace Scripts.Particle
     public class ParticleConfig : ScriptableObject
     {
         public float m_MinLifeTime = 0.5f;
-        public ParticleFXView particlePrefabView;
-        public List<ParticleFXData> particlePrefabs;
+        public int m_GrowSize = 10;
+        public ParticleFXView m_ParticlePrefabView;
+        public List<ParticleFXData> m_ParticlePrefabs;
     }
 
     [System.Serializable]
     public class ParticleFXData
     {
-        public EParticleType particleType;
-        public ParticleSystem particleSystem;
-        public int MaxParticleCount;
+        public EParticleType m_Type;
+        public ParticleSystem m_ParticleSystem;
+        public int m_MaxParticleCount;
     }
 }

@@ -25,8 +25,6 @@ namespace Scripts.Particle
 
             m_GameLoopService = gameLoopService;
 
-
-
             InitializeDictionary();
             InitalizePool();
 
@@ -38,7 +36,7 @@ namespace Scripts.Particle
             {
                 foreach (var item in particle.Value)
                 {
-                    item.OnParticleCompleted -= (x) => ReturnToPool(particle.Key, x);
+                    item.OnParticleCompleted -= () => ReturnToPool(particle.Key, item);
 
                     Object.Destroy(item);
                 }
@@ -62,18 +60,18 @@ namespace Scripts.Particle
 
         public void InitializeDictionary()
         {
-            foreach (ParticleFXData item in ParticleConfig.particlePrefabs)
+            foreach (ParticleFXData item in ParticleConfig.m_ParticlePrefabs)
             {
-                ParticleTypes.Add(item.particleType, item.particleSystem);
+                ParticleTypes.Add(item.m_Type, item.m_ParticleSystem);
             }
         }
 
         private void InitalizePool()
         {
             m_ParticleParent = new GameObject("ParticlePool").transform;
-            foreach (ParticleFXData item in ParticleConfig.particlePrefabs)
+            foreach (ParticleFXData item in ParticleConfig.m_ParticlePrefabs)
             {
-                GrowPool(item.particleType, item.MaxParticleCount);
+                GrowPool(item.m_Type, item.m_MaxParticleCount);
             }
         }
 
@@ -92,17 +90,22 @@ namespace Scripts.Particle
 
         private void InstantiateParticle(EParticleType eParticleType, ParticleSystem prefab)
         {
-            ParticleFXView view = Object.Instantiate(ParticleConfig.particlePrefabView);
+            //Instatiate view
+            ParticleFXView view = Object.Instantiate(ParticleConfig.m_ParticlePrefabView);
             view.transform.parent = m_ParticleParent;
 
+            //Instatiate Particle and Assign that to view
             ParticleSystem particle = Object.Instantiate(prefab);
             particle.transform.parent = view.transform;
 
             view.Setup(ParticleConfig, this, particle);
 
-            view.OnParticleCompleted += (x) => ReturnToPool(eParticleType, x);
+            view.OnParticleCompleted += () => ReturnToPool(eParticleType, view);
 
             AddParticleToList(eParticleType, view);
+
+
+            view.Hide();
         }
 
         private void AddParticleToList(EParticleType particleType, ParticleFXView particle)
@@ -114,7 +117,6 @@ namespace Scripts.Particle
 
             ListOfParticles[particleType].Enqueue(particle);
 
-            particle.Hide();
         }
 
         private ParticleSystem GetParticlePrefabByType(EParticleType eParticleType)
@@ -129,14 +131,15 @@ namespace Scripts.Particle
             return partilce.gameObject.activeSelf;
         }
 
-        public void SpawnFX(EParticleType type, Vector3 position, Quaternion rotation)
+        public ParticleFXView SpawnParticle(EParticleType type, Vector3 position, Quaternion rotation)
         {
             ParticleFXView front = GetParticle(type); 
 
             front.transform.position = position;
             front.transform.rotation = rotation;
             front.Show();
-            Debug.Log("Displayed particle");
+
+            return front;
 
         }
 
@@ -144,6 +147,7 @@ namespace Scripts.Particle
         {
             if (particleObject == null) return;
 
+            particleObject.Hide();
 
             AddParticleToList(type, particleObject);
         }

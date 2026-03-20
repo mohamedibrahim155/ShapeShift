@@ -14,7 +14,7 @@ namespace Scripts.Particle
 
         public ParticleFXView GetParticle(EParticleType type);
 
-        public void SpawnFX(EParticleType type, Vector3 position, Quaternion rotation);
+        public ParticleFXView SpawnParticle(EParticleType type, Vector3 position, Quaternion rotation);
         public void ReturnToPool(EParticleType type, ParticleFXView partilceObject);
     }
 }

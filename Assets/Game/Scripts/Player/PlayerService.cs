@@ -204,7 +204,7 @@ namespace Scripts.Player
         private void PlayFX(EParticleType type)
         {
             Vector3 spawnPoint = m_PlayerView.transform.position;
-            m_ParticleService.SpawnFX(type, spawnPoint, Quaternion.identity);
+            m_ParticleService.SpawnParticle(type, spawnPoint, Quaternion.identity);
 
         }
         public void Reset()
@@ -240,6 +240,7 @@ namespace Scripts.Player
         {
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
+            m_LevelService.OnLevelCompleted -= OnPlayerReachedFinishLine;
 
             BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
             m_PlayerInputService.OnSwipe -= Swipe;
