@@ -63,6 +63,14 @@ namespace Scripts.Player
             currentshape.Hide();
         }
 
+        public void Hide()
+        {
+            foreach (var item in ShapeViews)
+            {
+                item.Value.Hide();
+            }
+        }
+
         public void Initialize(PlayerConfig config, Vector3 spawnPosition)
         {
             playerConfig = config;
@@ -82,7 +90,6 @@ namespace Scripts.Player
             foreach (var item in ShapeViews)
             {
                 item.Value.Hide();
-                SetShapeCollision(item.Value, false);
             }
         }
 

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using Zenject;
 using TMPro;
 using Scripts.Level;
+using System.Collections;
 namespace Scripts.UI
 {
     public class LevelFailedWindow : UIWindow
@@ -30,6 +31,12 @@ namespace Scripts.UI
         private void OpenLevelFailedWindow()
         {
             Debug.Log("Level Failed Window Opened");
+            StartCoroutine(DelayOpenCallback(0.25f));
+        }
+
+        private IEnumerator DelayOpenCallback(float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
             Open();
         }
 

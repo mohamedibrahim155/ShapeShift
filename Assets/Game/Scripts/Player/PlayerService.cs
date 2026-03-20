@@ -1,6 +1,7 @@
 
 using Scripts.GameService;
 using Scripts.Level;
+using Scripts.Particle;
 using Scripts.Score;
 using Scripts.UI;
 using System;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using Zenject;
+using Zenject.SpaceFighter;
 namespace Scripts.Player
 {
 
@@ -23,6 +25,7 @@ namespace Scripts.Player
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
         private ILevelService m_LevelService;
+        private IParticleService m_ParticleService;
         private PlayerStateMachine PlayerStateMachine;
 
 
@@ -36,7 +39,8 @@ namespace Scripts.Player
 
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container, IPLayerInputService inputService,
-            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, ILevelService levelService)
+            IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, 
+            ILevelService levelService, IParticleService particleService)
 
         {
             m_PlayerConfig = playerConfig;
@@ -46,6 +50,7 @@ namespace Scripts.Player
             m_CameraService = cameraService;
             m_ScoreService = scoreService;
             m_LevelService = levelService;
+            m_ParticleService = particleService;
 
 
             Initialize();
@@ -191,10 +196,17 @@ namespace Scripts.Player
             //Activate rotating camera around player at finish line
             m_CameraService.ActivateFinishLineCamera(m_PlayerView.transform);
 
+            PlayFX(EParticleType.CONFETTI);
+
             OnPlayerFinishedLevel?.Invoke();
         }
 
+        private void PlayFX(EParticleType type)
+        {
+            Vector3 spawnPoint = m_PlayerView.transform.position;
+            m_ParticleService.SpawnFX(type, spawnPoint, Quaternion.identity);
 
+        }
         public void Reset()
         {
             DestroyPlayer();
@@ -240,8 +252,11 @@ namespace Scripts.Player
 
         public void InvokePlayerDeath()
         {
-            FailedLevel();
+            PlayFX(EParticleType.DEATH);
 
+
+            FailedLevel();
+            m_PlayerView.Hide();
             OnPlayerDied.Invoke();
         }
 
