@@ -144,8 +144,6 @@ namespace Scripts.Particle
         {
             if (particleObject == null) return;
 
-            Debug.Log("Returned particle");
-
 
             AddParticleToList(type, particleObject);
         }

@@ -51,9 +51,7 @@ namespace Scripts.Particle
 
         private void PlayParticles()
         {
-
             _particleSystem.Play();
-            
         }
 
         private float GetTotatlPlayime()
