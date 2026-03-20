@@ -14,8 +14,9 @@ namespace Scripts.Particle
 
         [SerializeField] private  ParticleSystem _particleSystem;
 
-        private ParticleConfig m_Config;
-        private IParticleService m_ParticleService;
+        private ParticleConfig _config;
+        private IParticleService _particleService;
+
         private void Awake()
         {
             _particleSystem = GetComponentInChildren<ParticleSystem>();
@@ -25,56 +26,36 @@ namespace Scripts.Particle
         {
             gameObject.SetActive(true);
             m_IsAlive = true;
+            _particleSystem.Play();
 
-            PlayParticles();
+            float delayTime = CalculateTotalLifetime();
+            StartCoroutine(WaitForParticleCompletion(delayTime));
+        }
 
-            float deleyTime = GetTotatlPlayime();
-
-            Debug.Log($"delay time: {deleyTime}");
-            StartCoroutine(DelayTimeerCall(deleyTime));
-            
+        private IEnumerator WaitForParticleCompletion(float delayTime)
+        {
+            yield return new WaitForSeconds(delayTime);
+            OnParticleCompleted.Invoke(this);
         }
 
         public void Hide()
         {
-            StopParticles();
+            _particleSystem.Stop();
             m_IsAlive = false;
             gameObject.SetActive(false);
         }
 
-        IEnumerator DelayTimeerCall(float DelayTime)
+        private float CalculateTotalLifetime()
         {
-            yield return new WaitForSeconds(DelayTime);
-            OnParticleCompleted.Invoke(this);
-
-        }
-
-        private void PlayParticles()
-        {
-            _particleSystem.Play();
-        }
-
-        private float GetTotatlPlayime()
-        {
-            float maxTotalTime = m_Config.m_MinLifeTime;
-          
-                maxTotalTime  =  Mathf.Max(maxTotalTime, _particleSystem.totalTime);
-            
-
+            float maxTotalTime = _config.m_MinLifeTime;
+            maxTotalTime = Mathf.Max(maxTotalTime, _particleSystem.main.duration + _particleSystem.main.startLifetime.constantMax);
             return maxTotalTime;
-        }
-
-        private void StopParticles()
-        {
-
-            _particleSystem.Stop();
-            
         }
 
         public void Setup(ParticleConfig particleConfig, IParticleService particleService, ParticleSystem particleSystem)
         {
-            m_Config = particleConfig;
-            m_ParticleService = particleService;
+            _config = particleConfig;
+            _particleService = particleService;
             this._particleSystem = particleSystem;
         }
 
