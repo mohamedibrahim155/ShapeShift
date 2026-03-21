@@ -9,8 +9,8 @@ namespace Scripts.UI
 {
     public class LevelCompleteWindow : UIWindow
     {
-        [SerializeField] private Button NextLevelButton;
-        [SerializeField] private Button RemoveAdsButton;
+        [SerializeField] private ButtonVisuals NextLevelButton;
+        [SerializeField] private ButtonVisuals RemoveAdsButton;
         [SerializeField] private TextMeshProUGUI LevelNumberTextField;
         [SerializeField] private TextMeshProUGUI TotalCoinsTextField;
 
@@ -27,8 +27,8 @@ namespace Scripts.UI
 
         
 
-            NextLevelButton.onClick.AddListener(FailedLevelButtonClicked);
-            RemoveAdsButton.onClick.AddListener(OnRemoveAdsClicked);
+            NextLevelButton.Button.onClick.AddListener(FailedLevelButtonClicked);
+            RemoveAdsButton.Button.onClick.AddListener(OnRemoveAdsClicked);
 
             m_LevelService.OnLevelCompleted += OpenLevelCompleteScreen;
         }
@@ -87,8 +87,8 @@ namespace Scripts.UI
         {
             m_LevelService.OnLevelCompleted -= OpenLevelCompleteScreen;
 
-            NextLevelButton.onClick.RemoveAllListeners();
-            RemoveAdsButton.onClick.RemoveAllListeners();
+            NextLevelButton.Button.onClick.RemoveAllListeners();
+            RemoveAdsButton.Button.onClick.RemoveAllListeners();
         }
 
     }

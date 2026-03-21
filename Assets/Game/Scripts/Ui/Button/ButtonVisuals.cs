@@ -23,7 +23,9 @@ namespace Scripts.UI
         private void Awake()
         {
             initialScale = transform.localScale;
-            AnimateButton();
+
+            if (IsPumping)
+                AnimateButton();
         }
         public void OnPointerDown(PointerEventData eventData)
         {
