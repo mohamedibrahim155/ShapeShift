@@ -10,10 +10,11 @@ namespace Scripts.UI
 {
     public class LevelFailedWindow : UIWindow
     {
-        [SerializeField] private Button RetryButton;
+        [SerializeField] private ButtonVisuals RetryButton;
         [SerializeField] private TextMeshProUGUI TotalCoinsTextField;
         [SerializeField] private GameObject LevelFailedBanner;
         [SerializeField] private TextMeshProUGUI LevelFailedTextField;
+        [SerializeField] private TextMeshProUGUI LevelNumberTextField;
 
         private IPlayerService m_PlayerService;
         private IUIService m_UIService;
@@ -26,12 +27,12 @@ namespace Scripts.UI
             m_UIService = uiService;
             m_LevelService = levelService;
 
-            RetryButton.onClick.AddListener(RetryButtonClicked);
+            RetryButton.Button.onClick.AddListener(RetryButtonClicked);
 
             m_LevelService.OnLevelFailed += OpenLevelFailedWindow;
         }
 
-        private void OpenLevelFailedWindow()
+        public void OpenLevelFailedWindow()
         {
             StartCoroutine(DelayOpenCallback(0.25f));
         }
@@ -42,6 +43,7 @@ namespace Scripts.UI
             yield return new WaitForSeconds(waitTime);
             Open();
             AnimateBanner();
+            FadeLevelNumber(1, 0.25f);
         }
 
         private void RetryButtonClicked()
@@ -71,26 +73,32 @@ namespace Scripts.UI
         {
             m_LevelService.OnLevelFailed -= OpenLevelFailedWindow;
 
-            RetryButton.onClick.RemoveListener(RetryButtonClicked);
+            RetryButton.Button.onClick.RemoveListener(RetryButtonClicked);
         }
 
         private void AnimateBanner()
         {
-            LevelFailedBanner.transform.DOScale(Vector3.one, 0.3f).OnComplete(() => AnimateLevelText());
-
+            LevelFailedBanner.transform.DOScale(Vector3.one, 0.3f).OnComplete(() => AnimateLevelText()).SetEase(Ease.InOutCubic);
         }
 
         private void AnimateLevelText()
         {
-            LevelFailedTextField.transform.DOScale(Vector3.one, 0.2f);
+            LevelFailedTextField.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutCubic);
+        }
+
+
+        private void FadeLevelNumber(float value, float time)
+        {
+            LevelFailedTextField.DOFade(value, time);
         }
 
         private void ResetBanner()
         {
             LevelFailedBanner.transform.localScale = Vector3.zero;
             LevelFailedTextField.transform.localScale = Vector3.zero;
+            FadeLevelNumber(0, 0);
         }
-   
+ 
 
     }
 }
