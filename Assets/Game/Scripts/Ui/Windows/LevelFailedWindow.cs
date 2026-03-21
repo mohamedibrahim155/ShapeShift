@@ -83,7 +83,7 @@ namespace Scripts.UI
 
         private void AnimateLevelText()
         {
-            LevelFailedTextField.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutCubic);
+            LevelFailedTextField.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutCubic).OnComplete(() => FadeRetryButton(1, 0.25f));
         }
 
 
@@ -92,11 +92,18 @@ namespace Scripts.UI
             LevelFailedTextField.DOFade(value, time);
         }
 
+        private void FadeRetryButton(float value, float time)
+        {
+            RetryButton.Button.image.DOFade(value, time);
+            RetryButton.ButtonTextField.DOFade(value, time);
+        }
+
         private void ResetBanner()
         {
             LevelFailedBanner.transform.localScale = Vector3.zero;
             LevelFailedTextField.transform.localScale = Vector3.zero;
             FadeLevelNumber(0, 0);
+            FadeRetryButton(0, 0);
         }
  
 

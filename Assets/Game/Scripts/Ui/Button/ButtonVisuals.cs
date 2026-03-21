@@ -1,4 +1,5 @@
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -11,11 +12,13 @@ namespace Scripts.UI
     public class ButtonVisuals : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         [SerializeField] private Button _button;
+        [SerializeField] private TextMeshProUGUI _buttonTextField;
         [SerializeField] private bool isPumping; 
         private Vector2 initialScale;
 
         public bool IsPumping { get { return isPumping; } }
         public Button Button { get { return _button; } }
+        public  TextMeshProUGUI ButtonTextField { get { return _buttonTextField; } }
 
 
         [Inject] private ButtonConfig buttonConfig;
@@ -24,6 +27,11 @@ namespace Scripts.UI
         {
             initialScale = transform.localScale;
 
+         
+        }
+
+        private void OnEnable()
+        {
             if (IsPumping)
                 AnimateButton();
         }
@@ -65,6 +73,7 @@ namespace Scripts.UI
         private void Reset()
         {
             _button = GetComponent<Button>();
+            _buttonTextField = GetComponentInChildren<TextMeshProUGUI>();
         }
 
        

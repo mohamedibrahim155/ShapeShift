@@ -140,8 +140,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 489.49573, y: -786.78687}
-  m_SizeDelta: {x: 978.99146, y: 644.5246}
+  m_AnchoredPosition: {x: 569.06366, y: -675.72766}
+  m_SizeDelta: {x: 1138.1273, y: 570.4851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2096984644077323550
 CanvasRenderer:
@@ -373,8 +373,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 489.49573, y: -242.2623}
-  m_SizeDelta: {x: 778.99146, y: 244.5246}
+  m_AnchoredPosition: {x: 569.06366, y: -205.24254}
+  m_SizeDelta: {x: 938.1273, y: 170.48508}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &838299894002934170
 CanvasRenderer:
@@ -685,6 +685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 1393027849093442172}
+  _buttonTextField: {fileID: 3876007532866681411}
   isPumping: 0
 --- !u!1 &3311357421015180898
 GameObject:
@@ -1212,7 +1213,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6381122724681560460}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -1563,6 +1564,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 5082142793316871881}
+  _buttonTextField: {fileID: 4062817295350831831}
   isPumping: 0
 --- !u!1 &6785077284995036025
 GameObject:
@@ -1877,8 +1879,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 489.49573, y: -232.2623}
-  m_SizeDelta: {x: 978.99146, y: 464.5246}
+  m_AnchoredPosition: {x: 569.06366, y: -195.24254}
+  m_SizeDelta: {x: 1138.1273, y: 390.48508}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8660837324394281012
 CanvasRenderer:

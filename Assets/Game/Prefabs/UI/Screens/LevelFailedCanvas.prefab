@@ -137,10 +137,10 @@ RectTransform:
   - {fileID: 3465596833083250878}
   m_Father: {fileID: 2111242394522320512}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 569.06366, y: -675.72766}
+  m_SizeDelta: {x: 1138.1273, y: 570.4851}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2096984644077323550
 CanvasRenderer:
@@ -372,10 +372,10 @@ RectTransform:
   - {fileID: 6424505624500958094}
   m_Father: {fileID: 3702173528888428816}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 569.06366, y: -205.24254}
+  m_SizeDelta: {x: 938.1273, y: 170.48508}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &838299894002934170
 CanvasRenderer:
@@ -550,6 +550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 1393027849093442172}
+  _buttonTextField: {fileID: 3876007532866681411}
   isPumping: 1
 --- !u!1 &3311357421015180898
 GameObject:
@@ -1584,10 +1585,10 @@ RectTransform:
   - {fileID: 1680858749803438683}
   m_Father: {fileID: 2111242394522320512}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 569.06366, y: -195.24254}
+  m_SizeDelta: {x: 1138.1273, y: 390.48508}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8660837324394281012
 CanvasRenderer:
