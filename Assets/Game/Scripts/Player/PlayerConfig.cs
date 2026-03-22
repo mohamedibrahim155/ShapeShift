@@ -48,6 +48,9 @@ namespace Scripts.Player
         public float m_CrossAxisSquash = 0.85f;
         public float m_StartingScale = 0.05f;
 
+        [Header("Invisible Shape Highlights")]
+        public float m_HighlightRadius = 40;
+
         public void SetCurrentShape(EShapeType shapeType)
         {
             m_CurrentShapeIndex = (int)shapeType;

@@ -9,7 +9,6 @@ namespace Scripts.Player
         public event Action OnPlayerDied;
         void SpawnPlayer(Vector3 position);
         void InitializeCamera(Vector3 spawnPosition);
-        void RegisterBlockWall(BlockView wall);
 
         void Reset();
         void CleanUp();

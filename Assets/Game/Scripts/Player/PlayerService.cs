@@ -27,10 +27,8 @@ namespace Scripts.Player
         private ILevelService m_LevelService;
         private IParticleService m_ParticleService;
         private PlayerStateMachine PlayerStateMachine;
+        private PlayerInvisibleController PlayerInvisibleController;
 
-        [Header("Blocks")]
-        private int _currentBlockIndex = 0;
-        private List<BlockView> m_ListOfBlocks;
 
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PointsPerCorrectCollision = 10;
@@ -64,7 +62,6 @@ namespace Scripts.Player
 
             //subscribes events
             InitializeEvents();
-            InitlializeLevelBlocks();
             SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
         }
 
@@ -110,7 +107,7 @@ namespace Scripts.Player
 
         private void Init()
         {
-            _currentBlockIndex = 0;
+            PlayerInvisibleController = new PlayerInvisibleController(m_PlayerView, m_PlayerConfig, m_LevelService);
 
             m_PlayerView.EnableShape(EShapeType.CUBE);
             PlayerStateMachine.GetCurrentState().OnEnterState();
@@ -153,9 +150,7 @@ namespace Scripts.Player
                 return;
             }
 
-            _currentBlockIndex++;
-
-            m_PlayerView.HideTransparentShapes();
+            PlayerInvisibleController.NextBlock();
 
             m_ScoreService.AddPoints(PointsPerCorrectCollision);
         }
@@ -170,9 +165,11 @@ namespace Scripts.Player
             {
                 PlayerStateMachine.Update();
 
-              //  UpdateShapeHighligher();
+                if (PlayerStateMachine.CurrentStateID == EPlayerStates.MOVE)
+                    PlayerInvisibleController.Update();
+                else
+                    PlayerInvisibleController.Hide();
             }
-
 
         }
 
@@ -194,48 +191,6 @@ namespace Scripts.Player
                 PlayerStateMachine.DrawGizmos();
             }
         }
-
-        private void UpdateShapeHighligher()
-        {
-            BlockView view = GetClosestBlock();
-
-       
-
-            if (view == null) return;
-
-            float distance = GetDistanceFromBlock(view);
-
-
-            if (_currentBlockIndex >= m_ListOfBlocks.Count)
-            {
-                Debug.Log("Surpassed value");
-                m_PlayerView.UpdateHighligherPosition(Vector3.zero, Color.red, m_PlayerConfig.m_CurrentShapeType);
-                return;
-
-            }
-            if (distance < 1000)
-            {
-                Color alpha = new Color(1, 1, 1, 0.5f);
-                Color highlightColor = (IsValidCollision(m_PlayerConfig.m_CurrentShapeType, view.BlockType) ? Color.green : Color.red) * alpha;
-                m_PlayerView.UpdateHighligherPosition(view.transform.position, highlightColor, m_PlayerConfig.m_CurrentShapeType);
-            }
-        }
-
-        private void InitlializeLevelBlocks()
-        {
-            Debug.Log("InitalizeBlocksList");
-
-            var currentBlocks =  m_LevelService.GetCurrentLevelBlocks();
-            if (currentBlocks ==  null || currentBlocks.Count == 0)
-            {
-                Debug.Log("currentBlocks null");
-            }
-            foreach (var blockView in currentBlocks)
-            {
-                RegisterBlockWall(blockView);
-            }
-        }
-
         private void OnPlayerReachedFinishLine()
         {
             m_PlayerConfig.m_HasPlayerFinished = true;
@@ -266,31 +221,6 @@ namespace Scripts.Player
             Initialize();
         }
 
-        private BlockView GetClosestBlock()
-        {
-            if(m_PlayerView == null || m_ListOfBlocks == null) return null;
-
-            int currentIndex = _currentBlockIndex;
-
-            if (currentIndex < m_ListOfBlocks.Count)
-            {
-                return m_ListOfBlocks[currentIndex];
-
-            }
-
-            return null;
-
-        }
-
-        private float GetDistanceFromBlock(BlockView blockView)
-        {
-            Vector3 displacement= m_PlayerView.transform.position - blockView.transform.position;
-            float distanceSqXZ = displacement.x * displacement.x + displacement.z * displacement.z;
-
-            return distanceSqXZ;
-        }
-
-
         private void DestroyPlayer()
         {
             MonoBehaviour.Destroy(m_PlayerView.gameObject);
@@ -303,31 +233,22 @@ namespace Scripts.Player
             return (int)shapeType == (int)blockType;
         }
 
-        public void RegisterBlockWall(BlockView wall)
-        {
-            if (m_ListOfBlocks == null)
-            {
-                m_ListOfBlocks = new List<BlockView>();
-            }
-            m_ListOfBlocks.Add(wall);
-        }
-
         public void CleanUp()
         {
+            //Event clean
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
-
             m_LevelService.OnLevelCompleted -= OnPlayerReachedFinishLine;
-
             BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
             m_PlayerInputService.OnSwipe -= Swipe;
 
+            //services clean
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
-
             PlayerStateMachine.CleanUp();
 
-            m_ListOfBlocks.Clear();
+            //Data/References clean
+            PlayerInvisibleController = null;
         }
 
         public void InvokePlayerDeath()
