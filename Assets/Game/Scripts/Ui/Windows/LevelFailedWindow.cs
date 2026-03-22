@@ -34,14 +34,20 @@ namespace Scripts.UI
 
         public void OpenLevelFailedWindow()
         {
-            StartCoroutine(DelayOpenCallback(0.25f));
+            StartCoroutine(OpenWindowWithDelay(0.25f));
         }
 
-        private IEnumerator DelayOpenCallback(float waitTime)
+        private IEnumerator OpenWindowWithDelay(float waitTime)
         {
-            ResetBanner();
             yield return new WaitForSeconds(waitTime);
             Open();
+      
+        }
+
+        public override void Open(float time = 0.5F)
+        {
+            ResetWindow();
+            base.Open(time);
             AnimateBanner();
             FadeLevelNumber(1, 0.25f);
         }
@@ -98,14 +104,19 @@ namespace Scripts.UI
             RetryButton.ButtonTextField.DOFade(value, time);
         }
 
-        private void ResetBanner()
+        private void ResetWindow()
         {
             LevelFailedBanner.transform.localScale = Vector3.zero;
             LevelFailedTextField.transform.localScale = Vector3.zero;
             FadeLevelNumber(0, 0);
             FadeRetryButton(0, 0);
         }
- 
+
+        private void OnDestroy()
+        {
+            UnsubscribeEvents();
+        }
+
 
     }
 }

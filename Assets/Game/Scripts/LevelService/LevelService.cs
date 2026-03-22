@@ -15,10 +15,13 @@ namespace Scripts.Level
         private int _currentLevelIndex = 0;
 
         public event Action OnLevelCreated = delegate { };
+        public event Action OnLevelNewCreated = delegate { };
         public event Action OnLevelCompleted = delegate { };
         public event Action OnLevelFailed = delegate { };
 
         public FinishLine FinishLineView { get; private set; }
+
+        private List<BlockView> _currentLevelBlocks = new List<BlockView>();
 
 
         [Inject]
@@ -28,7 +31,11 @@ namespace Scripts.Level
             m_Container = container;
             m_BlockConfig = blockConfig;
 
+            InitializeLevel();
+        }
 
+        public void InitializeLevel()
+        {
             SpawnLevel(GetCurrentLevel());
         }
         public void CreateLevel(int levelNumber)
@@ -41,8 +48,7 @@ namespace Scripts.Level
             _levelParent.name = $"LEVEL_{levelNumber}";
 
             int idx = levelNumber < 1   ? 1 : levelNumber-1;
-
-            Debug.Log($"Creating level {idx}" +  _currentLevels.Count);
+            Debug.Log($"Creating level {idx}" + _currentLevels.Count);
 
             List<LevelView> currentLevelGorund = GetLevel(GetWrappedLevelIndex(idx)).ListOfChunks;
 
@@ -68,8 +74,27 @@ namespace Scripts.Level
                 _currentLevels.Add(levelView);
             }
 
-
             OnLevelCreated.Invoke();
+
+            InitalizeBlocksList();
+        }
+
+        private void InitalizeBlocksList()
+        {
+           List< BlockView> blocksList = new List< BlockView>();
+
+            foreach (var item in _currentLevels)
+            {
+                if (item.HasBlocks())
+                {
+                    blocksList.AddRange(item.GetBlocks());
+                }
+            }
+
+            foreach (var item in blocksList)
+            {
+                _currentLevelBlocks.Add(item);
+            }
         }
 
         public void InitializeFinishLine(FinishLine view)
@@ -84,12 +109,6 @@ namespace Scripts.Level
             return m_LevelConfigPresets.m_Levels[index];
         }
 
-        public void SpawnBlocksForLevel(LevelView view)
-        {
-            if (view == null) return;
-
-        }
-
         public void InvokeLevelCompleted()
         {
             OnLevelCompleted.Invoke();
@@ -98,7 +117,6 @@ namespace Scripts.Level
         {
             OnLevelFailed.Invoke();
         }
-
 
 
         public int GetWrappedLevelIndex(int levelNumber)
@@ -137,7 +155,18 @@ namespace Scripts.Level
             }
 
             _currentLevels.Clear();
+            _currentLevelBlocks.Clear();
 
+        }
+
+        public List<LevelView> GetLevelViews()
+        {
+            return _currentLevels;
+        }
+
+        public List<BlockView> GetCurrentLevelBlocks()
+        {
+           return _currentLevelBlocks;
         }
     }
 }

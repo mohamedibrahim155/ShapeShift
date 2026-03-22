@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Collider: {fileID: 6522331450683629033}
   MeshRenderer: {fileID: 4772539975150739689}
-  Size: {x: 10, y: 4, z: 60}
+  _blockViews: []
 --- !u!1 &7046521103111911487
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,6 +16,8 @@ namespace Scripts.Player
         private Dictionary<EShapeType,ShapeView> ShapeViews = new();
         private Dictionary<ESwipeDirection,ShapeView> ShapesViewByDirections = new();
         [SerializeField] private List<ShapeView> shapesList = new List<ShapeView>();
+
+        [SerializeField] private PlayerShapeHighlighterView PlayerShapeHighlighterView;
        
 
         private Coroutine _transitionRoutine;
@@ -235,10 +237,27 @@ namespace Scripts.Player
         }
 
 
+        public void UpdateHighligherPosition(Vector3 position, Color color, EShapeType type)
+        {
+            PlayerShapeHighlighterView.transform.position = position;
+
+            PlayerShapeHighlighterView.UpdateShapeColor(color);
+
+            PlayerShapeHighlighterView.Hide();
+            PlayerShapeHighlighterView.ShowShape(type);
+        }
+
+        public void HideTransparentShapes()
+        {
+            PlayerShapeHighlighterView.Hide();
+        }
+
+
         private void Reset()
         {
             Rigidbody = GetComponent<Rigidbody>();
             shapesList = GetComponentsInChildren<ShapeView>().ToList();
+            PlayerShapeHighlighterView = GetComponentInChildren<PlayerShapeHighlighterView>();
         }
 
     }

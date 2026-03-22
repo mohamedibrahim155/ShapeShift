@@ -18,7 +18,6 @@ public class BlockView : MonoBehaviour
     {
         m_playerService =  playerService;
         _config = config;
-        m_playerService.RegisterBlockWall(this);
     }
 
     public EBlockType BlockType => m_BlockType;

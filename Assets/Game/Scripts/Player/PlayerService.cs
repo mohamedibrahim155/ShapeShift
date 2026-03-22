@@ -28,9 +28,10 @@ namespace Scripts.Player
         private IParticleService m_ParticleService;
         private PlayerStateMachine PlayerStateMachine;
 
-
-
+        [Header("Blocks")]
+        private int _currentBlockIndex = 0;
         private List<BlockView> m_ListOfBlocks;
+
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PointsPerCorrectCollision = 10;
 
@@ -63,7 +64,7 @@ namespace Scripts.Player
 
             //subscribes events
             InitializeEvents();
-
+            InitlializeLevelBlocks();
             SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
         }
 
@@ -109,6 +110,8 @@ namespace Scripts.Player
 
         private void Init()
         {
+            _currentBlockIndex = 0;
+
             m_PlayerView.EnableShape(EShapeType.CUBE);
             PlayerStateMachine.GetCurrentState().OnEnterState();
         }
@@ -150,6 +153,10 @@ namespace Scripts.Player
                 return;
             }
 
+            _currentBlockIndex++;
+
+            m_PlayerView.HideTransparentShapes();
+
             m_ScoreService.AddPoints(PointsPerCorrectCollision);
         }
 
@@ -162,9 +169,13 @@ namespace Scripts.Player
             if (PlayerStateMachine != null)
             {
                 PlayerStateMachine.Update();
+
+              //  UpdateShapeHighligher();
             }
 
+
         }
+
 
         private void FixedUpdate()
         {
@@ -181,6 +192,47 @@ namespace Scripts.Player
             if (PlayerStateMachine != null)
             {
                 PlayerStateMachine.DrawGizmos();
+            }
+        }
+
+        private void UpdateShapeHighligher()
+        {
+            BlockView view = GetClosestBlock();
+
+       
+
+            if (view == null) return;
+
+            float distance = GetDistanceFromBlock(view);
+
+
+            if (_currentBlockIndex >= m_ListOfBlocks.Count)
+            {
+                Debug.Log("Surpassed value");
+                m_PlayerView.UpdateHighligherPosition(Vector3.zero, Color.red, m_PlayerConfig.m_CurrentShapeType);
+                return;
+
+            }
+            if (distance < 1000)
+            {
+                Color alpha = new Color(1, 1, 1, 0.5f);
+                Color highlightColor = (IsValidCollision(m_PlayerConfig.m_CurrentShapeType, view.BlockType) ? Color.green : Color.red) * alpha;
+                m_PlayerView.UpdateHighligherPosition(view.transform.position, highlightColor, m_PlayerConfig.m_CurrentShapeType);
+            }
+        }
+
+        private void InitlializeLevelBlocks()
+        {
+            Debug.Log("InitalizeBlocksList");
+
+            var currentBlocks =  m_LevelService.GetCurrentLevelBlocks();
+            if (currentBlocks ==  null || currentBlocks.Count == 0)
+            {
+                Debug.Log("currentBlocks null");
+            }
+            foreach (var blockView in currentBlocks)
+            {
+                RegisterBlockWall(blockView);
             }
         }
 
@@ -214,6 +266,30 @@ namespace Scripts.Player
             Initialize();
         }
 
+        private BlockView GetClosestBlock()
+        {
+            if(m_PlayerView == null || m_ListOfBlocks == null) return null;
+
+            int currentIndex = _currentBlockIndex;
+
+            if (currentIndex < m_ListOfBlocks.Count)
+            {
+                return m_ListOfBlocks[currentIndex];
+
+            }
+
+            return null;
+
+        }
+
+        private float GetDistanceFromBlock(BlockView blockView)
+        {
+            Vector3 displacement= m_PlayerView.transform.position - blockView.transform.position;
+            float distanceSqXZ = displacement.x * displacement.x + displacement.z * displacement.z;
+
+            return distanceSqXZ;
+        }
+
 
         private void DestroyPlayer()
         {
@@ -240,6 +316,7 @@ namespace Scripts.Player
         {
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
+
             m_LevelService.OnLevelCompleted -= OnPlayerReachedFinishLine;
 
             BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
@@ -249,6 +326,8 @@ namespace Scripts.Player
             m_CameraService.Cleanup();
 
             PlayerStateMachine.CleanUp();
+
+            m_ListOfBlocks.Clear();
         }
 
         public void InvokePlayerDeath()
