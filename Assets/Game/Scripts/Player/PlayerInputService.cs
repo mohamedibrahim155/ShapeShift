@@ -8,7 +8,7 @@ namespace Scripts.Player
 {
     public class PlayerInputService : IPLayerInputService
     {
-        private bool _isInputEnabled = true;
+        private bool _isInputEnabled = false;
         public Vector2 endPosition { get; private set; }
 
         public Vector2 startTouchPosition { get; private set; }
@@ -19,6 +19,8 @@ namespace Scripts.Player
         private PlayerConfig m_PlayerConfig;
 
         private IGameLoopService m_GameLoopService;
+
+        private bool wasPressed = false;
 
         [Inject]
         private void Construct(PlayerConfig config, IGameLoopService gameloop)
@@ -93,8 +95,9 @@ namespace Scripts.Player
             if (Input.GetMouseButtonDown(0))
             {
                 startTouchPosition = Input.mousePosition;
+                wasPressed = true;
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (Input.GetMouseButtonUp(0) && wasPressed)
             {
                 endPosition = Input.mousePosition;
                 Vector2 distance = endPosition - startTouchPosition;
@@ -108,13 +111,13 @@ namespace Scripts.Player
                     {
                         //Right Swipe
                         OnSwipe?.Invoke(ESwipeDirection.RIGHT);
-                        Debug.Log("Right");
+                        Debug.Log("Windows mouse swipe Right");
                     }
                     else
                     {
                         //Left Swipe
                         OnSwipe?.Invoke(ESwipeDirection.LEFT);
-                        Debug.Log("Left");
+                        Debug.Log("Windows mouse swipe Left");
                     }
                 }
                 else
@@ -123,15 +126,18 @@ namespace Scripts.Player
                     {
                         //Up Swipe
                         OnSwipe?.Invoke(ESwipeDirection.UP);
-                        Debug.Log("Up");
+                        Debug.Log("Windows mouse swipe Up");
                     }
                     else
                     {
                         //Down Swipe
                         OnSwipe?.Invoke(ESwipeDirection.DOWN);
-                        Debug.Log("Down");
+                        Debug.Log("Windows mouse swipe Down");
                     }
                 }
+
+                wasPressed = false;
+
             }
 
             Vector2 inputAxis = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -143,13 +149,13 @@ namespace Scripts.Player
                     {
                         //Right Swipe
                         OnSwipe?.Invoke(ESwipeDirection.RIGHT);
-                        Debug.Log("Windows - Right");
+                        Debug.Log("Windows key - Right");
                     }
                     else
                     {
                         //Left Swipe
                         OnSwipe?.Invoke(ESwipeDirection.LEFT);
-                        Debug.Log("Windows-Left");
+                        Debug.Log("Windows key -Left");
                     }
                 }
                 else
@@ -158,13 +164,13 @@ namespace Scripts.Player
                     {
                         //Up Swipe
                         OnSwipe?.Invoke(ESwipeDirection.UP);
-                        Debug.Log("Windows-Up");
+                        Debug.Log("Windows key -Up");
                     }
                     else
                     {
                         //Down Swipe
                         OnSwipe?.Invoke(ESwipeDirection.DOWN);
-                        Debug.Log("Windows-Down");
+                        Debug.Log("Windows key -Down");
                     }
                 }
             }

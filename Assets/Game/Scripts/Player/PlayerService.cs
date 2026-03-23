@@ -123,11 +123,15 @@ namespace Scripts.Player
 
         public void StartGame()
         {
+            m_PlayerConfig.SetCurrentShape(EShapeType.CUBE);
+
             //spawns Input
-            m_PlayerInputService.SpawnInputController();
             PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
 
             m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
+
+            m_PlayerInputService.SpawnInputController();
+
         }
 
 
