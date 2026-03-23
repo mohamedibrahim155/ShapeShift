@@ -8,5 +8,6 @@ namespace Scripts.GameService
         event Action OnUpdateTick;
         event Action OnFixedUpdateTick;
         event Action OnGizemosTick;
+        event Action OnDestroyed;
     }
 }

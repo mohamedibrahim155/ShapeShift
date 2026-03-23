@@ -25,6 +25,11 @@ namespace Scripts.GameService
             _gameLoop.OnGizmosDrawTick();
         }
 
+        public void OnDestroy()
+        {
+            _gameLoop.OnDestroyedEvent();
+        }
+
     }
 
 }
