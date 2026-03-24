@@ -3,6 +3,7 @@ using Scripts.GameService;
 using Scripts.Level;
 using Scripts.Particle;
 using Scripts.Score;
+using Scripts.SkyService;
 using Scripts.UI;
 using System;
 using System.Collections;
@@ -25,6 +26,7 @@ namespace Scripts.Player
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
         private ILevelService m_LevelService;
+        private ISkyService m_SkyBoxService;
         private IParticleService m_ParticleService;
         private PlayerStateMachine PlayerStateMachine;
         private PlayerInvisibleController PlayerInvisibleController;
@@ -39,7 +41,7 @@ namespace Scripts.Player
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container, IPLayerInputService inputService,
             IGameLoopService gameloopService, ICameraService cameraService, IScoreService scoreService, 
-            ILevelService levelService, IParticleService particleService)
+            ILevelService levelService, IParticleService particleService, ISkyService skyBoxService)
 
         {
             m_PlayerConfig = playerConfig;
@@ -50,6 +52,7 @@ namespace Scripts.Player
             m_ScoreService = scoreService;
             m_LevelService = levelService;
             m_ParticleService = particleService;
+            m_SkyBoxService = skyBoxService;
 
 
             Initialize();
@@ -70,9 +73,9 @@ namespace Scripts.Player
             m_GameloopService.OnUpdateTick += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
             m_GameloopService.OnGizemosTick += OnGizmosDraw;
-            m_LevelService.OnLevelCompleted += OnPlayerReachedFinishLine;
+            m_LevelService.OnLevelCompleted += HandlePlayerReachedFinishLine;
             m_PlayerInputService.OnSwipe += Swipe;
-            BlockWallColliderView.OnBlockCollision += OnBlockCollision;
+            BlockWallColliderView.OnBlockCollision += HandleBlockCollision;
 
             m_ScoreService.Reset();
         }
@@ -141,7 +144,7 @@ namespace Scripts.Player
             m_PlayerView.ChangeShapeForDirection(swipeDirection);
         }
 
-        private void OnBlockCollision(BlockView block)
+        private void HandleBlockCollision(BlockView block)
         {
             bool isValid = IsValidCollision(m_PlayerConfig.m_CurrentShapeType, block.BlockType);
 
@@ -195,7 +198,7 @@ namespace Scripts.Player
                 PlayerStateMachine.DrawGizmos();
             }
         }
-        private void OnPlayerReachedFinishLine()
+        private void HandlePlayerReachedFinishLine()
         {
             m_PlayerConfig.m_HasPlayerFinished = true;
 
@@ -242,8 +245,8 @@ namespace Scripts.Player
             //Event clean
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
-            m_LevelService.OnLevelCompleted -= OnPlayerReachedFinishLine;
-            BlockWallColliderView.OnBlockCollision -= OnBlockCollision;
+            m_LevelService.OnLevelCompleted -= HandlePlayerReachedFinishLine;
+            BlockWallColliderView.OnBlockCollision -= HandleBlockCollision;
             m_PlayerInputService.OnSwipe -= Swipe;
 
             //services clean

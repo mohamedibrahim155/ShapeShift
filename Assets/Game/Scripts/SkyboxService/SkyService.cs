@@ -6,7 +6,7 @@ namespace Scripts.SkyService
 {
     public class SkyService : ISkyService
     {
-        private SkyboxConfig Config { get; set; }
+        public SkyboxConfig Config { get; private set; }
         private SkyColor CurrentSkyColor { get;  set; }
         private bool IsTransitioning { get; set; }
 
