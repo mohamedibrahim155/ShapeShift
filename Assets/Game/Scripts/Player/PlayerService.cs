@@ -205,7 +205,7 @@ namespace Scripts.Player
             m_PlayerInputService.DestroyInputController();
 
             //Activate rotating camera around player at finish line
-            m_CameraService.ActivateFinishLineCamera(m_PlayerView.transform);
+            m_CameraService.ActivateFinishLineCamera();
 
             PlayFX(EParticleType.CONFETTI);
 

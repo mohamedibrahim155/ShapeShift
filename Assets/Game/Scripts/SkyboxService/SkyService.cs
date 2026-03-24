@@ -121,7 +121,6 @@ namespace Scripts.SkyService
 
         public void CleanUp()
         {
-            Debug.Log("Cleaned");
             m_GameLoopService.OnUpdateTick -= Update;
             m_GameLoopService.OnDestroyed -= CleanUp;
         }

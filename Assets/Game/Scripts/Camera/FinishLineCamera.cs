@@ -9,18 +9,23 @@ public class FinishLineCamera : GameplayCamera
     [Inject] private CameraConfig cameraConfig;
     [Inject] private ICameraService cameraService;
 
-    [SerializeField] private Transform targetTransform;
     [SerializeField] private CinemachineOrbitalFollow OrbitalFollow;
     
-    private bool _HasBeenActivated = false;
-    void Start()
-    {
-        _HasBeenActivated = false;
-    }
+    private bool isActive;
 
     private void Reset()
     {
         OrbitalFollow = GetComponent<CinemachineOrbitalFollow>();
+    }
+
+    private void OnEnable()
+    {
+        cameraService.OnFinishlineCameraActived += Activate;
+    }
+
+    private void OnDisable()
+    {
+        cameraService.OnFinishlineCameraActived -= Activate;
     }
 
     // Update is called once per frame
@@ -30,16 +35,16 @@ public class FinishLineCamera : GameplayCamera
         CiniMachineRotation();
     }
 
-    public void ActivateFinishCamera(Transform target)
+    //Activates on Finishline Triggers
+    public void Activate()
     {
-        _HasBeenActivated = true;
-        targetTransform = target;
+        isActive =  true;
     }
 
 
     void CiniMachineRotation()
     {
-        if (!_HasBeenActivated || !targetTransform) return;
+        if (!isActive) return;
         OrbitalFollow.HorizontalAxis.Value +=  cameraConfig.m_RotationSpeed * Time.deltaTime; // Increment the rotation angle based on the rotation speed and time
     }
 

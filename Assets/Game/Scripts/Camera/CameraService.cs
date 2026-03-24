@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 using Zenject.Asteroids;
@@ -12,6 +13,8 @@ public class CameraService : ICameraService
     private CameraConfig m_CameraConfig;
     private DiContainer m_Container;
     private CameraType currentCameraID;
+
+    public event Action OnFinishlineCameraActived = delegate { };
 
     [Inject]
     private void Construct(CameraConfig config, DiContainer container)
@@ -73,13 +76,10 @@ public class CameraService : ICameraService
         }
     }
 
-    public void ActivateFinishLineCamera(Transform playerTarget)
+    public void ActivateFinishLineCamera()
     {
         EnableCamera(ECameraType.FINISHLINE_CAMERA);
-
-        FinishLineCamera finishLineCamera = (FinishLineCamera)CameraView.GetCamera(ECameraType.FINISHLINE_CAMERA);
-
-       finishLineCamera.ActivateFinishCamera(playerTarget);
+        OnFinishlineCameraActived.Invoke();
     }
 
 

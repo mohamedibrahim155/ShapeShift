@@ -13,18 +13,6 @@ MonoBehaviour:
   m_Name: SkyboxConfig
   m_EditorClassIdentifier: 
   SkyBoxMaterial: {fileID: 2100000, guid: 281db98179359484e864881b16ad262c, type: 2}
-  DefaultSky:
-    Top: {r: 0, g: 1, b: 0.9647059, a: 1}
-    Bottom: {r: 0.69803923, g: 1, b: 0.9647059, a: 1}
-  BonusLevelSky:
-    Top: {r: 1, g: 0, b: 0.8039216, a: 1}
-    Bottom: {r: 1, g: 0.59607846, b: 0.94509804, a: 1}
-  GreyShadeColor:
-    Top: {r: 0, g: 0, b: 0, a: 1}
-    Bottom: {r: 0.9308176, g: 0.9308176, b: 0.9308176, a: 1}
-  GreenShadeColor:
-    Top: {r: 0, g: 1, b: 0.09411765, a: 1}
-    Bottom: {r: 0.72156864, g: 1, b: 0.78039217, a: 1}
   SkyData:
   - Type: 0
     Color:
@@ -34,11 +22,15 @@ MonoBehaviour:
     Color:
       Top: {r: 0, g: 1, b: 0.9647059, a: 1}
       Bottom: {r: 0.69803923, g: 1, b: 0.9647059, a: 1}
+  - Type: 4
+    Color:
+      Top: {r: 0, g: 1, b: 0.09411765, a: 1}
+      Bottom: {r: 0.72156864, g: 1, b: 0.78039217, a: 1}
   - Type: 2
     Color:
       Top: {r: 0, g: 0, b: 0, a: 1}
       Bottom: {r: 0.92941177, g: 0.92941177, b: 0.92941177, a: 1}
-  - Type: 2
+  - Type: 3
     Color:
-      Top: {r: 0, g: 1, b: 0.09411765, a: 1}
-      Bottom: {r: 0.72156864, g: 1, b: 0.78039217, a: 1}
+      Top: {r: 1, g: 0, b: 0.8045702, a: 1}
+      Bottom: {r: 1, g: 0.547, b: 1, a: 1}
