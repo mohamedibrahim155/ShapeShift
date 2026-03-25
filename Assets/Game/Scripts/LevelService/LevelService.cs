@@ -92,10 +92,8 @@ namespace Scripts.Level
                 }
             }
 
-            int indexID = 0;
             foreach (var item in blocksList)
             {
-                item.SetID(indexID++);
                 _currentLevelBlocks.Add(item);
             }
         }

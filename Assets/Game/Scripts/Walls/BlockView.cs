@@ -14,7 +14,6 @@ public class BlockView : MonoBehaviour
     private IPlayerService m_playerService;
     private BlockConfig m_Config;
     public EBlockType BlockType => m_BlockType;
-    public int BlockID { get; private set; }
 
 
     [Inject]
@@ -63,11 +62,6 @@ public class BlockView : MonoBehaviour
             m_TransparentBlockView.SetColor(m_playerService.PlayerConfig.m_PlayerColor);
             m_TransparentBlockView.AnimateScaling(m_Config.m_AnimationScaleFactor, m_Config.m_AnimationDuration, () => m_TransparentBlockView.Hide());
         }
-    }
-
-    public void SetID(int ID)
-    {
-        BlockID = ID;
     }
 
     private void HandleCollision()
