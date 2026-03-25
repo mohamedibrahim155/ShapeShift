@@ -279,7 +279,7 @@ namespace Scripts.Player
             if (m_PlayerView == null || m_LevelService.FinishLineView == null)
                 return 0f;
 
-            return Vector3.Distance(m_PlayerView.transform.position, m_LevelService.FinishLineView.transform.position);
+            return (m_PlayerView.transform.position - m_LevelService.FinishLineView.transform.position).magnitude;
 
         }
 
@@ -287,7 +287,7 @@ namespace Scripts.Player
         {
             if (m_LevelService.FinishLineView == null)
                 return 0f;
-            return Vector3.Distance(PlayerConfig.m_SpawnPosition, m_LevelService.FinishLineView.transform.position);
+            return (PlayerConfig.m_SpawnPosition- m_LevelService.FinishLineView.transform.position ).magnitude;
         }
     }
 }
