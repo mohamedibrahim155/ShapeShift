@@ -141,7 +141,11 @@ namespace Scripts.Player
         // Change the player's shape based on swipe direction
         private void Swipe(ESwipeDirection swipeDirection)
         {
-            m_PlayerView.ChangeShapeForDirection(swipeDirection);
+            if (m_PlayerView.GetShape(PlayerConfig.m_CurrentShapeType) != m_PlayerView.GetShape(swipeDirection))
+            {
+                PlayFX(EParticleType.SHAPE_TRANSITION);
+            }
+            m_PlayerView.ChangeShapeForDirection(swipeDirection);  
         }
 
         public void CheckCollision(BlockView block)
@@ -217,7 +221,8 @@ namespace Scripts.Player
 
         private void PlayFX(EParticleType type)
         {
-            Vector3 spawnPoint = m_PlayerView.transform.position;
+            Vector3 offset = ((type != EParticleType.DEATH) ? Vector3.zero : Vector3.down *1.5f);
+            Vector3 spawnPoint = m_PlayerView.transform.position + offset;
             m_ParticleService.SpawnParticle(type, spawnPoint, Quaternion.identity);
 
         }

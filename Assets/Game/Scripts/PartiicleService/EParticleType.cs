@@ -6,5 +6,6 @@ namespace Scripts.Particle
     {
       DEATH = 0,
       CONFETTI =1,
+      SHAPE_TRANSITION =2,
     }
 }
