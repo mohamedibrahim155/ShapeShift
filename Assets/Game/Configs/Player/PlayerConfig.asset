@@ -27,8 +27,9 @@ MonoBehaviour:
     m_SwipeDirection: 3
     m_ShapeView: {fileID: 4119971641524525323, guid: 366165b2cbbb06348a44f5563238930f, type: 3}
   m_SwipeThreshold: 5
-  m_CurrentShapeIndex: 3
-  m_CurrentShapeType: 3
+  m_CurrentShapeIndex: 1
+  m_CurrentShapeType: 1
+  m_PlayerColor: {r: 0.9137255, g: 0.2627451, b: 0.2627451, a: 1}
   m_SpawnPosition: {x: 0, y: 0, z: -4}
   m_MoveSpeed: 10
   m_FallTimer: 1
@@ -40,7 +41,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   m_FinishLineWaitTimer: 2
-  m_HasPlayerFinished: 1
+  m_HasPlayerFinished: 0
   m_TransitionDuration: 0.2
   m_DirectionalStretch: 1.2
   m_CrossAxisSquash: 0.85

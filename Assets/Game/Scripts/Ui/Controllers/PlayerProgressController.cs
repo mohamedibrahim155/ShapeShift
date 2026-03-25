@@ -17,6 +17,8 @@ namespace Scripts.UI
 
         private bool isRunning;
 
+        private float totalDistance;
+
         [Inject]
         public void Construct( IGameLoopService gameLoopService, IPlayerService playerService, IUIService uIService)
         {
@@ -43,7 +45,7 @@ namespace Scripts.UI
             }
 
             isRunning =true;
-
+            totalDistance = m_PlayerService.GetTotalDistanceToFinish();
             m_GameWindow.ResetProgress();
             m_GameLoopService.OnUpdateTick += UpdateProgress;
 
@@ -66,11 +68,13 @@ namespace Scripts.UI
         private void UpdateProgress()
         {
 
-            Debug.Log("Updating progress");
-            if(m_GameWindow ==  null)
-                return;
 
-            float totalDistance = m_PlayerService.GetTotalProgressedDistance();
+            if(m_GameWindow ==  null || !isRunning)
+                return;
+                        Debug.Log("Updating progress");
+
+            Debug.Log("totalDistance" + totalDistance);
+
 
             if (totalDistance <= 0)
             {
@@ -79,9 +83,9 @@ namespace Scripts.UI
             }
 
 
-            float remainIngDistance = m_PlayerService.GetPlayerProgressedDistance();
+            float ramainingDistance = m_PlayerService.GetPlayerDistanceToFinish();
 
-            float progress =  1 - (remainIngDistance / totalDistance);
+            float progress = 1- (ramainingDistance / totalDistance);
             
             m_GameWindow.SetProgress(progress);
 
