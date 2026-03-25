@@ -23,6 +23,7 @@ namespace Scripts.Player
         [Header("Shapes")]
         public int m_CurrentShapeIndex = 0;
         public EShapeType m_CurrentShapeType;
+        public Color m_PlayerColor;
 
 
         [Header("Spawn position")]

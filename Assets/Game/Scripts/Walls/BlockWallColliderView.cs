@@ -1,22 +1,19 @@
+using Scripts.Player;
 using System;
 using UnityEngine;
 using Zenject;
 
 public class BlockWallColliderView : MonoBehaviour
 {
-    public static event  Action<BlockView> OnBlockCollision;
+    public event  Action OnBlockCollision = delegate { };
 
-    [SerializeField] private BlockView m_Block;
-    [SerializeField] private BlockConfig _config;
+    private IPlayerService m_PlayerService;
+    private BlockView m_Block;
+    private BlockConfig m_Config;
 
-    [Inject]
-    public void Construct(BlockConfig config)
-    {
-        _config = config;
-    }
     private void OnTriggerEnter(Collider collision)
     {
-        if ((_config.m_CollisionLayer & (1 << collision.gameObject.layer)) != 0)
+        if ((m_Config.m_CollisionLayer & (1 << collision.gameObject.layer)) != 0)
         {
             InvokeCollisionWithPlayer();
         }  
@@ -24,11 +21,13 @@ public class BlockWallColliderView : MonoBehaviour
 
     private void InvokeCollisionWithPlayer()
     {
-        OnBlockCollision?.Invoke(m_Block);
+        OnBlockCollision?.Invoke();
     }
 
-    public void SetBlock(BlockView view)
+    public void Setup(BlockView view, BlockConfig config, IPlayerService playerService)
     {
         m_Block = view;
+        m_Config = config;
+        m_PlayerService = playerService;
     }
 }

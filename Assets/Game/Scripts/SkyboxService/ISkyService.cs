@@ -9,6 +9,7 @@ namespace Scripts.SkyService
         void Initialize();
         void SetSky(ESkyColorType type);
         void LerpToSky(ESkyColorType type, float duration);
+        SkyColor LerpSky(ESkyColorType typeA, ESkyColorType typeB, float time);
 
         void CleanUp();
     }

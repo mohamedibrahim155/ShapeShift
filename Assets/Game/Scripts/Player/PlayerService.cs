@@ -17,8 +17,8 @@ namespace Scripts.Player
 
     public class PlayerService : IPlayerService
     {
-
-        private PlayerConfig m_PlayerConfig;
+        
+        public PlayerConfig PlayerConfig { get; private set; }
         private PlayerView m_PlayerView;
         private DiContainer m_Container;
         private IPLayerInputService m_PlayerInputService;
@@ -26,17 +26,19 @@ namespace Scripts.Player
         private ICameraService m_CameraService;
         private IScoreService m_ScoreService;
         private ILevelService m_LevelService;
-        private ISkyService m_SkyBoxService;
         private IParticleService m_ParticleService;
         private PlayerStateMachine PlayerStateMachine;
         private PlayerInvisibleController PlayerInvisibleController;
 
+        private float inremental;
 
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PointsPerCorrectCollision = 10;
 
         public event Action OnPlayerFinishedLevel = delegate { };
         public event Action OnPlayerDied = delegate { };
+        public event Action<BlockView> OnPlayerCrossedWall = delegate { };
+        public event Action<BlockView> OnPlayerCollidedWithWall = delegate { };
 
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container, IPLayerInputService inputService,
@@ -44,7 +46,7 @@ namespace Scripts.Player
             ILevelService levelService, IParticleService particleService, ISkyService skyBoxService)
 
         {
-            m_PlayerConfig = playerConfig;
+            PlayerConfig = playerConfig;
             m_Container = container;
             m_PlayerInputService = inputService;
             m_GameloopService = gameloopService;
@@ -52,7 +54,6 @@ namespace Scripts.Player
             m_ScoreService = scoreService;
             m_LevelService = levelService;
             m_ParticleService = particleService;
-            m_SkyBoxService = skyBoxService;
 
 
             Initialize();
@@ -61,11 +62,11 @@ namespace Scripts.Player
         private void Initialize()
         {
             //resets player state for new game or level retry
-            m_PlayerConfig.m_HasPlayerFinished = false;
+            PlayerConfig.m_HasPlayerFinished = false;
 
             //subscribes events
             InitializeEvents();
-            SpawnPlayer(m_PlayerConfig.m_SpawnPosition);
+            SpawnPlayer(PlayerConfig.m_SpawnPosition);
         }
 
         private void InitializeEvents()
@@ -75,7 +76,6 @@ namespace Scripts.Player
             m_GameloopService.OnGizemosTick += OnGizmosDraw;
             m_LevelService.OnLevelCompleted += HandlePlayerReachedFinishLine;
             m_PlayerInputService.OnSwipe += Swipe;
-            BlockWallColliderView.OnBlockCollision += HandleBlockCollision;
 
             m_ScoreService.Reset();
         }
@@ -83,7 +83,7 @@ namespace Scripts.Player
 
         private void InitializeStateMachine()
         {
-            PlayerStateMachine = new PlayerStateMachine(m_PlayerView, m_PlayerConfig);
+            PlayerStateMachine = new PlayerStateMachine(m_PlayerView, PlayerConfig);
 
             PlayerStateMachine.AddState(EPlayerStates.IDLE, m_Container.Instantiate<IdleState>());
             PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
@@ -98,8 +98,8 @@ namespace Scripts.Player
         // Spawn the player at the specified position and set up input and collision handling
         public void SpawnPlayer(Vector3 position)
         {
-            m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(m_PlayerConfig.m_PlayerView);
-            m_PlayerView.Initialize(m_PlayerConfig, position);
+            m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(PlayerConfig.m_PlayerView);
+            m_PlayerView.Initialize(PlayerConfig, position);
 
 
             InitializeStateMachine();
@@ -110,7 +110,7 @@ namespace Scripts.Player
 
         private void Init()
         {
-            PlayerInvisibleController = new PlayerInvisibleController(m_PlayerView, m_PlayerConfig, m_LevelService);
+            PlayerInvisibleController = new PlayerInvisibleController(m_PlayerView, PlayerConfig, m_LevelService);
 
             m_PlayerView.EnableShape(EShapeType.CUBE);
             PlayerStateMachine.GetCurrentState().OnEnterState();
@@ -126,7 +126,7 @@ namespace Scripts.Player
 
         public void StartGame()
         {
-            m_PlayerConfig.SetCurrentShape(EShapeType.CUBE);
+            PlayerConfig.SetCurrentShape(EShapeType.CUBE);
 
             //spawns Input
             PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
@@ -144,9 +144,9 @@ namespace Scripts.Player
             m_PlayerView.ChangeShapeForDirection(swipeDirection);
         }
 
-        private void HandleBlockCollision(BlockView block)
+        public void CheckCollision(BlockView block)
         {
-            bool isValid = IsValidCollision(m_PlayerConfig.m_CurrentShapeType, block.BlockType);
+            bool isValid = IsValidCollision(PlayerConfig.m_CurrentShapeType, block.BlockType);
 
             if (!isValid)
             {
@@ -156,7 +156,7 @@ namespace Scripts.Player
                 InvokePlayerDeath();
                 return;
             }
-
+            OnPlayerCrossedWall.Invoke(block);
             PlayerInvisibleController.NextBlock();
 
             m_ScoreService.AddPoints(PointsPerCorrectCollision);
@@ -200,7 +200,7 @@ namespace Scripts.Player
         }
         private void HandlePlayerReachedFinishLine()
         {
-            m_PlayerConfig.m_HasPlayerFinished = true;
+            PlayerConfig.m_HasPlayerFinished = true;
 
             // change to idle
             PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
@@ -246,7 +246,6 @@ namespace Scripts.Player
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
             m_LevelService.OnLevelCompleted -= HandlePlayerReachedFinishLine;
-            BlockWallColliderView.OnBlockCollision -= HandleBlockCollision;
             m_PlayerInputService.OnSwipe -= Swipe;
 
             //services clean
@@ -288,7 +287,7 @@ namespace Scripts.Player
         {
             if (m_LevelService.FinishLineView == null)
                 return 0f;
-            return Vector3.Distance(m_PlayerConfig.m_SpawnPosition, m_LevelService.FinishLineView.transform.position);
+            return Vector3.Distance(PlayerConfig.m_SpawnPosition, m_LevelService.FinishLineView.transform.position);
         }
     }
 }

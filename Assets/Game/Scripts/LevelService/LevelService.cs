@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -91,8 +92,10 @@ namespace Scripts.Level
                 }
             }
 
+            int indexID = 0;
             foreach (var item in blocksList)
             {
+                item.SetID(indexID++);
                 _currentLevelBlocks.Add(item);
             }
         }

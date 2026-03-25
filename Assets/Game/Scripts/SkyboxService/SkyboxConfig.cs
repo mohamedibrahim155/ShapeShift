@@ -94,6 +94,22 @@ public struct SkyColor
 {
     public Color Top;
     public Color Bottom;
+
+    public static SkyColor Lerp(SkyColor a, SkyColor b, float t)
+    {
+        if (t>= 1)
+        {
+            t = Mathf.Clamp01(t);
+        }
+
+        SkyColor skyColorLerp = new SkyColor
+        {
+            Top = Color.Lerp(a.Top, b.Top, t),
+            Bottom = Color.Lerp(a.Bottom, b.Bottom, t)
+        };
+
+        return skyColorLerp;
+    }
 }
 
 public enum ESkyColorType
