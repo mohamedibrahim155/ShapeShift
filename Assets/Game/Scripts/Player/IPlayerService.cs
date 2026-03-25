@@ -18,7 +18,7 @@ namespace Scripts.Player
         public  abstract void StartGame();
         public abstract void InvokePlayerDeath();
         public abstract void CheckCollision(BlockView blockView);
-        public float GetPlayerProgressedDistance();
-        public float GetTotalProgressedDistance();
+        public float GetPlayerDistanceToFinish();
+        public float GetTotalDistanceToFinish();
     }
 }

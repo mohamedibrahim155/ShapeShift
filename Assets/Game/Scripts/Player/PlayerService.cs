@@ -274,20 +274,27 @@ namespace Scripts.Player
             m_LevelService.InvokeLevelFailed();
         }
 
-        public float GetPlayerProgressedDistance()
+        public float GetPlayerDistanceToFinish()
+        {
+            if (m_PlayerView == null || m_LevelService.FinishLineView == null)
+                return 0f;
+            //since game moves in X and Z, we ignore Y axis
+            Vector3 displacement = (m_PlayerView.transform.position - m_LevelService.FinishLineView.transform.position);
+            float lengthXZ = Mathf.Sqrt(displacement.x * displacement.x + displacement.z * displacement.z);
+
+            return lengthXZ;
+
+        }
+
+        public float GetTotalDistanceToFinish()
         {
             if (m_PlayerView == null || m_LevelService.FinishLineView == null)
                 return 0f;
 
-            return (m_PlayerView.transform.position - m_LevelService.FinishLineView.transform.position).magnitude;
+            Vector3 displacement = PlayerConfig.m_SpawnPosition - m_LevelService.FinishLineView.transform.position;
 
-        }
-
-        public float GetTotalProgressedDistance()
-        {
-            if (m_LevelService.FinishLineView == null)
-                return 0f;
-            return (PlayerConfig.m_SpawnPosition- m_LevelService.FinishLineView.transform.position ).magnitude;
+            float lengthXZ = Mathf.Sqrt(displacement.x * displacement.x + displacement.z * displacement.z);
+            return lengthXZ;
         }
     }
 }
