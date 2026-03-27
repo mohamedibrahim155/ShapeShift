@@ -33,7 +33,7 @@ namespace Scripts.Player
         private float inremental;
 
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
-        private const int PointsPerCorrectCollision = 10;
+        private const int PerfectCollsionPoints = 1;
 
         public event Action OnPlayerFinishedLevel = delegate { };
         public event Action OnPlayerDied = delegate { };
@@ -163,7 +163,7 @@ namespace Scripts.Player
             OnPlayerCrossedWall.Invoke(block);
             PlayerInvisibleController.NextBlock();
 
-            m_ScoreService.AddPoints(PointsPerCorrectCollision);
+            m_ScoreService.AddPoints(PerfectCollsionPoints);
         }
 
         private void Update()

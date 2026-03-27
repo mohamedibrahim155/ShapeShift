@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UIConfig: {fileID: 11400000, guid: 9d7481860fe9ac44685c4db442696ca2, type: 2}
   buttonConfig: {fileID: 11400000, guid: 8c5b6e4040c87fc42b99b09d470ef4c1, type: 2}
+  scoreConfig: {fileID: 11400000, guid: 78cf169334995e24dae3fc90a827d11e, type: 2}

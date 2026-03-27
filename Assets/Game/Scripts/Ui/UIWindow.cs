@@ -12,7 +12,7 @@ namespace Scripts.UI
         public bool m_OpenOnStart = false;
         public CanvasGroup canvasGroup;
 
-        protected void Reset()
+        public virtual void Reset()
         {
             canvasGroup = GetComponentInChildren<CanvasGroup>();
         }

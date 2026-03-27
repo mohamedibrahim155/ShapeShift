@@ -1,11 +1,27 @@
+using Scripts.GameplayStates;
+using Scripts.UI;
 using System;
+using Zenject;
 
 namespace Scripts.Score
 {
     public class ScoreService : IScoreService
     {
+        public ScoreConfig ScoreConfig { get; private set; }
+        public ScoreView ScoreView { get; private set; }
         public int CurrentScore { get; private set; }
         public event Action<int> OnScoreChanged;
+
+
+        private GameWindow gameWidow;
+        private DiContainer DiContainer;
+        
+        [Inject]
+        public void Construct(ScoreConfig config, DiContainer container)
+        {
+            ScoreConfig = config;
+            DiContainer =container;
+        }
 
         public void AddPoints(int points)
         {

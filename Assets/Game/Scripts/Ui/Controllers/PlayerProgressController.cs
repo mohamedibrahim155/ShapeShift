@@ -61,6 +61,7 @@ namespace Scripts.UI
             isRunning = false;
 
             m_GameLoopService.OnUpdateTick -= UpdateProgress;
+            m_GameWindow.Close();
         }
 
 
