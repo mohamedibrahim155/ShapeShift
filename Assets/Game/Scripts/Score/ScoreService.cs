@@ -11,6 +11,7 @@ namespace Scripts.Score
         public ScoreView ScoreView { get; private set; }
         public int CurrentScore { get; private set; }
         public event Action<int> OnScoreChanged;
+        public event Action<bool> OnScoreDisplay;
 
 
         private GameWindow gameWidow;

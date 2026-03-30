@@ -6,11 +6,16 @@ namespace Scripts.SkyService
     public interface ISkyService 
     {
         SkyboxConfig Config { get; }
+        event Action OnSkyLerpStarted;
+        event Action OnSkyLerpCompleted;
+         ESkyColorType CurrentSkyColorType { get; }
         void Initialize();
         void SetSky(ESkyColorType type);
         void LerpToSky(ESkyColorType type, float duration);
         SkyColor LerpSky(ESkyColorType typeA, ESkyColorType typeB, float time);
+        void LerpCurrentTo(ESkyColorType typeA, ESkyColorType typeB, float time);
 
+        void Reset();
         void CleanUp();
     }
 }

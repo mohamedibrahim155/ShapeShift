@@ -27,10 +27,9 @@ namespace Scripts.Player
         private IScoreService m_ScoreService;
         private ILevelService m_LevelService;
         private IParticleService m_ParticleService;
-        private PlayerStateMachine PlayerStateMachine;
-        private PlayerInvisibleController PlayerInvisibleController;
-
-        private float inremental;
+        private ISkyService m_SkyboxService;
+        private PlayerStateMachine m_PlayerStateMachine;
+        private PlayerInvisibleController m_FutureShapeController;
 
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PerfectCollsionPoints = 1;
@@ -39,6 +38,7 @@ namespace Scripts.Player
         public event Action OnPlayerDied = delegate { };
         public event Action<BlockView> OnPlayerCrossedWall = delegate { };
         public event Action<BlockView> OnPlayerCollidedWithWall = delegate { };
+        public event Action<bool> OnPlayerBeastModeActivated = delegate { };
 
         [Inject]
         private void Construct(PlayerConfig playerConfig, DiContainer container, IPLayerInputService inputService,
@@ -54,7 +54,7 @@ namespace Scripts.Player
             m_ScoreService = scoreService;
             m_LevelService = levelService;
             m_ParticleService = particleService;
-
+            m_SkyboxService = skyBoxService;
 
             Initialize();
         }
@@ -78,18 +78,20 @@ namespace Scripts.Player
             m_PlayerInputService.OnSwipe += Swipe;
 
             m_ScoreService.Reset();
+            m_SkyboxService.Reset();
         }
 
 
         private void InitializeStateMachine()
         {
-            PlayerStateMachine = new PlayerStateMachine(m_PlayerView, PlayerConfig);
+            m_PlayerStateMachine    = new PlayerStateMachine(m_PlayerView, PlayerConfig);
+            m_FutureShapeController = new PlayerInvisibleController(m_PlayerView, PlayerConfig, m_LevelService);
 
-            PlayerStateMachine.AddState(EPlayerStates.IDLE, m_Container.Instantiate<IdleState>());
-            PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState());
-            PlayerStateMachine.AddState(EPlayerStates.FALL, m_Container.Instantiate<FallState>());
+            m_PlayerStateMachine.AddState(EPlayerStates.IDLE, m_Container.Instantiate<IdleState>());
+            m_PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState(m_FutureShapeController, this));
+            m_PlayerStateMachine.AddState(EPlayerStates.FALL, new FallState(m_CameraService));
 
-            PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
+            m_PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
 
         }
 
@@ -98,9 +100,8 @@ namespace Scripts.Player
         // Spawn the player at the specified position and set up input and collision handling
         public void SpawnPlayer(Vector3 position)
         {
-            m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(PlayerConfig.m_PlayerView);
-            m_PlayerView.Initialize(PlayerConfig, position);
-
+            m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(PlayerConfig.m_PlayerView, position, Quaternion.identity, null);
+            m_PlayerView.Initialize(PlayerConfig);
 
             InitializeStateMachine();
             InitializeCamera(Vector3.zero);
@@ -110,10 +111,8 @@ namespace Scripts.Player
 
         private void Init()
         {
-            PlayerInvisibleController = new PlayerInvisibleController(m_PlayerView, PlayerConfig, m_LevelService);
-
             m_PlayerView.EnableShape(EShapeType.CUBE);
-            PlayerStateMachine.GetCurrentState().OnEnterState();
+            m_PlayerStateMachine.GetCurrentState().OnEnterState();
         }
 
 
@@ -129,7 +128,7 @@ namespace Scripts.Player
             PlayerConfig.SetCurrentShape(EShapeType.CUBE);
 
             //spawns Input
-            PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
+            m_PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
 
             m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
 
@@ -161,9 +160,39 @@ namespace Scripts.Player
                 return;
             }
             OnPlayerCrossedWall.Invoke(block);
-            PlayerInvisibleController.NextBlock();
 
-            m_ScoreService.AddPoints(PerfectCollsionPoints);
+            bool ActivateBeastMode = ((m_ScoreService.CurrentScore + PerfectCollsionPoints) % 5 == 0) && m_ScoreService.CurrentScore > 0;
+
+            if (ActivateBeastMode)
+            {
+                if (!BeastState)
+                {
+                    OnBeastActivated();
+                }
+            }
+            else
+            {
+                float value = (int)m_ScoreService.CurrentScore / 5f;
+                value = Mathf.Clamp01(value);
+                Debug.Log($"Sky value: {value}");
+                m_SkyboxService.LerpCurrentTo(m_SkyboxService.CurrentSkyColorType, ESkyColorType.GREYSHADE, value);
+                m_ScoreService.AddPoints(PerfectCollsionPoints);
+            }
+
+        }
+
+        private bool BeastState =false;
+
+        void OnBeastActivated()
+        {
+            BeastState = true;
+            OnPlayerBeastModeActivated.Invoke(true);
+        }
+
+        void OnBeastDeActivated()
+        {
+            BeastState = false;
+            OnPlayerBeastModeActivated.Invoke(false);
         }
 
         private void Update()
@@ -172,14 +201,9 @@ namespace Scripts.Player
             m_PlayerInputService.UpdateInputs();
 
             // update states
-            if (PlayerStateMachine != null)
+            if (m_PlayerStateMachine != null)
             {
-                PlayerStateMachine.Update();
-
-                if (PlayerStateMachine.CurrentStateID == EPlayerStates.MOVE)
-                    PlayerInvisibleController.Update();
-                else
-                    PlayerInvisibleController.Hide();
+                m_PlayerStateMachine.Update();
             }
 
         }
@@ -188,18 +212,18 @@ namespace Scripts.Player
         private void FixedUpdate()
         {
 
-            if (PlayerStateMachine != null)
+            if (m_PlayerStateMachine != null)
             {
-                PlayerStateMachine.FixedUpdate();
+                m_PlayerStateMachine.FixedUpdate();
             }
 
         }
 
         private void OnGizmosDraw()
         {
-            if (PlayerStateMachine != null)
+            if (m_PlayerStateMachine != null)
             {
-                PlayerStateMachine.DrawGizmos();
+                m_PlayerStateMachine.DrawGizmos();
             }
         }
         private void HandlePlayerReachedFinishLine()
@@ -207,7 +231,7 @@ namespace Scripts.Player
             PlayerConfig.m_HasPlayerFinished = true;
 
             // change to idle
-            PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
+            m_PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
             m_PlayerInputService.DestroyInputController();
 
@@ -219,6 +243,7 @@ namespace Scripts.Player
             OnPlayerFinishedLevel?.Invoke();
         }
 
+        //Plays particle fxs
         private void PlayFX(EParticleType type)
         {
             Vector3 offset = ((type != EParticleType.DEATH) ? Vector3.zero : Vector3.down *1.5f);
@@ -226,6 +251,7 @@ namespace Scripts.Player
             m_ParticleService.SpawnParticle(type, spawnPoint, Quaternion.identity);
 
         }
+        //resets the player to initial state for new game or level retry
         public void Reset()
         {
             DestroyPlayer();
@@ -256,10 +282,11 @@ namespace Scripts.Player
             //services clean
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
-            PlayerStateMachine.CleanUp();
+            m_PlayerStateMachine.CleanUp();
+            m_SkyboxService.CleanUp();
 
             //Data/References clean
-            PlayerInvisibleController = null;
+            m_FutureShapeController = null;
         }
 
         public void InvokePlayerDeath()
@@ -274,17 +301,17 @@ namespace Scripts.Player
 
         private void FailedLevel()
         {
-            PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
+            m_PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_PlayerInputService.EnableInput(false);
             m_LevelService.InvokeLevelFailed();
         }
 
         public float GetPlayerDistanceToFinish()
         {
-            if (m_PlayerView == null || m_LevelService.FinishLineView == null)
+            if (m_PlayerView == null || m_LevelService.m_FinishLineView == null)
                 return 0f;
             //since game moves in X and Z, we ignore Y axis
-            Vector3 displacement = (m_PlayerView.transform.position - m_LevelService.FinishLineView.transform.position);
+            Vector3 displacement = (m_PlayerView.transform.position - m_LevelService.m_FinishLineView.transform.position);
             float lengthXZ = Mathf.Sqrt(displacement.x * displacement.x + displacement.z * displacement.z);
 
             return lengthXZ;
@@ -293,10 +320,10 @@ namespace Scripts.Player
 
         public float GetTotalDistanceToFinish()
         {
-            if (m_PlayerView == null || m_LevelService.FinishLineView == null)
+            if (m_PlayerView == null || m_LevelService.m_FinishLineView == null)
                 return 0f;
 
-            Vector3 displacement = PlayerConfig.m_SpawnPosition - m_LevelService.FinishLineView.transform.position;
+            Vector3 displacement = PlayerConfig.m_SpawnPosition - m_LevelService.m_FinishLineView.transform.position;
 
             float lengthXZ = Mathf.Sqrt(displacement.x * displacement.x + displacement.z * displacement.z);
             return lengthXZ;

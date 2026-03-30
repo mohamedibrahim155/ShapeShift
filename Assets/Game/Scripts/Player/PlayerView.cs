@@ -73,11 +73,9 @@ namespace Scripts.Player
             }
         }
 
-        public void Initialize(PlayerConfig config, Vector3 spawnPosition)
+        public void Initialize(PlayerConfig config)
         {
             playerConfig = config;
-
-            transform.position = spawnPosition;
 
             ShapeViews.Clear();
             ShapesViewByDirections.Clear();

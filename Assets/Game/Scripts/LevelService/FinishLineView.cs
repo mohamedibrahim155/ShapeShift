@@ -30,7 +30,7 @@ namespace Scripts.Level
             Collider = GetComponentInChildren<Collider>();
         }
 
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerExit(Collider other)
         {
             if ((_config.m_PlayerLayer & (1 << other.gameObject.layer)) != 0)
             {

@@ -20,7 +20,7 @@ namespace Scripts.Level
         public event Action OnLevelCompleted = delegate { };
         public event Action OnLevelFailed = delegate { };
 
-        public FinishLine FinishLineView { get; private set; }
+        public FinishLine m_FinishLineView { get; private set; }
 
         private List<BlockView> _currentLevelBlocks = new List<BlockView>();
 
@@ -100,7 +100,7 @@ namespace Scripts.Level
 
         public void InitializeFinishLine(FinishLine view)
         {
-            FinishLineView = view;
+            m_FinishLineView = view;
         }
 
 

@@ -9,6 +9,7 @@ namespace Scripts.Player
         public event Action OnPlayerFinishedLevel;
         public event Action OnPlayerDied;
         public event Action<BlockView> OnPlayerCrossedWall;
+        public event Action<bool> OnPlayerBeastModeActivated;
         void SpawnPlayer(Vector3 position);
         void InitializeCamera(Vector3 spawnPosition);
 

@@ -11,7 +11,7 @@ namespace Scripts.Level
         public event Action OnLevelCompleted;
         public event Action OnLevelFailed;
 
-        public FinishLine FinishLineView { get; }
+        public FinishLine m_FinishLineView { get; }
         void CreateLevel(int levelNo);
         void InitializeLevel();
         LevelConfig GetLevel(int levelNo);

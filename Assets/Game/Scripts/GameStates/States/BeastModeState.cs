@@ -1,9 +1,8 @@
-using Scripts.GameService;
 using UnityEngine;
 
 namespace Scripts.GameplayStates
 {
-    public class PlayingState : IGameplayState
+    public class BeastModeState : IGameplayState
     {
         public void BeginState()
         {
@@ -12,5 +11,6 @@ namespace Scripts.GameplayStates
         public void EndState()
         {
         }
+
     }
 }

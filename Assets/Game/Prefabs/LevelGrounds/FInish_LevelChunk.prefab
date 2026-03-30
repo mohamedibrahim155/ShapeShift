@@ -148,7 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Collider: {fileID: 6522331450683629033}
   MeshRenderer: {fileID: 4772539975150739689}
-  Size: {x: 10, y: 4, z: 20}
+  _blockViews: []
 --- !u!1 &7046521103111911487
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,7 +214,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 6e6d0ca587a44d042930bc702f249ecc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -7,19 +7,37 @@ namespace Scripts.Player
 
         private Vector3 playerForward;
         private float playerMoveSpeed;
+        private readonly PlayerInvisibleController m_PlayerInvisibleController;
+        private readonly IPlayerService m_PlayerService;
+        public MoveState(PlayerInvisibleController playerInvisibleController, IPlayerService playerService)
+        {
+            m_PlayerInvisibleController = playerInvisibleController;
+            this.m_PlayerService = playerService;
+        }
+
         public override void OnEnterState() 
         {
             ShowDebug = true;
 
             playerForward = PlayerView.transform.forward;
             playerMoveSpeed = PlayerConfig.m_MoveSpeed;
+            m_PlayerService.OnPlayerCrossedWall += OnPlayerCrossedWall;
         }
+
+        private void OnPlayerCrossedWall(BlockView obj)
+        {
+            m_PlayerInvisibleController.NextBlock();
+        }
+
         public override void OnStateExit() 
         {
             UpdatePlayerMovement(Vector3.zero);
+            m_PlayerInvisibleController.Hide();
+            m_PlayerService.OnPlayerCrossedWall -= OnPlayerCrossedWall;
         }
-        public override void Update() {
-           
+        public override void Update() 
+        {
+            m_PlayerInvisibleController.Update();
         }
         public override void FixedUpdate() 
         {

@@ -8,6 +8,7 @@ namespace Scripts.GameplayStates
         PLAYING,
         GAMEOVER,
         GAMEPAUSED,
+        BEASTMODE,
         LEVELCOMPLETED
     }
 }

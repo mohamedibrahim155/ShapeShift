@@ -8,6 +8,7 @@ namespace Scripts.Score
         ScoreView ScoreView { get; }
         int CurrentScore { get; }
         event Action<int> OnScoreChanged;
+        event Action<bool> OnScoreDisplay;
         void AddPoints(int points);
         void Reset();
     }

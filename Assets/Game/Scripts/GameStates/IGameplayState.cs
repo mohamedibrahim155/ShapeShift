@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Scripts.GameplayStates
 {
-    public interface GameplayState
+    public interface IGameplayState
     {
         void BeginState();
         void EndState();

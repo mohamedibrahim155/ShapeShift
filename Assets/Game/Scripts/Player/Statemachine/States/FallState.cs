@@ -9,7 +9,13 @@ namespace Scripts.Player
 
         private float _timer;
 
-        [Inject] ICameraService _cameraService;
+        private readonly ICameraService _cameraService;
+
+        public FallState(ICameraService cameraService)
+        {
+            _cameraService = cameraService;
+        }
+
         public override void OnEnterState() 
         {
             _timer = 0;
