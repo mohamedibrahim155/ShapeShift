@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SkyboxConfig
   m_EditorClassIdentifier: 
   SkyBoxMaterial: {fileID: 2100000, guid: 281db98179359484e864881b16ad262c, type: 2}
+  viewPrefab: {fileID: 8137741207000322915, guid: c7f89edff8b21514fafc63e2f83a290a, type: 3}
   SkyData:
   - Type: 0
     Color:
