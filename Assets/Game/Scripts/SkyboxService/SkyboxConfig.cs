@@ -1,3 +1,4 @@
+using Scripts.SkyService;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine;
 public class SkyboxConfig : ScriptableObject, ISerializationCallbackReceiver
 {
     public Material SkyBoxMaterial;
+    public SkyboxView viewPrefab;
 
     [SerializeField]
     public List<SkyColorWithType> SkyData = new List<SkyColorWithType>();

@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using Zenject;
+using static UnityEngine.Rendering.STP;
 
 namespace Scripts.SkyService
 {
@@ -7,17 +9,26 @@ namespace Scripts.SkyService
     {
         private SkyboxConfig config;
 
-        private ISkyService skyService;
+        private Material skyboxMaterial;
 
-        [Inject]
-        public void Contruct(ISkyService skyService)
+
+        public void Initialize(SkyboxConfig config)
         {
-            this.skyService = skyService;
+            this.config = config;
+
+            SpawnMaterial();
         }
 
-        private void Start()
+        private void SpawnMaterial()
         {
-            skyService.Initialize();
+            skyboxMaterial = UnityEngine.Object.Instantiate(config.SkyBoxMaterial);
+            RenderSettings.skybox = skyboxMaterial;
+        }
+
+        public void ApplySkyColor(SkyColor color)
+        {
+            skyboxMaterial.SetColor(SkyboxConfig.GetTopColorString(), color.Top);
+            skyboxMaterial.SetColor(SkyboxConfig.GetBottomColorString(), color.Bottom);
         }
 
     }

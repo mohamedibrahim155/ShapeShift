@@ -9,6 +9,7 @@ namespace Scripts.SkyService
     public class SkyService : ISkyService
     {
         public SkyboxConfig Config { get; private set; }
+        public SkyboxView Skyview { get; private set; }
         private SkyColor CurrentSkyColor { get;  set; }
         public ESkyColorType CurrentSkyColorType { get;  private set; }
         private bool IsTransitioning { get; set; }
@@ -26,17 +27,19 @@ namespace Scripts.SkyService
 
         private IGameLoopService m_GameLoopService;
         private IPlayerService m_PlayerService;
+        private DiContainer m_Container;
 
         public event Action OnSkyLerpStarted = delegate { };
         public event Action OnSkyLerpCompleted= delegate { };
 
 
         [Inject]
-        public void Contruct(SkyboxConfig config, IGameLoopService gameLoopService, IPlayerService playerService)
+        public void Contruct(SkyboxConfig config, IGameLoopService gameLoopService, IPlayerService playerService, DiContainer container)
         {
             Config = config;
             m_GameLoopService = gameLoopService;
             m_PlayerService = playerService;
+            m_Container = container;
             Initialize();
         }
 
@@ -54,6 +57,7 @@ namespace Scripts.SkyService
 
         private void OnBeastActive()
         {
+            
             LerpToSky(ESkyColorType.GREEN, 0.5f);
         }
 
@@ -69,11 +73,11 @@ namespace Scripts.SkyService
                 return;
             }
 
-            // Clone the material so runtime color changes do not mutate the asset itself.
-            skyboxMaterial = UnityEngine.Object.Instantiate(Config.SkyBoxMaterial);
-            RenderSettings.skybox = skyboxMaterial;
+            //spawns view
+            Skyview = m_Container.InstantiatePrefabForComponent<SkyboxView>(Config.viewPrefab);
+            Skyview.Initialize(Config);
 
-       
+            //set random sky on start
             int randomSkyIndex = UnityEngine.Random.Range(0, Enum.GetValues(typeof(ESkyColorType)).Length);
             SetSky((ESkyColorType)randomSkyIndex);
 
@@ -88,33 +92,6 @@ namespace Scripts.SkyService
             HandleLerpColor(Time.deltaTime);
         }
 
-        private void HandleTick(float deltaTime)
-        {
-            if (!IsTransitioning || skyboxMaterial == null)
-            {
-                return;
-            }
-
-            transitionElapsed += deltaTime;
-
-            float t = transitionDuration <= 0f
-                ? 1f
-                : Mathf.Clamp01(transitionElapsed / transitionDuration);
-
-            SkyColor lerpedColor = new SkyColor
-            {
-                Top = Color.Lerp(transitionStartColor.Top, transitionTargetColor.Top, t),
-                Bottom = Color.Lerp(transitionStartColor.Bottom, transitionTargetColor.Bottom, t)
-            };
-
-            CurrentSkyColor = lerpedColor;
-            ApplySkyColor(CurrentSkyColor);
-
-            if (t >= 1f)
-            {
-                IsTransitioning = false;
-            }
-        }
 
         private void HandleLerpColor(float deltaTime)
         {
@@ -128,7 +105,7 @@ namespace Scripts.SkyService
             float t = transitionDuration <= 0 ? 1 : Mathf.Clamp01(transitionElapsed / (float)transitionDuration);
 
             CurrentSkyColor = LerpSky(transitionStartColorWithType, transitionTargetColorWithType, t);
-            ApplySkyColor(CurrentSkyColor);
+            Skyview.ApplySkyColor(CurrentSkyColor);
             if (t >= 1)
             {
                 IsTransitioning = false;
@@ -151,7 +128,7 @@ namespace Scripts.SkyService
             transitionElapsed = 0f;
             transitionDuration = 0f;
 
-            ApplySkyColor(CurrentSkyColor);
+            Skyview.ApplySkyColor(CurrentSkyColor);
         }
 
         public void LerpToSky(ESkyColorType type, float duration)
@@ -192,12 +169,6 @@ namespace Scripts.SkyService
             return SkyColor.Lerp(colorA, colorB, time);
         }
 
-        public void ApplySkyColor(SkyColor color)
-        {
-            skyboxMaterial.SetColor(SkyboxConfig.GetTopColorString(), color.Top);
-            skyboxMaterial.SetColor(SkyboxConfig.GetBottomColorString(), color.Bottom);
-        }
-
         public void CleanUp()
         {
             m_GameLoopService.OnUpdateTick             -= Update;
@@ -215,7 +186,7 @@ namespace Scripts.SkyService
 
 
             CurrentSkyColor = LerpSky(typeA, typeB, time);
-            ApplySkyColor(CurrentSkyColor);
+           Skyview.ApplySkyColor(CurrentSkyColor);
 
         }
     }

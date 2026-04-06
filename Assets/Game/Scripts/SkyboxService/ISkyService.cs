@@ -6,6 +6,7 @@ namespace Scripts.SkyService
     public interface ISkyService 
     {
         SkyboxConfig Config { get; }
+        SkyboxView Skyview { get; }
         event Action OnSkyLerpStarted;
         event Action OnSkyLerpCompleted;
          ESkyColorType CurrentSkyColorType { get; }
