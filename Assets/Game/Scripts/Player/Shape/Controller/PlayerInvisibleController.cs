@@ -53,7 +53,7 @@ namespace Scripts.Player
             Color color = ((int)_playerConfig.m_CurrentShapeType == (int)currentBlock.BlockType) ? Color.green : Color.red;
             color.a = 0.5f;
 
-            _playerView.UpdateHighligherPosition(currentBlock.transform.position, color, _playerConfig.m_CurrentShapeType);
+            _playerView.ShowHightLight(currentBlock.transform.position, color, _playerConfig.m_CurrentShapeType);
 
         }
 
@@ -65,7 +65,7 @@ namespace Scripts.Player
 
         public void Hide()
         {
-            _playerView.HideTransparentShapes();
+            _playerView.HideHighlight();
         }
 
         public BlockView GetCurrentBlock()
@@ -81,6 +81,13 @@ namespace Scripts.Player
         {
             Vector3 d = _playerView.transform.position - block.transform.position;
             return d.x * d.x + d.z * d.z;
+        }
+
+        public void CleanUp()
+        {
+            _currentBlockIndex = 0;
+            _blocks.Clear();
+            _blocks = null;
         }
     }
     

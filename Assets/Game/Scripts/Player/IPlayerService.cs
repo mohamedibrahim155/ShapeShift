@@ -20,6 +20,5 @@ namespace Scripts.Player
         public abstract void InvokePlayerDeath();
         public abstract void CheckCollision(BlockView blockView);
         public float GetPlayerDistanceToFinish();
-        public float GetTotalDistanceToFinish();
     }
 }

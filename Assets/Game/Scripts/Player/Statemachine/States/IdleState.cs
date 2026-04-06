@@ -8,7 +8,7 @@ namespace Scripts.Player
     {
         private float waitTimer;
 
-        [Inject] private IUIService uiService;
+        private IUIService uiService;
         public override void OnEnterState() 
         {
             waitTimer = 0f;

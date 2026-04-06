@@ -10,23 +10,28 @@ namespace Scripts.Player
         private float _timer;
 
         private readonly ICameraService _cameraService;
-
-        public FallState(ICameraService cameraService)
+        private readonly PlayerController _playerController;
+        public FallState(ICameraService cameraService, PlayerController playerController)
         {
             _cameraService = cameraService;
+            _playerController = playerController;
         }
 
         public override void OnEnterState() 
         {
             _timer = 0;
-            EnableKinematicPhysics(false);
 
             //disables colliders to prevent further interactions with the player while falling and enables finish line camera for cinematic effect
-            PlayerView.DisbaleColliders();
+            _playerController.SetPlayerPhysicsEnabled(true);
+            _playerController.DisableShapeColliders();
+            _playerController.SetAllShapesRigidbodyKinematic(false);
+            _playerController.ClearShapeConstraints();
+          
+
             // change camera to finish line camera for cinematic effect
             _cameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
-
-            ResetCamera();
+            _cameraService.SetCameraLookAt(null);
+            _cameraService.SetCameraFollow(null);
         }
         public override void Update()
         {
@@ -38,24 +43,8 @@ namespace Scripts.Player
                 return;
             }
 
-            PlayerView.Rigidbody.linearVelocity = PlayerView.transform.forward * PlayerConfig.m_MoveSpeed;
+            _playerController.SetVelocity(_playerController.Transform.forward * PlayerConfig.m_MoveSpeed);
 
-        }
-
-        private void EnableKinematicPhysics(bool value)
-        {
-            PlayerView.Rigidbody.isKinematic = value;
-            foreach (var item in PlayerView.GetShapes())
-            {
-                item.Value.Rigidbody.isKinematic = value;
-                item.Value.Rigidbody.constraints = RigidbodyConstraints.None;
-            }
-        }
-
-        private void ResetCamera()
-        {
-            _cameraService.SetCameraLookAt(null);
-            _cameraService.SetCameraFollow(null);
         }
     }
 }

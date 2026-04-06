@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,50 +23,45 @@ namespace Scripts.Player
 
         private Coroutine _transitionRoutine;
 
-        private void Start()
+        public void ShowShape(EShapeType shapeType)
         {
-        }
-        public void EnableShape(EShapeType shapeType)
-        {
-            playerConfig.SetCurrentShape(shapeType);
+            HideAllShapes();
 
-            GetShape(shapeType).Show();
-        }
+            if (!ShapeViews.TryGetValue(shapeType, out ShapeView shape))
+                return;
 
-        public void EnableShape(ESwipeDirection direction)
-        {
-            ShapeView currentshape = GetShape(direction);
-            EShapeType ID = currentshape.ShapeID;
-
-            //Sets ID
-            playerConfig.SetCurrentShape(ID);
-
-            currentshape.Show();
-
+            shape.transform.localScale = Vector3.one;
+            shape.Show();
         }
 
-        public void ChangeShape(EShapeType eShapeType)
+        public void PlayShapeTransition(EShapeType fromShapeType, EShapeType toShapeType, ESwipeDirection  swipeDirection)
         {
-            StartShapeTransition(GetShape(eShapeType), ESwipeDirection.NONE);
+            if (playerConfig == null)
+                return;
 
+            if (!ShapeViews.TryGetValue(fromShapeType, out ShapeView fromShape))
+                return;
+
+            if (!ShapeViews.TryGetValue(toShapeType, out ShapeView toShape))
+                return;
+
+            if (fromShape == toShape)
+            {
+                toShape.Show();
+                toShape.transform.localScale = Vector3.one;
+                return;
+            }
+
+            if (_transitionRoutine != null)
+            {
+                StopCoroutine(_transitionRoutine);
+            }
+
+            _transitionRoutine = StartCoroutine(TransitionShapes(fromShape, toShape, swipeDirection));
         }
 
-        public void ChangeShapeForDirection(ESwipeDirection swipeDirection)
-        {
-            ShapeView changeShape = GetShape(swipeDirection);
-            StartShapeTransition(changeShape, swipeDirection);
 
-        }
-
-
-        public IEnumerator DisableShape(EShapeType shapeIndex)
-        {
-            ShapeView currentshape = GetShape(shapeIndex);
-            yield return new WaitForSeconds(0.2f);
-            currentshape.Hide();
-        }
-
-        public void Hide()
+        public void HideAllShapes()
         {
             foreach (var item in ShapeViews)
             {
@@ -82,14 +78,11 @@ namespace Scripts.Player
 
             foreach (ShapeView shape in shapesList)
             {
+                if (shape == null) continue;
+
                 AddShape(shape);
                 shape.transform.localScale = Vector3.one;
-            }
-
-            //Disable all shapes at the start of the game
-            foreach (var item in ShapeViews)
-            {
-                item.Value.Hide();
+                shape.Hide();
             }
         }
 
@@ -108,43 +101,9 @@ namespace Scripts.Player
             return ShapesViewByDirections[direction];
         }
 
-        public void DisbaleColliders()
-        {
-            foreach (var item in ShapeViews)
-            {
-                SetShapeCollision(item.Value, false);
-            }
-        }
-
         public Dictionary<EShapeType, ShapeView> GetShapes()
         {
             return ShapeViews;
-        }
-
-        private void StartShapeTransition(ShapeView targetShape, ESwipeDirection swipeDirection)
-        {
-            if (targetShape == null || playerConfig == null)
-            {
-                return;
-            }
-
-            EShapeType currentShapeType = playerConfig.m_CurrentShapeType;
-            ShapeView currentShape = GetShape(currentShapeType);
-
-            if (currentShape == targetShape)
-            {
-                currentShape.Show();
-                currentShape.transform.localScale = Vector3.one;
-                SetShapeCollision(currentShape, true);
-                return;
-            }
-
-            if (_transitionRoutine != null)
-            {
-                StopCoroutine(_transitionRoutine);
-            }
-
-            _transitionRoutine = StartCoroutine(TransitionShapes(currentShape, targetShape, swipeDirection));
         }
 
         private IEnumerator TransitionShapes(ShapeView fromShape, ShapeView toShape, ESwipeDirection swipeDirection)
@@ -163,7 +122,6 @@ namespace Scripts.Player
 
             SetShapeCollision(fromShape, false);
             SetShapeCollision(toShape, true);
-            playerConfig.SetCurrentShape(toShape.ShapeID);
 
             float duration = Mathf.Max(0.01f,playerConfig.m_TransitionDuration);
             float time = 0f;
@@ -204,21 +162,15 @@ namespace Scripts.Player
                 axisStretch = Mathf.Lerp(axisStretch, axisSquash, 0.6f);
             }
 
-            Vector3 directional = Vector3.one;
-            switch (direction)
+            Vector3  directional = direction switch
             {
-                case ESwipeDirection.LEFT:
-                case ESwipeDirection.RIGHT:
-                    directional = new Vector3(axisStretch, axisSquash, axisSquash);
-                    break;
-                case ESwipeDirection.UP:
-                case ESwipeDirection.DOWN:
-                    directional = new Vector3(axisSquash, axisSquash, axisStretch);
-                    break;
-                default:
-                    directional = new Vector3(axisSquash, axisStretch, axisSquash);
-                    break;
-            }
+                ESwipeDirection.LEFT => new Vector3(axisStretch, axisSquash, axisSquash),
+                ESwipeDirection.RIGHT => new Vector3(axisStretch, axisSquash, axisSquash),
+                ESwipeDirection.UP => new Vector3(axisSquash, axisSquash, axisStretch),
+                ESwipeDirection.DOWN => new Vector3(axisSquash, axisSquash, axisStretch),
+                _ => new Vector3(axisSquash, axisStretch, axisSquash)
+            };
+
 
             float uniform = Mathf.Max(0f, baseUniformScale);
             return Vector3.Scale(Vector3.one * uniform, directional);
@@ -234,20 +186,44 @@ namespace Scripts.Player
             shape.Collider.enabled = enabled;
         }
 
+        public void SetShapeCollidersEnabled(bool enabled)
+        {
+            foreach (var item in ShapeViews)
+            {
+                SetShapeCollision(item.Value, enabled);
+            }
+        }
 
-        public void UpdateHighligherPosition(Vector3 position, Color color, EShapeType type)
+        public void ClearShapeContraints()
+        {
+            foreach (var item in ShapeViews)
+            {
+                if (item.Value.Rigidbody != null)
+                {
+                    item.Value.Rigidbody.constraints = RigidbodyConstraints.None;
+                }
+            }
+        }
+
+
+        public void ShowHightLight(Vector3 position, Color color, EShapeType type)
         {
             PlayerShapeHighlighterView.transform.position = position;
-
             PlayerShapeHighlighterView.UpdateShapeColor(color);
-
             PlayerShapeHighlighterView.Hide();
             PlayerShapeHighlighterView.ShowShape(type);
         }
 
-        public void HideTransparentShapes()
+        public void HideHighlight()
         {
             PlayerShapeHighlighterView.Hide();
+        }
+        public void SetAllShapeRigidbodyKinematic(bool isKinematic)
+        {
+            foreach (var item in ShapeViews)
+            {
+                item.Value.Rigidbody.isKinematic = isKinematic;
+            }
         }
 
 
@@ -257,6 +233,8 @@ namespace Scripts.Player
             shapesList = GetComponentsInChildren<ShapeView>().ToList();
             PlayerShapeHighlighterView = GetComponentInChildren<PlayerShapeHighlighterView>();
         }
+
+    
 
     }
 }

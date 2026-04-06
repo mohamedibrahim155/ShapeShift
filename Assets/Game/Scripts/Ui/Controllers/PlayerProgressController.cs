@@ -45,7 +45,7 @@ namespace Scripts.UI
             }
 
             isRunning =true;
-            totalDistance = m_PlayerService.GetTotalDistanceToFinish();
+            totalDistance = m_PlayerService.GetPlayerDistanceToFinish();
             m_GameWindow.ResetProgress();
             m_GameLoopService.OnUpdateTick += UpdateProgress;
 

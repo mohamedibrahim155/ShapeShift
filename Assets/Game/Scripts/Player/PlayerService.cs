@@ -1,4 +1,5 @@
 
+using Scripts.GameplayStates;
 using Scripts.GameService;
 using Scripts.Level;
 using Scripts.Particle;
@@ -30,6 +31,8 @@ namespace Scripts.Player
         private ISkyService m_SkyboxService;
         private PlayerStateMachine m_PlayerStateMachine;
         private PlayerInvisibleController m_FutureShapeController;
+        private PlayerController m_PlayerController;
+        private GameplayStateMachine m_GameplayStateMachine;
 
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PerfectCollsionPoints = 1;
@@ -61,24 +64,25 @@ namespace Scripts.Player
 
         private void Initialize()
         {
-            //resets player state for new game or level retry
-            PlayerConfig.m_HasPlayerFinished = false;
+
 
             //subscribes events
             InitializeEvents();
+
+            m_ScoreService.Reset();
+            m_SkyboxService.Reset();
+
             SpawnPlayer(PlayerConfig.m_SpawnPosition);
         }
 
         private void InitializeEvents()
         {
-            m_GameloopService.OnUpdateTick += Update;
+            m_GameloopService.OnUpdateTick      += Update;
             m_GameloopService.OnFixedUpdateTick += FixedUpdate;
-            m_GameloopService.OnGizemosTick += OnGizmosDraw;
-            m_LevelService.OnLevelCompleted += HandlePlayerReachedFinishLine;
-            m_PlayerInputService.OnSwipe += Swipe;
-
-            m_ScoreService.Reset();
-            m_SkyboxService.Reset();
+            m_GameloopService.OnGizemosTick     += OnGizmosDraw;
+           
+            m_PlayerInputService.OnSwipe        += HandleSwipe;
+            m_LevelService.OnLevelCompleted     += HandlePlayerReachedFinishLine;
         }
 
 
@@ -86,13 +90,16 @@ namespace Scripts.Player
         {
             m_PlayerStateMachine    = new PlayerStateMachine(m_PlayerView, PlayerConfig);
             m_FutureShapeController = new PlayerInvisibleController(m_PlayerView, PlayerConfig, m_LevelService);
+           
 
-            m_PlayerStateMachine.AddState(EPlayerStates.IDLE, m_Container.Instantiate<IdleState>());
-            m_PlayerStateMachine.AddState(EPlayerStates.MOVE, new MoveState(m_FutureShapeController, this));
-            m_PlayerStateMachine.AddState(EPlayerStates.FALL, new FallState(m_CameraService));
+        }
+        private void InitializeGameplayStates()
+        {
+            m_GameplayStateMachine = new GameplayStateMachine();
+            m_GameplayStateMachine.AddState(EGameplayStates.PLAYING, new PlayingState());
+            m_GameplayStateMachine.AddState(EGameplayStates.BEASTMODE, new BeastModeState(this, ref OnPlayerBeastModeActivated));
 
-            m_PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
-
+            m_GameplayStateMachine.ChangeState(EGameplayStates.PLAYING);
         }
 
 
@@ -103,95 +110,72 @@ namespace Scripts.Player
             m_PlayerView = m_Container.InstantiatePrefabForComponent<PlayerView>(PlayerConfig.m_PlayerView, position, Quaternion.identity, null);
             m_PlayerView.Initialize(PlayerConfig);
 
-            InitializeStateMachine();
+            m_PlayerController = new PlayerController(PlayerConfig, m_PlayerView, m_LevelService, m_CameraService, m_ParticleService, m_ScoreService, m_SkyboxService);
+
+            BindControllerEvents();
+
+            InitializeGameplayStates();
+           // InitializeStateMachine();
             InitializeCamera(Vector3.zero);
-            Init();
+           // Init();
 
         }
 
-        private void Init()
+
+        private void BindControllerEvents()
         {
-            m_PlayerView.EnableShape(EShapeType.CUBE);
-            m_PlayerStateMachine.GetCurrentState().OnEnterState();
+            m_PlayerController.OnDied               += HandleControllerDied;
+            m_PlayerController.OnFinishedLevel      += HandleControllerFinishedLevel;
+            m_PlayerController.OnCrossedWall        += HandleControllerCrossedWall;
+            m_PlayerController.OnBeastModeActivated += HandleControllerBeastModeActivated;
+        }
+
+
+        private void UnbindControllerEvents()
+        {
+            if (m_PlayerController == null)
+                return;
+
+            m_PlayerController.OnDied                 -= HandleControllerDied;
+            m_PlayerController.OnFinishedLevel        -= HandleControllerFinishedLevel;
+            m_PlayerController.OnCrossedWall          -= HandleControllerCrossedWall;
+            m_PlayerController.OnBeastModeActivated   -= HandleControllerBeastModeActivated;
         }
 
 
         public void InitializeCamera(Vector3 spawnPosition)
         {
             m_CameraService.SpawnCamera(spawnPosition);
-            m_CameraService.SetCameraFollow(m_PlayerView.transform);
-            m_CameraService.SetCameraLookAt(m_PlayerView.transform);
+            m_CameraService.SetCameraFollow(m_PlayerController.Transform);
+            m_CameraService.SetCameraLookAt(m_PlayerController.Transform);
         }
 
         public void StartGame()
         {
-            PlayerConfig.SetCurrentShape(EShapeType.CUBE);
-
-            //spawns Input
-            m_PlayerStateMachine.ChangeState(EPlayerStates.MOVE);
-
+            m_PlayerController.StartGame();
             m_CameraService.EnableCamera(ECameraType.FOLLOW_CAMERA);
-
             m_PlayerInputService.SpawnInputController();
-
         }
 
 
         // Change the player's shape based on swipe direction
-        private void Swipe(ESwipeDirection swipeDirection)
+        private void HandleSwipe(ESwipeDirection swipeDirection)
         {
-            if (m_PlayerView.GetShape(PlayerConfig.m_CurrentShapeType) != m_PlayerView.GetShape(swipeDirection))
-            {
-                PlayFX(EParticleType.SHAPE_TRANSITION);
-            }
-            m_PlayerView.ChangeShapeForDirection(swipeDirection);  
+            m_PlayerController.HandleSwipe(swipeDirection);
         }
 
         public void CheckCollision(BlockView block)
         {
-            bool isValid = IsValidCollision(PlayerConfig.m_CurrentShapeType, block.BlockType);
-
-            if (!isValid)
-            {
-                // Level Failed Condition
-                Debug.Log("Player Collided with different Shape. Level Failed!");
-
-                InvokePlayerDeath();
-                return;
-            }
-            OnPlayerCrossedWall.Invoke(block);
-
-            bool ActivateBeastMode = ((m_ScoreService.CurrentScore + PerfectCollsionPoints) % 5 == 0) && m_ScoreService.CurrentScore > 0;
-
-            if (ActivateBeastMode)
-            {
-                if (!BeastState)
-                {
-                    OnBeastActivated();
-                }
-            }
-            else
-            {
-                float value = (int)m_ScoreService.CurrentScore / 5f;
-                value = Mathf.Clamp01(value);
-                Debug.Log($"Sky value: {value}");
-                m_SkyboxService.LerpCurrentTo(m_SkyboxService.CurrentSkyColorType, ESkyColorType.GREYSHADE, value);
-                m_ScoreService.AddPoints(PerfectCollsionPoints);
-            }
-
+            m_PlayerController.CheckCollision(block);
         }
-
-        private bool BeastState =false;
 
         void OnBeastActivated()
         {
-            BeastState = true;
-            OnPlayerBeastModeActivated.Invoke(true);
+            m_GameplayStateMachine.ChangeState(EGameplayStates.BEASTMODE);
         }
 
         void OnBeastDeActivated()
         {
-            BeastState = false;
             OnPlayerBeastModeActivated.Invoke(false);
         }
 
@@ -201,52 +185,57 @@ namespace Scripts.Player
             m_PlayerInputService.UpdateInputs();
 
             // update states
-            if (m_PlayerStateMachine != null)
-            {
-                m_PlayerStateMachine.Update();
-            }
+            m_PlayerController.Tick();
 
         }
 
 
         private void FixedUpdate()
         {
-
-            if (m_PlayerStateMachine != null)
-            {
-                m_PlayerStateMachine.FixedUpdate();
-            }
-
+            m_PlayerController.FixedTick();
         }
 
         private void OnGizmosDraw()
         {
-            if (m_PlayerStateMachine != null)
-            {
-                m_PlayerStateMachine.DrawGizmos();
-            }
+            m_PlayerController.DrawGizmos();
         }
         private void HandlePlayerReachedFinishLine()
         {
-            PlayerConfig.m_HasPlayerFinished = true;
-
-            // change to idle
-            m_PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
-            m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
             m_PlayerInputService.DestroyInputController();
-
-            //Activate rotating camera around player at finish line
+            m_CameraService.EnableCamera(ECameraType.FINISHLINE_CAMERA);
             m_CameraService.ActivateFinishLineCamera();
 
-            PlayFX(EParticleType.CONFETTI);
-
-            OnPlayerFinishedLevel?.Invoke();
+            //Activate rotating camera around player at finish line
+            m_PlayerController.ReachFinishLine();
         }
+        private void HandleControllerDied()
+        {
+            m_PlayerInputService.EnableInput(false);
+            m_LevelService.InvokeLevelFailed();
+            OnPlayerDied.Invoke();
+
+        }
+
+        private void HandleControllerFinishedLevel()
+        {
+            OnPlayerFinishedLevel.Invoke();
+        }
+
+        private void HandleControllerCrossedWall(BlockView block)
+        {
+            OnPlayerCrossedWall.Invoke(block);
+        }
+
+        private void HandleControllerBeastModeActivated(bool active)
+        {
+            OnPlayerBeastModeActivated.Invoke(active);
+        }
+
 
         //Plays particle fxs
         private void PlayFX(EParticleType type)
         {
-            Vector3 offset = ((type != EParticleType.DEATH) ? Vector3.zero : Vector3.down *1.5f);
+            Vector3 offset = ((type != EParticleType.DEATH) ? Vector3.zero : Vector3.down * 1.5f);
             Vector3 spawnPoint = m_PlayerView.transform.position + offset;
             m_ParticleService.SpawnParticle(type, spawnPoint, Quaternion.identity);
 
@@ -255,13 +244,16 @@ namespace Scripts.Player
         public void Reset()
         {
             DestroyPlayer();
-            CleanUp();
-            Initialize();
+            CleanUpRuntimeOnly();
+            SpawnPlayer(PlayerConfig.m_SpawnPosition);
         }
 
         private void DestroyPlayer()
         {
-            MonoBehaviour.Destroy(m_PlayerView.gameObject);
+            if (m_PlayerView!= null)
+            {
+                UnityEngine.Object.Destroy(m_PlayerView.gameObject);
+            }
         }
 
 
@@ -273,60 +265,54 @@ namespace Scripts.Player
 
         public void CleanUp()
         {
+            CleanUpRuntimeOnly();
             //Event clean
             m_GameloopService.OnUpdateTick -= Update;
             m_GameloopService.OnFixedUpdateTick -= FixedUpdate;
             m_LevelService.OnLevelCompleted -= HandlePlayerReachedFinishLine;
-            m_PlayerInputService.OnSwipe -= Swipe;
+            m_PlayerInputService.OnSwipe -= HandleSwipe;
 
             //services clean
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
             m_PlayerStateMachine.CleanUp();
             m_SkyboxService.CleanUp();
+            m_GameplayStateMachine.CleanupStates();
 
             //Data/References clean
             m_FutureShapeController = null;
+            m_GameplayStateMachine = null;
+
         }
 
         public void InvokePlayerDeath()
         {
-            PlayFX(EParticleType.DEATH);
-
-
             FailedLevel();
-            m_PlayerView.Hide();
             OnPlayerDied.Invoke();
         }
 
         private void FailedLevel()
         {
-            m_PlayerStateMachine.ChangeState(EPlayerStates.IDLE);
             m_PlayerInputService.EnableInput(false);
             m_LevelService.InvokeLevelFailed();
         }
 
         public float GetPlayerDistanceToFinish()
         {
-            if (m_PlayerView == null || m_LevelService.m_FinishLineView == null)
+            if (m_PlayerController == null || m_LevelService.m_FinishLineView == null)
                 return 0f;
-            //since game moves in X and Z, we ignore Y axis
-            Vector3 displacement = (m_PlayerView.transform.position - m_LevelService.m_FinishLineView.transform.position);
-            float lengthXZ = Mathf.Sqrt(displacement.x * displacement.x + displacement.z * displacement.z);
 
-            return lengthXZ;
+            return m_PlayerController.GetDistanceSq(m_LevelService.m_FinishLineView.transform);
 
         }
 
-        public float GetTotalDistanceToFinish()
+        private void CleanUpRuntimeOnly()
         {
-            if (m_PlayerView == null || m_LevelService.m_FinishLineView == null)
-                return 0f;
+            UnbindControllerEvents();
 
-            Vector3 displacement = PlayerConfig.m_SpawnPosition - m_LevelService.m_FinishLineView.transform.position;
-
-            float lengthXZ = Mathf.Sqrt(displacement.x * displacement.x + displacement.z * displacement.z);
-            return lengthXZ;
+            m_PlayerController?.Cleanup();
+            m_PlayerController = null;
+            m_PlayerView = null;
         }
     }
 }
