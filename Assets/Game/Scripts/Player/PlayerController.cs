@@ -16,8 +16,6 @@ namespace Scripts.Player
         private readonly ILevelService _levelService;
         private readonly ICameraService _cameraService;
         private readonly IParticleService _particleService;
-        private readonly IScoreService _scoreService;
-        private readonly ISkyService _skyService;
 
 
         public event Action OnDied = delegate { };
@@ -43,8 +41,6 @@ namespace Scripts.Player
             _cameraService = cameraService;
             _levelService = levelService;
             _particleService = particleService;
-            _scoreService = scoreService;
-            _skyService = skyService;
 
 
             _view.Initialize(_config);
