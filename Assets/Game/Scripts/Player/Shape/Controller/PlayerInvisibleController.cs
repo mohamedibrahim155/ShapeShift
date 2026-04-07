@@ -9,16 +9,16 @@ namespace Scripts.Player
     public class PlayerInvisibleController 
     {
         
-        private readonly PlayerView _playerView;
+        private readonly PlayerController _playerController;
         private readonly PlayerConfig _playerConfig;
         private readonly ILevelService _levelService;
 
         private int _currentBlockIndex;
         private List<BlockView> _blocks;
 
-        public PlayerInvisibleController(PlayerView playerView, PlayerConfig playerConfig, ILevelService levelService)
+        public PlayerInvisibleController(PlayerController playerController, PlayerConfig playerConfig, ILevelService levelService)
         {
-            _playerView = playerView;
+            _playerController = playerController;
             _playerConfig = playerConfig;
             _levelService = levelService;
             _currentBlockIndex = 0;
@@ -53,7 +53,7 @@ namespace Scripts.Player
             Color color = ((int)_playerConfig.m_CurrentShapeType == (int)currentBlock.BlockType) ? Color.green : Color.red;
             color.a = 0.5f;
 
-            _playerView.ShowHightLight(currentBlock.transform.position, color, _playerConfig.m_CurrentShapeType);
+            _playerController.ShowHighlight(currentBlock.transform.position, color, _playerConfig.m_CurrentShapeType);
 
         }
 
@@ -65,7 +65,7 @@ namespace Scripts.Player
 
         public void Hide()
         {
-            _playerView.HideHighlight();
+            _playerController.HideHighlight();
         }
 
         public BlockView GetCurrentBlock()
@@ -79,7 +79,7 @@ namespace Scripts.Player
         //Taking z and x axis alone
         private float GetDistanceSq(BlockView block)
         {
-            Vector3 d = _playerView.transform.position - block.transform.position;
+            Vector3 d = _playerController.Transform.position - block.transform.position;
             return d.x * d.x + d.z * d.z;
         }
 

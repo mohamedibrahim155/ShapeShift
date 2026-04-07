@@ -33,7 +33,7 @@ namespace Scripts.Player
         {
             foreach (var shapeView in shapeViews)
             {
-               shapeView?.Hide();
+               shapeView.Hide();
             }
         }
 

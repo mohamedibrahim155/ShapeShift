@@ -23,10 +23,10 @@ namespace Scripts.Player
         public event Action OnDied = delegate { };
         public event Action OnFinishedLevel = delegate { };
         public event Action<BlockView> OnCrossedWall = delegate { };
-        public event Action<bool> OnBeastModeActivated = delegate { };
 
         public EShapeType CurrentShapeType { get; private set; }
         public bool HasFinishedLevel { get; private set; }
+        public bool HasDied { get; private set; }
         public Transform Transform => _view.transform;
         public Rigidbody Rigidbody => _view.Rigidbody;
         public PlayerController(PlayerConfig config,
@@ -51,7 +51,7 @@ namespace Scripts.Player
 
             //Creation
             _stateMachine = new PlayerStateMachine(_view, _config);
-            _playerInvisibleController = new PlayerInvisibleController(_view, _config, levelService);
+            _playerInvisibleController = new PlayerInvisibleController(this, _config, levelService);
 
             //states initalize
             _stateMachine.AddState(EPlayerStates.IDLE, new IdleState());
@@ -66,19 +66,29 @@ namespace Scripts.Player
 
         public void StartGame()
         {
+            ResetPlayer();
+        }
+
+        private void ResetPlayer()
+        {
             HasFinishedLevel = false;
+            HasDied = false;
             SetShapeImmediate(EShapeType.CUBE);
             _stateMachine.ChangeState(EPlayerStates.MOVE);
         }
 
         public void Tick()
         {
+            if (HasFinishedLevel || HasDied) return;
+
             _playerInvisibleController.Update();
             _stateMachine.Update();
         }
 
         public void FixedTick()
         {
+            if (HasFinishedLevel || HasDied) return;
+
             _stateMachine.FixedUpdate();
         }
 
@@ -125,17 +135,21 @@ namespace Scripts.Player
 
             OnCrossedWall.Invoke(block);
             _playerInvisibleController.NextBlock();
-            HandleSuccessfullCollision();
         }
 
-     
+
 
         private void Die()
         {
+
             PlayFX(EParticleType.DEATH);
+
             _stateMachine.ChangeState(EPlayerStates.IDLE);
-            _view.HideAllShapes();
+
             _view.HideHighlight();
+            _view.HideAllShapes();
+            HasDied = true;
+
             OnDied.Invoke();
         }
 
@@ -153,27 +167,10 @@ namespace Scripts.Player
             _view.ShowShape(shapeType);
             _config.SetCurrentShape(shapeType);
         }
-        private void HandleSuccessfullCollision()
-        {
-            const int PointsPerWall = 1;
-            const float scoreDivident = 5f;
-
-            bool activateBeastMode = ((_scoreService.CurrentScore + PointsPerWall) % scoreDivident == 0) && _scoreService.CurrentScore > 0;
-            if (activateBeastMode)
-            {
-                OnBeastModeActivated.Invoke(true);
-                return;
-            }
-
-            float value = Mathf.Clamp01((int)_scoreService.CurrentScore / scoreDivident);
-            _skyService.LerpCurrentTo(_skyService.CurrentSkyColorType, ESkyColorType.GREYSHADE, value);
-            _scoreService.AddPoints(PointsPerWall);
-        }
 
         public void HideHighlight()
         {
             _view.HideHighlight();
-        
         }
 
         public void SetVelocity(Vector3 velocity)

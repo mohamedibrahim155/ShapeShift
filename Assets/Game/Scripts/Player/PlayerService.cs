@@ -29,10 +29,7 @@ namespace Scripts.Player
         private ILevelService m_LevelService;
         private IParticleService m_ParticleService;
         private ISkyService m_SkyboxService;
-        private PlayerStateMachine m_PlayerStateMachine;
-        private PlayerInvisibleController m_FutureShapeController;
         private PlayerController m_PlayerController;
-        private GameplayStateMachine m_GameplayStateMachine;
 
         private Dictionary<ESwipeDirection, ShapeView> m_PlayerShapes = new Dictionary<ESwipeDirection, ShapeView>();
         private const int PerfectCollsionPoints = 1;
@@ -69,9 +66,6 @@ namespace Scripts.Player
             //subscribes events
             InitializeEvents();
 
-            m_ScoreService.Reset();
-            m_SkyboxService.Reset();
-
             SpawnPlayer(PlayerConfig.m_SpawnPosition);
         }
 
@@ -86,21 +80,8 @@ namespace Scripts.Player
         }
 
 
-        private void InitializeStateMachine()
-        {
-            m_PlayerStateMachine    = new PlayerStateMachine(m_PlayerView, PlayerConfig);
-            m_FutureShapeController = new PlayerInvisibleController(m_PlayerView, PlayerConfig, m_LevelService);
-           
-
-        }
-        private void InitializeGameplayStates()
-        {
-            m_GameplayStateMachine = new GameplayStateMachine();
-            m_GameplayStateMachine.AddState(EGameplayStates.PLAYING, new PlayingState());
-            m_GameplayStateMachine.AddState(EGameplayStates.BEASTMODE, new BeastModeState(this, ref OnPlayerBeastModeActivated));
-
-            m_GameplayStateMachine.ChangeState(EGameplayStates.PLAYING);
-        }
+   
+  
 
 
 
@@ -113,11 +94,7 @@ namespace Scripts.Player
             m_PlayerController = new PlayerController(PlayerConfig, m_PlayerView, m_LevelService, m_CameraService, m_ParticleService, m_ScoreService, m_SkyboxService);
 
             BindControllerEvents();
-
-            InitializeGameplayStates();
-           // InitializeStateMachine();
             InitializeCamera(Vector3.zero);
-           // Init();
 
         }
 
@@ -127,7 +104,6 @@ namespace Scripts.Player
             m_PlayerController.OnDied               += HandleControllerDied;
             m_PlayerController.OnFinishedLevel      += HandleControllerFinishedLevel;
             m_PlayerController.OnCrossedWall        += HandleControllerCrossedWall;
-            m_PlayerController.OnBeastModeActivated += HandleControllerBeastModeActivated;
         }
 
 
@@ -139,7 +115,6 @@ namespace Scripts.Player
             m_PlayerController.OnDied                 -= HandleControllerDied;
             m_PlayerController.OnFinishedLevel        -= HandleControllerFinishedLevel;
             m_PlayerController.OnCrossedWall          -= HandleControllerCrossedWall;
-            m_PlayerController.OnBeastModeActivated   -= HandleControllerBeastModeActivated;
         }
 
 
@@ -167,16 +142,6 @@ namespace Scripts.Player
         public void CheckCollision(BlockView block)
         {
             m_PlayerController.CheckCollision(block);
-        }
-
-        void OnBeastActivated()
-        {
-            m_GameplayStateMachine.ChangeState(EGameplayStates.BEASTMODE);
-        }
-
-        void OnBeastDeActivated()
-        {
-            OnPlayerBeastModeActivated.Invoke(false);
         }
 
         private void Update()
@@ -224,27 +189,38 @@ namespace Scripts.Player
         private void HandleControllerCrossedWall(BlockView block)
         {
             OnPlayerCrossedWall.Invoke(block);
+            HandleSuccessfullCollision();
         }
 
-        private void HandleControllerBeastModeActivated(bool active)
+        private void HandleSuccessfullCollision()
         {
-            OnPlayerBeastModeActivated.Invoke(active);
+            const int PointsPerWall = 1;
+            const float scoreDivident = 5f;
+
+            bool activateBeastMode = ((m_ScoreService.CurrentScore + PointsPerWall) % scoreDivident == 0) && m_ScoreService.CurrentScore > 0;
+            if (activateBeastMode)
+            {
+                OnPlayerBeastModeActivated.Invoke(true);
+                return;
+            }
+
+            float value = Mathf.Clamp01((int)m_ScoreService.CurrentScore / scoreDivident);
+            m_SkyboxService.LerpCurrentTo(ESkyColorType.GREYSHADE, value);
+            m_ScoreService.AddPoints(PointsPerWall);
         }
+    
 
-
-        //Plays particle fxs
-        private void PlayFX(EParticleType type)
-        {
-            Vector3 offset = ((type != EParticleType.DEATH) ? Vector3.zero : Vector3.down * 1.5f);
-            Vector3 spawnPoint = m_PlayerView.transform.position + offset;
-            m_ParticleService.SpawnParticle(type, spawnPoint, Quaternion.identity);
-
-        }
         //resets the player to initial state for new game or level retry
         public void Reset()
         {
             DestroyPlayer();
             CleanUpRuntimeOnly();
+
+            //reset services
+            m_ScoreService.Reset();
+            m_SkyboxService.Reset();
+
+            // resspawn player and reinitialize states and events
             SpawnPlayer(PlayerConfig.m_SpawnPosition);
         }
 
@@ -254,13 +230,6 @@ namespace Scripts.Player
             {
                 UnityEngine.Object.Destroy(m_PlayerView.gameObject);
             }
-        }
-
-
-        private bool IsValidCollision(EShapeType shapeType, EBlockType blockType)
-        {
-
-            return (int)shapeType == (int)blockType;
         }
 
         public void CleanUp()
@@ -275,14 +244,7 @@ namespace Scripts.Player
             //services clean
             m_PlayerInputService.CleanUp();
             m_CameraService.Cleanup();
-            m_PlayerStateMachine.CleanUp();
             m_SkyboxService.CleanUp();
-            m_GameplayStateMachine.CleanupStates();
-
-            //Data/References clean
-            m_FutureShapeController = null;
-            m_GameplayStateMachine = null;
-
         }
 
         public void InvokePlayerDeath()
