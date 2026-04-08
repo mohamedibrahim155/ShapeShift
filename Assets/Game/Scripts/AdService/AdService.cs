@@ -17,17 +17,16 @@ namespace Scripts.Ads
 
         public AdsConfig AdsConfig { get; private set; }
 
-        public bool IsAdsInitialized { get; private set; }
+        public bool IsAdsInitialized => Advertisement.isInitialized;
 
-        public bool IsRewardedAdReady { get; private set; }
 
         private Action<RewardedAdResult> OnAdCompleted;
 
-        public event Action OnAdInitialization                =delegate { };
-        public event Action<string> OnAdInitalizationFailed   = delegate { };
-        public event Action<EAdType> OnAdLoaded               = delegate { };
+        public event Action OnAdInitialization = delegate { };
+        public event Action<string> OnAdInitalizationFailed = delegate { };
+        public event Action<EAdType> OnAdLoaded = delegate { };
         public event Action<EAdType, string> OnAdLoadedFailed = delegate { };
-        public event Action<EAdType, string> OnAdShowFailed   = delegate { };
+        public event Action<EAdType, string> OnAdShowFailed = delegate { };
 
         [Inject]
         public void Construct(AdsConfig adsConfig)
@@ -47,6 +46,7 @@ namespace Scripts.Ads
                 OnAdInitalizationFailed.Invoke("Missing Game ID in AdConfig.");
                 return;
             }
+            Debug.Log("Ads initalized: " + Advertisement.isInitialized);
             Advertisement.Initialize(_gameId, AdsConfig.TestMode, this);
         }
 
@@ -58,9 +58,9 @@ namespace Scripts.Ads
             _rewardedAdUnitId = AdsConfig.IOS_RewardedID;
             _intersetialAdID  = AdsConfig.IOS_IntersitalAdID;
 #else
-            _gameId            = AdsConfig.AndroidAdUnityId;
+            _gameId = AdsConfig.AndroidAdUnityId;
             _rewardedAdUnitId = AdsConfig.Android_RewardedID;
-            _intersetialAdID   = AdsConfig.Android_IntersitialAdID;
+            _intersetialAdID = AdsConfig.Android_IntersitialAdID;
 
 #endif
         }
@@ -69,10 +69,9 @@ namespace Scripts.Ads
         public void OnInitializationComplete()
         {
             Debug.Log("Unity Ads initialization complete.");
-            
-            IsAdsInitialized = true;
+
             OnAdInitialization.Invoke();
-           
+
             LoadAd(EAdType.Rewarded);
             LoadAd(EAdType.Intersetial);
         }
@@ -81,14 +80,12 @@ namespace Scripts.Ads
         {
             string errorMessage = $"Unity Ads Initialization Failed: {error.ToString()} - {message}";
             Debug.LogError(errorMessage);
-           
-            IsAdsInitialized = false;
+
             OnAdInitalizationFailed.Invoke(errorMessage);
         }
 
         public void OnUnityAdsAdLoaded(string placementId)
         {
-            Debug.Log($"Ad Loaded: {placementId}");
             EAdType adType = GetAdType(placementId);
             OnAdLoaded.Invoke(adType);
         }
@@ -129,11 +126,11 @@ namespace Scripts.Ads
 
             EAdType nextAdTypToload = GetAdType(placementId);
             RewardedAdResult completionState = MapResult(showCompletionState);
-           
+
             OnAdCompleted?.Invoke(completionState);
             OnAdCompleted = null;
 
-      
+
 
             LoadAd(nextAdTypToload);
 
@@ -141,15 +138,15 @@ namespace Scripts.Ads
 
         public void LoadAd(EAdType adType)
         {
-            if (!IsAdsInitialized) return;
-            
+            if (!IsAdReady()) return;
+
             Advertisement.Load(GetAdTypeID(adType), this);
         }
         public void ShowAd(EAdType adType, Action<RewardedAdResult> onAdComplete)
         {
-            if (!IsAdsInitialized)
+            if (!IsAdReady())
             {
-                onAdComplete?.Invoke(RewardedAdResult.Failed);
+                onAdComplete?.Invoke(RewardedAdResult.NotReady);
                 return;
             }
 
@@ -157,7 +154,7 @@ namespace Scripts.Ads
             Advertisement.Show(GetAdTypeID(adType), this);
         }
 
-        private  string GetAdTypeID(EAdType adType)
+        private string GetAdTypeID(EAdType adType)
         {
             return (adType) switch
             {
@@ -170,14 +167,14 @@ namespace Scripts.Ads
         private EAdType GetAdType(string AdID)
         {
             if (string.Equals(AdID, _rewardedAdUnitId)) return EAdType.Rewarded;
-            if (string.Equals(AdID , _intersetialAdID)) return EAdType.Intersetial;
-            
+            if (string.Equals(AdID, _intersetialAdID)) return EAdType.Intersetial;
+
             return EAdType.Intersetial;
         }
 
         private static RewardedAdResult MapResult(UnityAdsShowCompletionState showCompletionState)
         {
-              return showCompletionState switch
+            return showCompletionState switch
             {
                 UnityAdsShowCompletionState.COMPLETED => RewardedAdResult.Completed,
                 UnityAdsShowCompletionState.SKIPPED => RewardedAdResult.Skipped,
@@ -186,6 +183,11 @@ namespace Scripts.Ads
             };
         }
 
-     
+        private bool IsAdReady()
+        {
+            bool adReady = IsAdsInitialized && AdsConfig.AdsEnabled;
+            return adReady;
+
+        }
     }
 }

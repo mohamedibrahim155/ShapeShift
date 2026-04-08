@@ -82,8 +82,8 @@ namespace Scripts.UI
 
         private void HandleWatchAdButtonClicked()
         {
-            m_adService.ShowAd(EAdType.Intersetial, OnAdComplete);
             WatchAdButton.SetInteractable(false);
+            m_adService.ShowAd(EAdType.Intersetial, OnAdComplete);
             void OnAdComplete(RewardedAdResult result)
             {
                 Debug.Log("Watch ad result: " + result.ToString());
