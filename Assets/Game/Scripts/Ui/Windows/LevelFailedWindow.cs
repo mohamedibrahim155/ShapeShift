@@ -6,6 +6,8 @@ using TMPro;
 using Scripts.Level;
 using System.Collections;
 using DG.Tweening;
+using Scripts.Ads;
+using System;
 namespace Scripts.UI
 {
     public class LevelFailedWindow : UIWindow
@@ -15,20 +17,26 @@ namespace Scripts.UI
         [SerializeField] private GameObject LevelFailedBanner;
         [SerializeField] private TextMeshProUGUI LevelFailedTextField;
         [SerializeField] private TextMeshProUGUI LevelNumberTextField;
+        [SerializeField] private RewardedAdButtonView WatchAdButton;
+
+        public RewardedAdButtonView WatchAdButtonView => WatchAdButton;
 
         private IPlayerService m_PlayerService;
         private IUIService m_UIService;
         private ILevelService m_LevelService;
+        private IAdService m_adService;
 
         [Inject]
-        private void Construct(IPlayerService playerService, IUIService uiService, ILevelService levelService)
+        private void Construct(IPlayerService playerService, IUIService uiService, ILevelService levelService, IAdService adService)
         {
             m_PlayerService = playerService;
             m_UIService = uiService;
             m_LevelService = levelService;
+            m_adService = adService;
+
 
             RetryButton.Button.onClick.AddListener(RetryButtonClicked);
-
+            WatchAdButton.OnButtonClicked += HandleWatchAdButtonClicked;
             m_LevelService.OnLevelFailed += OpenLevelFailedWindow;
         }
 
@@ -59,9 +67,6 @@ namespace Scripts.UI
             Close();
             RestartLevel();
         }
-
-
-
         private void RestartLevel()
         {
 
@@ -73,6 +78,19 @@ namespace Scripts.UI
             m_PlayerService.Reset();
 
             m_UIService.OpenWindow(EWindowID.MinMenu);
+        }
+
+        private void HandleWatchAdButtonClicked()
+        {
+            m_adService.ShowAd(EAdType.Intersetial, OnAdComplete);
+            WatchAdButton.SetInteractable(false);
+            void OnAdComplete(RewardedAdResult result)
+            {
+                Debug.Log("Watch ad result: " + result.ToString());
+                WatchAdButton.SetInteractable(true);
+
+            }
+
         }
 
         private void UnsubscribeEvents()
