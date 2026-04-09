@@ -9,6 +9,7 @@ namespace Scripts.UI
         GamePaused,
         Settings,
         LevelCompleted,
-        LevelFailed
+        LevelFailed,
+        Shop
     }
 }

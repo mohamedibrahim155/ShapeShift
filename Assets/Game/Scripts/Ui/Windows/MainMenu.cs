@@ -12,6 +12,7 @@ namespace Scripts.UI
         [SerializeField] private Button PlayButton;
         [SerializeField] private Button OptionButton;
         [SerializeField] private Button QuitButton;
+        [SerializeField] private Button ShopButton;
 
         public event Action OnPlayButtonClicked = delegate { };
 
@@ -26,6 +27,7 @@ namespace Scripts.UI
 
             PlayButton.onClick.AddListener(OnPlayClicked);
             QuitButton.onClick.AddListener(OnQuitClicked);
+            ShopButton.onClick.AddListener(OnShopButtonClicked);
         }
 
 
@@ -42,6 +44,11 @@ namespace Scripts.UI
             m_PlayerService.StartGame();
             m_UIService.OpenWindow(EWindowID.Gameplay);
             Close();
+        }
+
+        private void OnShopButtonClicked()
+        {
+            m_UIService.OpenWindow(EWindowID.Shop);
         }
 
     }
