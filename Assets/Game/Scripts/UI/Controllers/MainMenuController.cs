@@ -24,9 +24,10 @@ namespace Scripts.UI
         {
             m_MainMenuWindow =  m_UIService.GetWindow(EWindowID.MinMenu) as MainMenu;
 
-            m_MainMenuWindow.OnPlayClicked += HandlePlayClicked;
-            m_MainMenuWindow.OnQuitClicked += HandleQuitClicked;
-            m_MainMenuWindow.OnShopClicked += HandleShopClicked;
+            m_MainMenuWindow.OnPlayClicked     += HandlePlayClicked;
+            m_MainMenuWindow.OnSettingsClicked += HandleSettingsClicked;
+            m_MainMenuWindow.OnQuitClicked     += HandleQuitClicked;
+            m_MainMenuWindow.OnShopClicked     += HandleShopClicked;
         }
 
         private void HandleShopClicked()
@@ -46,6 +47,11 @@ namespace Scripts.UI
             m_UIService.CloseWindow(EWindowID.MinMenu);
         }
 
+        private void HandleSettingsClicked()
+        {
+            m_UIService.OpenWindow(EWindowID.Settings);
+        }
+
         public void Cleanup()
 
         {
@@ -54,9 +60,11 @@ namespace Scripts.UI
             {
                 return;
             }
-            m_MainMenuWindow.OnPlayClicked -= HandlePlayClicked;
-            m_MainMenuWindow.OnQuitClicked -= HandleQuitClicked;
-            m_MainMenuWindow.OnShopClicked -= HandleShopClicked;
+            m_MainMenuWindow.OnPlayClicked     -= HandlePlayClicked;
+            m_MainMenuWindow.OnSettingsClicked -= HandleSettingsClicked;
+
+            m_MainMenuWindow.OnQuitClicked     -= HandleQuitClicked;
+            m_MainMenuWindow.OnShopClicked     -= HandleShopClicked;
         }
     }
 }

@@ -15,12 +15,13 @@ namespace Scripts.UI
         [SerializeField] private Button ShopButton;
 
         public event Action OnPlayClicked = delegate { };
-        public event Action OnOptionClicked = delegate { };
+        public event Action OnSettingsClicked = delegate { };
         public event Action OnQuitClicked = delegate { };
         public event Action OnShopClicked = delegate { };
         private void Awake()
         {
             PlayButton.onClick.AddListener(() => OnPlayClicked.Invoke());
+            OptionButton.onClick.AddListener(() => OnSettingsClicked.Invoke());
             QuitButton.onClick.AddListener(() => OnQuitClicked.Invoke());
             ShopButton.onClick.AddListener(() => OnShopClicked.Invoke());
         }
@@ -28,6 +29,7 @@ namespace Scripts.UI
         private void OnDestroy()
         {
             PlayButton.onClick.RemoveAllListeners();
+            OptionButton.onClick.RemoveAllListeners();
             QuitButton.onClick.RemoveAllListeners();
             ShopButton.onClick.RemoveAllListeners();
         }

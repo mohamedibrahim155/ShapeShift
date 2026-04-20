@@ -14,7 +14,7 @@ namespace Scripts.UI
     public class UIService : IUIService
     {
 
-        private Dictionary<EWindowID, UIWindow> m_ListOfWindowsCached   = new Dictionary<EWindowID, UIWindow>();
+        private Dictionary<EWindowID, UIWindow> m_ListOfWindowsCached = new Dictionary<EWindowID, UIWindow>();
 
         private UICanvasView m_UiCanvasView;
         private UIConfig m_UiConfig;
@@ -29,10 +29,11 @@ namespace Scripts.UI
         private IController m_MainMenuController;
         private IController m_LevelCompleteController;
         private IController m_LevelFailedController;
+        private IController m_SettingsController;
 
-        [Inject] 
-        public void Construct(UIConfig config, DiContainer container, 
-            IPlayerService playerService, 
+        [Inject]
+        public void Construct(UIConfig config, DiContainer container,
+            IPlayerService playerService,
             ILevelService levelService,
             IAdService AdService)
         {
@@ -57,7 +58,7 @@ namespace Scripts.UI
             m_UiCanvasView = m_Container.InstantiatePrefabForComponent<UICanvasView>(m_UiConfig.m_CanvasView);
         }
 
-     
+
         private void CachedWindows()
         {
             Debug.Log("Caching Windows");
@@ -81,10 +82,12 @@ namespace Scripts.UI
             m_MainMenuController = new MainMenuController(this, m_PlayerService);
             m_LevelCompleteController = new LevelCompleteController(this, m_PlayerService, m_LevelService);
             m_LevelFailedController = new LevelFailedController(this, m_PlayerService, m_LevelService, m_AdService);
+            m_SettingsController = new SettingsController(this);
 
             m_MainMenuController.Initialize();
             m_LevelCompleteController.Initialize();
             m_LevelFailedController.Initialize();
+            m_SettingsController.Initialize();
         }
 
         public void Cleanup()
@@ -92,6 +95,7 @@ namespace Scripts.UI
             m_MainMenuController.Cleanup();
             m_LevelCompleteController.Cleanup();
             m_LevelFailedController.Cleanup();
+            m_SettingsController.Cleanup();
         }
 
         public void OpenWindow(EWindowID ID, float time = 0.5f)
@@ -106,7 +110,12 @@ namespace Scripts.UI
 
         public UIWindow GetWindow(EWindowID ID)
         {
-           return m_ListOfWindowsCached[ID];
+            return m_ListOfWindowsCached[ID];
         }
+
+
+
+        
     }
+
 }
