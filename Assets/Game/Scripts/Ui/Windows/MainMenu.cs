@@ -14,41 +14,22 @@ namespace Scripts.UI
         [SerializeField] private Button QuitButton;
         [SerializeField] private Button ShopButton;
 
-        public event Action OnPlayButtonClicked = delegate { };
-
-        private IPlayerService m_PlayerService;
-        private IUIService m_UIService;
-
-        [Inject]
-        private void Construct(IPlayerService playerService, IUIService uiService)
+        public event Action OnPlayClicked = delegate { };
+        public event Action OnOptionClicked = delegate { };
+        public event Action OnQuitClicked = delegate { };
+        public event Action OnShopClicked = delegate { };
+        private void Awake()
         {
-            m_PlayerService = playerService;
-            m_UIService = uiService;
-
-            PlayButton.onClick.AddListener(OnPlayClicked);
-            QuitButton.onClick.AddListener(OnQuitClicked);
-            ShopButton.onClick.AddListener(OnShopButtonClicked);
+            PlayButton.onClick.AddListener(() => OnPlayClicked.Invoke());
+            QuitButton.onClick.AddListener(() => OnQuitClicked.Invoke());
+            ShopButton.onClick.AddListener(() => OnShopClicked.Invoke());
         }
 
-
-        private void OnQuitClicked()
+        private void OnDestroy()
         {
-            Debug.Log("Quit Button Pressed");
-
-            Application.Quit();
-        }
-
-        private void OnPlayClicked()
-        {
-            OnPlayButtonClicked.Invoke();
-            m_PlayerService.StartGame();
-            m_UIService.OpenWindow(EWindowID.Gameplay);
-            Close();
-        }
-
-        private void OnShopButtonClicked()
-        {
-            m_UIService.OpenWindow(EWindowID.Shop);
+            PlayButton.onClick.RemoveAllListeners();
+            QuitButton.onClick.RemoveAllListeners();
+            ShopButton.onClick.RemoveAllListeners();
         }
 
     }

@@ -20,27 +20,16 @@ namespace Scripts.UI
         [SerializeField] private RewardedAdButtonView WatchAdButton;
 
         public RewardedAdButtonView WatchAdButtonView => WatchAdButton;
+        public Action OnRetryButtonClicked = delegate { };
 
-        private IPlayerService m_PlayerService;
-        private IUIService m_UIService;
-        private ILevelService m_LevelService;
-        private IAdService m_adService;
 
-        [Inject]
-        private void Construct(IPlayerService playerService, IUIService uiService, ILevelService levelService, IAdService adService)
+
+        private void Awake()
         {
-            m_PlayerService = playerService;
-            m_UIService = uiService;
-            m_LevelService = levelService;
-            m_adService = adService;
-
-
-            RetryButton.Button.onClick.AddListener(RetryButtonClicked);
-            WatchAdButton.OnButtonClicked += HandleWatchAdButtonClicked;
-            m_LevelService.OnLevelFailed += OpenLevelFailedWindow;
+            RetryButton.Button.onClick.AddListener(() => OnRetryButtonClicked.Invoke());
         }
 
-        public void OpenLevelFailedWindow()
+        public void OpenLevelFailedWindowWithDelay()
         {
             StartCoroutine(OpenWindowWithDelay(0.25f));
         }
@@ -60,46 +49,6 @@ namespace Scripts.UI
             FadeLevelNumber(1, 0.25f);
         }
 
-        private void RetryButtonClicked()
-        {
-            Debug.Log("Retry  Pressed");
-
-            Close();
-            RestartLevel();
-        }
-        private void RestartLevel()
-        {
-
-            int currentLevel = m_LevelService.GetCurrentLevel();
-
-            m_LevelService.Cleanup();
-            m_LevelService.SpawnLevel(currentLevel);
-
-            m_PlayerService.Reset();
-
-            m_UIService.OpenWindow(EWindowID.MinMenu);
-        }
-
-        private void HandleWatchAdButtonClicked()
-        {
-            WatchAdButton.SetInteractable(false);
-            m_adService.ShowAd(EAdType.Intersetial, OnAdComplete);
-            void OnAdComplete(RewardedAdResult result)
-            {
-                Debug.Log("Watch ad result: " + result.ToString());
-                WatchAdButton.SetInteractable(true);
-
-            }
-
-        }
-
-        private void UnsubscribeEvents()
-        {
-            m_LevelService.OnLevelFailed -= OpenLevelFailedWindow;
-
-            RetryButton.Button.onClick.RemoveListener(RetryButtonClicked);
-        }
-
         private void AnimateBanner()
         {
             LevelFailedBanner.transform.DOScale(Vector3.one, 0.3f).OnComplete(() => AnimateLevelText()).SetEase(Ease.InOutCubic);
@@ -110,8 +59,13 @@ namespace Scripts.UI
             LevelFailedTextField.transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.InOutCubic).OnComplete(() => FadeRetryButton(1, 0.25f));
         }
 
+        public void UpdateLevelText(int levelNumber)
+        {
+            LevelNumberTextField.text = $"Level {levelNumber}";
+        }
 
-        private void FadeLevelNumber(float value, float time)
+
+        public void FadeLevelNumber(float value, float time)
         {
             LevelFailedTextField.DOFade(value, time);
         }
@@ -132,7 +86,7 @@ namespace Scripts.UI
 
         private void OnDestroy()
         {
-            UnsubscribeEvents();
+            RetryButton.Button.onClick.RemoveAllListeners();
         }
 
 

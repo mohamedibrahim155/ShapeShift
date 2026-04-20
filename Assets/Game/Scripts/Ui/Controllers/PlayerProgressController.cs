@@ -30,7 +30,7 @@ namespace Scripts.UI
             m_MainMenuWindow =  m_UIService.GetWindow(EWindowID.MinMenu) as MainMenu;
 
 
-            m_MainMenuWindow.OnPlayButtonClicked += StartTracking;
+            m_MainMenuWindow.OnPlayClicked += StartTracking;
             m_PlayerService.OnPlayerDied += OnDied;
             m_PlayerService.OnPlayerFinishedLevel += OnFinishedLevel;
         }
@@ -106,7 +106,7 @@ namespace Scripts.UI
 
         public void Cleanup()
         {
-            m_MainMenuWindow.OnPlayButtonClicked    -= StartTracking;
+            m_MainMenuWindow.OnPlayClicked         -= StartTracking;
             m_PlayerService.OnPlayerDied            -= OnDied;
             m_PlayerService.OnPlayerFinishedLevel   -= OnFinishedLevel;
         }

@@ -1,10 +1,10 @@
 using Scripts.Player;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 using TMPro;
 using Scripts.Level;
 using System.Collections;
+using System;
 namespace Scripts.UI
 {
     public class LevelCompleteWindow : UIWindow
@@ -14,44 +14,29 @@ namespace Scripts.UI
         [SerializeField] private TextMeshProUGUI LevelNumberTextField;
         [SerializeField] private TextMeshProUGUI TotalCoinsTextField;
 
+        // Services
         private IPlayerService m_PlayerService;
         private IUIService m_UIService;
         private ILevelService m_LevelService;
 
-        [Inject]
-        private void Construct(IPlayerService playerService, IUIService uiService, ILevelService levelService)
+        // Events
+        public Action OnNextLevelClicked = delegate { };
+        public Action OnRemoveAdsClicked = delegate { };
+
+
+        private void Awake()
         {
-            m_PlayerService = playerService;
-            m_UIService = uiService;
-            m_LevelService = levelService;
-
-        
-
-            NextLevelButton.Button.onClick.AddListener(FailedLevelButtonClicked);
-            RemoveAdsButton.Button.onClick.AddListener(OnRemoveAdsClicked);
-
-            m_LevelService.OnLevelCompleted += OpenLevelCompleteScreen;
+            NextLevelButton.Button.onClick.AddListener(() => OnNextLevelClicked.Invoke());
+            RemoveAdsButton.Button.onClick.AddListener(() => OnRemoveAdsClicked.Invoke());
         }
-
         private IEnumerator DelayOpenCallback(float waitTime)
         {
             yield return new WaitForSeconds(waitTime);
             Open();
         }
-        private void OpenLevelCompleteScreen()
+        public void OpenLevelCompleteScreenWithDelay()
         {
             StartCoroutine(DelayOpenCallback(1));
-        }
-
-        private void FailedLevelButtonClicked()
-        {
-            Close();
-            SpawnNextLevel();
-        }
-
-        private void OnRemoveAdsClicked()
-        {
-            Debug.Log("Remove ads Pressed");
         }
 
         public void UpdateLevelText(int levelNumber)
@@ -59,34 +44,9 @@ namespace Scripts.UI
             LevelNumberTextField.text = $"Level {levelNumber}";
         }
 
-        public override void Open(float time = 0.5f)
-        {
-            int currentLevel = m_LevelService.GetCurrentLevel();
-            UpdateLevelText(currentLevel);
-
-            base.Open(time);
-        }
-
-        //cleanup current level, then spawn next level, reset player and open min menu window to start next level when player clicks start button there.
-        private void SpawnNextLevel()
-        {
-            m_LevelService.Cleanup();
-            m_LevelService.SpawnNextLevel();
-
-            m_PlayerService.Reset();
-
-            m_UIService.OpenWindow(EWindowID.MinMenu);
-
-        }
 
         private void OnDestroy()
         {
-            UnsubcribeEvents();
-        }
-        private void UnsubcribeEvents()
-        {
-            m_LevelService.OnLevelCompleted -= OpenLevelCompleteScreen;
-
             NextLevelButton.Button.onClick.RemoveAllListeners();
             RemoveAdsButton.Button.onClick.RemoveAllListeners();
         }

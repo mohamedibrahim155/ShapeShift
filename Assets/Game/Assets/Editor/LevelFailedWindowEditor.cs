@@ -18,7 +18,7 @@ public class LevelFailedWindowEditor : Editor
         GUI.enabled =  Application.isPlaying;
         if (GUILayout.Button("Open Window"))
         {
-            script.OpenLevelFailedWindow();
+            script.OpenLevelFailedWindowWithDelay();
         }
 
         if (GUILayout.Button("Close Window"))
