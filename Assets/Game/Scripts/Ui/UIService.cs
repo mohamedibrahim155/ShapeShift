@@ -3,6 +3,7 @@ using Scripts.GameService;
 using Scripts.Level;
 using Scripts.Player;
 using Scripts.UI;
+using Scripts.UI.Coins;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEditor.PackageManager.UI;
@@ -24,6 +25,7 @@ namespace Scripts.UI
         private IPlayerService m_PlayerService;
         private ILevelService m_LevelService;
         private IAdService m_AdService;
+        private ICoinService m_Coinservice;
 
         // Controllers
         private IController m_MainMenuController;
@@ -35,13 +37,15 @@ namespace Scripts.UI
         public void Construct(UIConfig config, DiContainer container,
             IPlayerService playerService,
             ILevelService levelService,
-            IAdService AdService)
+            IAdService AdService,
+            ICoinService coinService)
         {
             m_UiConfig = config;
             m_Container = container;
             m_PlayerService = playerService;
             m_LevelService = levelService;
             m_AdService = AdService;
+            m_Coinservice = coinService;
 
             SpawnMainCanvas();
             CachedWindows();
@@ -80,7 +84,7 @@ namespace Scripts.UI
         private void InitControllers()
         {
             m_MainMenuController = new MainMenuController(this, m_PlayerService);
-            m_LevelCompleteController = new LevelCompleteController(this, m_PlayerService, m_LevelService);
+            m_LevelCompleteController = new LevelCompleteController(this, m_PlayerService, m_LevelService, m_Coinservice);
             m_LevelFailedController = new LevelFailedController(this, m_PlayerService, m_LevelService, m_AdService);
             m_SettingsController = new SettingsController(this);
 

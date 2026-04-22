@@ -291,8 +291,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 389.43335, y: -209.18396}
-  m_SizeDelta: {x: 400, y: 318.36792}
+  m_AnchoredPosition: {x: 409.2377, y: -167.99225}
+  m_SizeDelta: {x: 0, y: 235.9845}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1084696679829355751
 CanvasRenderer:
@@ -650,7 +650,7 @@ MonoBehaviour:
   m_OpenOnStart: 0
   canvasGroup: {fileID: 353585886238220333}
   Slider: {fileID: 8483501061845765146}
-  ScoreView: {fileID: 0}
+  ScoreView: {fileID: 8174188177613024464}
 --- !u!1 &7026481671857406095
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,3 +1056,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7936090783662088683, guid: 49c9053ba8fc1ed459eeca483ba4d65a, type: 3}
   m_PrefabInstance: {fileID: 4002772952657619029}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8174188177613024464 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5115024970944119941, guid: 49c9053ba8fc1ed459eeca483ba4d65a, type: 3}
+  m_PrefabInstance: {fileID: 4002772952657619029}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22282041d37b13448988cf1dce9b8eed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,5 +1,6 @@
 using Scripts.Level;
 using Scripts.Player;
+using Scripts.UI.Coins;
 using System;
 using System.Net.NetworkInformation;
 using UnityEngine;
@@ -12,18 +13,25 @@ namespace Scripts.UI
         private IPlayerService m_PlayerService;
         private IUIService m_UIService;
         private ILevelService m_LevelService;
+        private ICoinService m_CoinService;
 
 
+        private int LastCoinAmount = 0;
         // UI Window
         private LevelCompleteWindow m_Window;
 
         private EWindowID ID = EWindowID.LevelCompleted;
 
-        public LevelCompleteController(IUIService uiService, IPlayerService playerService, ILevelService levelService)
+        public LevelCompleteController(
+            IUIService uiService, 
+            IPlayerService playerService,
+            ILevelService levelService
+            ,ICoinService coinService)
         {
             m_PlayerService = playerService;
             m_UIService = uiService;
             m_LevelService = levelService;
+            m_CoinService = coinService;
         }
 
         public void Initialize()
@@ -43,6 +51,23 @@ namespace Scripts.UI
         {
             m_Window.UpdateLevelText(m_LevelService.GetCurrentLevel());
             m_Window.OpenLevelCompleteScreenWithDelay();
+
+            AddCoins(UnityEngine.Random.Range(10, 20));
+        }
+
+        private void AddCoins(int value)
+        {
+            LastCoinAmount = m_CoinService.CurrentCoins;
+            m_CoinService.AddCoins(value);
+            m_Window.UpdateRewardCoins(value);
+            m_Window.PlayCoinRewardAnimation(LastCoinAmount, value);
+
+        }
+
+
+        private void HandleOnCoinsChanged(int coins)
+        {
+
         }
 
         private void HandleRemoveAdsClicked()
@@ -85,6 +110,9 @@ namespace Scripts.UI
             m_Window.OnRemoveAdsClicked     -= HandleRemoveAdsClicked;
             m_LevelService.OnLevelCompleted -= HandleOnLevelCompleted;
         }
+
+
+
 
    
     }
