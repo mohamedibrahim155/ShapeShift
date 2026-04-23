@@ -52,7 +52,7 @@ namespace Scripts.UI
             m_Window.UpdateLevelText(m_LevelService.GetCurrentLevel());
             m_Window.OpenLevelCompleteScreenWithDelay();
 
-            AddCoins(UnityEngine.Random.Range(10, 20));
+            AddCoins(m_CoinService.CoinConfig.GetRandomCoinReward());
         }
 
         private void AddCoins(int value)

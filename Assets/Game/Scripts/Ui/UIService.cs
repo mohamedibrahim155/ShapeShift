@@ -1,5 +1,6 @@
 using Scripts.Ads;
 using Scripts.GameService;
+using Scripts.Haptics;
 using Scripts.Level;
 using Scripts.Player;
 using Scripts.UI;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
+using UnityEngine.InputSystem.Haptics;
 using Zenject;
 
 namespace Scripts.UI
@@ -26,6 +28,7 @@ namespace Scripts.UI
         private ILevelService m_LevelService;
         private IAdService m_AdService;
         private ICoinService m_Coinservice;
+        private IHapticService m_HapticService;
 
         // Controllers
         private IController m_MainMenuController;
@@ -33,12 +36,15 @@ namespace Scripts.UI
         private IController m_LevelFailedController;
         private IController m_SettingsController;
 
+        private List<IController> m_ListOfControllers = new List<IController>();
+
         [Inject]
         public void Construct(UIConfig config, DiContainer container,
             IPlayerService playerService,
             ILevelService levelService,
             IAdService AdService,
-            ICoinService coinService)
+            ICoinService coinService,
+            IHapticService hapticService)
         {
             m_UiConfig = config;
             m_Container = container;
@@ -46,6 +52,7 @@ namespace Scripts.UI
             m_LevelService = levelService;
             m_AdService = AdService;
             m_Coinservice = coinService;
+            m_HapticService = hapticService;
 
             SpawnMainCanvas();
             CachedWindows();
@@ -83,23 +90,25 @@ namespace Scripts.UI
 
         private void InitControllers()
         {
-            m_MainMenuController = new MainMenuController(this, m_PlayerService);
-            m_LevelCompleteController = new LevelCompleteController(this, m_PlayerService, m_LevelService, m_Coinservice);
-            m_LevelFailedController = new LevelFailedController(this, m_PlayerService, m_LevelService, m_AdService);
-            m_SettingsController = new SettingsController(this);
+            AddController(new MainMenuController(this, m_PlayerService));
+            AddController(new LevelCompleteController(this, m_PlayerService, m_LevelService, m_Coinservice));
+            AddController(new LevelFailedController(this, m_PlayerService, m_LevelService, m_AdService));
+            AddController(new SettingsController(this, m_HapticService));
 
-            m_MainMenuController.Initialize();
-            m_LevelCompleteController.Initialize();
-            m_LevelFailedController.Initialize();
-            m_SettingsController.Initialize();
+        }
+
+        private void AddController(IController controller)
+        {
+            m_ListOfControllers.Add(controller);
+            controller.Initialize();
         }
 
         public void Cleanup()
         {
-            m_MainMenuController.Cleanup();
-            m_LevelCompleteController.Cleanup();
-            m_LevelFailedController.Cleanup();
-            m_SettingsController.Cleanup();
+            foreach (var controller in m_ListOfControllers)
+            {
+                controller.Cleanup();
+            }
         }
 
         public void OpenWindow(EWindowID ID, float time = 0.5f)

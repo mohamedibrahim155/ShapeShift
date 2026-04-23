@@ -1,3 +1,4 @@
+using Scripts.Haptics;
 using Scripts.Player;
 using System;
 using Unity.Services.Core;
@@ -9,27 +10,42 @@ namespace Scripts.UI
     public class SettingsController : IController
     {
         private readonly IUIService m_UIService;
-        private readonly IPlayerService m_PlayerService;
 
+
+        private  IHapticService m_HapticService;
         private SettingsWindow m_SettingWindow;
-
         private bool m_IsMusicEnabled  = true;
-        private bool m_IsHapticEnabled = true;
-        public SettingsController(IUIService uIService)
+        public SettingsController(IUIService uIService, IHapticService hapticService )
         {
             m_UIService = uIService;
+            m_HapticService = hapticService;
         }
+
+    
         public void Initialize()
         {
             m_SettingWindow = m_UIService.GetWindow(EWindowID.Settings) as SettingsWindow;
 
-            m_SettingWindow.OnCloseClicked               += HandleCloseSettings;
-            m_SettingWindow.OnFacebookShareButtonClicked += HandleFacebookShareButtonClicked;
-            m_SettingWindow.OnMusicSliderClicked         += HandleMusicButtonClicked;
-            m_SettingWindow.OnHapticSliderClicked        += HandleHapticButtonClicked;
+            m_SettingWindow.OnCloseClicked                      += HandleCloseSettings;
+            m_SettingWindow.OnFacebookShareButtonClicked        += HandleFacebookShareButtonClicked;
+            m_SettingWindow.OnMusicSliderClicked                += HandleMusicButtonClicked;
+            m_SettingWindow.OnHapticSliderClicked               += HandleHapticButtonClicked;
+
+
+            m_HapticService.Config.OnHapticEnabledChanged       += SetHapticUI;
+            SetHapticUI(m_HapticService.Config.isHapticEnabled);
+
 
 
         }
+
+       
+
+        private void SetHapticUI(bool isEnabled)
+        {
+            m_SettingWindow.UpdateHapticSlider(isEnabled ? 1f : 0f);
+        }
+
         public void Cleanup()
         {
             if (m_SettingWindow == null) return;
@@ -38,14 +54,19 @@ namespace Scripts.UI
             m_SettingWindow.OnFacebookShareButtonClicked -= HandleFacebookShareButtonClicked;
             m_SettingWindow.OnMusicSliderClicked         -= HandleMusicButtonClicked;
             m_SettingWindow.OnHapticSliderClicked        -= HandleHapticButtonClicked;
+
+            m_HapticService.Config.OnHapticEnabledChanged -= SetHapticUI;
+
+
         }
 
 
         /// Toggle music on and off by muting the audio listener. This is a simple implementation, you can expand this by adding a music manager that handles music and sound 
         private void HandleHapticButtonClicked()
         {
-            m_IsHapticEnabled = !m_IsHapticEnabled;
-            m_SettingWindow.UpdateHapticSlider(m_IsHapticEnabled ? 1f : 0f);
+            if (m_HapticService.Config == null) return;
+
+            m_HapticService.SetHapticEnabled(!m_HapticService.Config.isHapticEnabled);
         }
 
         /// <summary>
