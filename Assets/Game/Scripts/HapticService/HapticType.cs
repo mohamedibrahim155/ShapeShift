@@ -1,11 +1,14 @@
 using UnityEngine;
 
-public enum HapticType
+namespace Scripts.Haptics
 {
-    NONE = 0,
-    LIGHT,
-    MEDIUIM,
-    HEAVY,
-    SELECTION,
+    public enum HapticType
+    {
+        NONE = 0,
+        LIGHT,
+        MEDIUIM,
+        HEAVY,
+        SELECTION,
 
+    }
 }

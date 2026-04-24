@@ -1,3 +1,4 @@
+using Scripts.Audio;
 using Scripts.Haptics;
 using Scripts.Player;
 using System;
@@ -10,15 +11,17 @@ namespace Scripts.UI
     public class SettingsController : IController
     {
         private readonly IUIService m_UIService;
+        private readonly IHapticService m_HapticService;
+        private readonly IAudioService m_AudioService;
 
 
-        private  IHapticService m_HapticService;
         private SettingsWindow m_SettingWindow;
         private bool m_IsMusicEnabled  = true;
-        public SettingsController(IUIService uIService, IHapticService hapticService )
+        public SettingsController(IUIService uIService, IHapticService hapticService, IAudioService audioService )
         {
             m_UIService = uIService;
             m_HapticService = hapticService;
+            m_AudioService = audioService;
         }
 
     
@@ -33,13 +36,20 @@ namespace Scripts.UI
 
 
             m_HapticService.Config.OnHapticEnabledChanged       += SetHapticUI;
+            m_AudioService.Config.OnMusicEnabledChanged         += SetMusicUI;
+
+            
             SetHapticUI(m_HapticService.Config.isHapticEnabled);
+            SetMusicUI(m_AudioService.Config.IsMusicEnabled);
 
 
 
         }
 
-       
+        private void SetMusicUI(bool isEnabled)
+        {
+            m_SettingWindow.UpdateMusicSlider(isEnabled ? 1f : 0f);
+        }
 
         private void SetHapticUI(bool isEnabled)
         {
@@ -56,8 +66,7 @@ namespace Scripts.UI
             m_SettingWindow.OnHapticSliderClicked        -= HandleHapticButtonClicked;
 
             m_HapticService.Config.OnHapticEnabledChanged -= SetHapticUI;
-
-
+            m_AudioService.Config.OnMusicEnabledChanged   -= SetMusicUI;
         }
 
 
@@ -74,8 +83,9 @@ namespace Scripts.UI
         /// </summary>
         private void HandleMusicButtonClicked()
         {
-            m_IsMusicEnabled = !m_IsMusicEnabled;
-            m_SettingWindow.UpdateMusicSlider((m_IsMusicEnabled) ? 1f : 0f);
+            if (m_AudioService.Config == null) return;
+
+            m_AudioService.SetMusicEnabled(!m_AudioService.Config.IsMusicEnabled);
         }
 
         private void HandleFacebookShareButtonClicked()

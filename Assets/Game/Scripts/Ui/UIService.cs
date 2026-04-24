@@ -1,4 +1,5 @@
 using Scripts.Ads;
+using Scripts.Audio;
 using Scripts.GameService;
 using Scripts.Haptics;
 using Scripts.Level;
@@ -29,6 +30,7 @@ namespace Scripts.UI
         private IAdService m_AdService;
         private ICoinService m_Coinservice;
         private IHapticService m_HapticService;
+        private IAudioService m_AudioService;
 
         // Controllers
         private IController m_MainMenuController;
@@ -44,7 +46,8 @@ namespace Scripts.UI
             ILevelService levelService,
             IAdService AdService,
             ICoinService coinService,
-            IHapticService hapticService)
+            IHapticService hapticService,
+            IAudioService audioService)
         {
             m_UiConfig = config;
             m_Container = container;
@@ -53,6 +56,7 @@ namespace Scripts.UI
             m_AdService = AdService;
             m_Coinservice = coinService;
             m_HapticService = hapticService;
+            m_AudioService = audioService;
 
             SpawnMainCanvas();
             CachedWindows();
@@ -93,7 +97,7 @@ namespace Scripts.UI
             AddController(new MainMenuController(this, m_PlayerService));
             AddController(new LevelCompleteController(this, m_PlayerService, m_LevelService, m_Coinservice));
             AddController(new LevelFailedController(this, m_PlayerService, m_LevelService, m_AdService));
-            AddController(new SettingsController(this, m_HapticService));
+            AddController(new SettingsController(this, m_HapticService, m_AudioService));
 
         }
 

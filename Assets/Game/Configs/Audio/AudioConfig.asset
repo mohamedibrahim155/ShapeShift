@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcb0bc28e59d9b4cbdf1d69fe4690b3, type: 3}
+  m_Name: AudioConfig
+  m_EditorClassIdentifier: 
+  isMusicEnabled: 0
+  audioPolSize: 10
+  audioPlayerViewPrefab: {fileID: 3143149274613004811, guid: b72f49aee07e68c44a0ef6f97b3244a7, type: 3}
+  audioDatas:
+  - {fileID: 11400000, guid: 48d9fcfac9756324ba8e88909b5b4f40, type: 2}
