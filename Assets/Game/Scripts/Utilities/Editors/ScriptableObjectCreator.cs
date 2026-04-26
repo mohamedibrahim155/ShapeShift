@@ -5,22 +5,26 @@ using UnityEditor;
 using UnityEngine;
 public class ScriptableObjectCreator : EditorWindow
 {
-    private string scriptableObjectName = "NewScriptableObject";
-    private string namespaceName = "YourNamespace";
-    private string scriptFolder = "Assets/Scripts/ScriptableObjects";
-    private string assetFolder = "Assets/Data";
-    private string className = "NewScriptableObject";
-    private string menuName = "Scriptable Objects";
+    [Header("Main Settings")]
+    private string namespaceName  = SOGeneratorSettings.defaultNamespaceName;
+    private string scriptFolder   = SOGeneratorSettings.defaultScriptFolder;
+    private string assetFolder    = SOGeneratorSettings.defaultAssetFolder;
+    private string className      = SOGeneratorSettings.defaultClassName;
+    private string menuName       = SOGeneratorSettings.defaultMenuName;
+
+
     private Vector2 scrollPosition;
+
+    [Header("Field Definitions")]
     private FieldDefinition[] fieldDefinitions = new FieldDefinition[0];
     private FieldDefinition copiedField;
 
-    private static ScriptableObjectCreator currentWindow;
 
+    [Header("UI- Styles")]
     private GUIStyle headerStyle;
     private GUIStyle sectionStyle;
     private GUIContent createButtonContent;
-    private GUIStyle centeredButton;
+    private static ScriptableObjectCreator currentWindow;
 
     [MenuItem("Tools/Scriptable Object Generator")]
     public static void Open()
@@ -30,8 +34,6 @@ public class ScriptableObjectCreator : EditorWindow
     }
 
  
-
-
     private void OnGUI()
     {
         DrawHeader();
@@ -169,104 +171,7 @@ public class ScriptableObjectCreator : EditorWindow
         EditorGUILayout.EndVertical();
     }
 
-    private string GetFieldType(FieldDefinition sOFieldDefinition)
-    {
-        string enumTypeName = sOFieldDefinition.isCustomEnum ? ConvertTypeToName(sOFieldDefinition.customEnum) : "";
-        string classTypeName = sOFieldDefinition.isCustomClass ? ConvertTypeToName(sOFieldDefinition.customClassType) : "";
-
-        string fieldType =  sOFieldDefinition.fieldType switch 
-        {
-            SOFieldType.Enum=> enumTypeName,
-            SOFieldType.CustomClass => classTypeName,
-            _ => ConvertFieldType(sOFieldDefinition.fieldType)
-        };
-        string containerType = sOFieldDefinition.collectionType switch
-        {
-            SOFieldCollectionType.List => $"List<{fieldType}>",
-            SOFieldCollectionType.Array => $"{fieldType}[]",
-            SOFieldCollectionType.Queue => $"Queue<{fieldType}>",
-            SOFieldCollectionType.Stack => $"Stack<{fieldType}>",
-            _ => fieldType
-        };
-
-        string accessModifier = ConvertAccessModifier(sOFieldDefinition.fieldAccessModifier);
-        string fieldDeclaration = $"{accessModifier} {containerType} {sOFieldDefinition.fieldName};";
-
-        return fieldDeclaration;
-
-
-    }
-
-    public string ConvertTypeToName(Type type)
-    {
-        if (type == null)
-            return "";
-
-        if (type == typeof(int)) return "int";
-        if (type == typeof(float)) return "float";
-        if (type == typeof(string)) return "string";
-        if (type == typeof(bool)) return "bool";
-
-        return type.Name;
-    }
-
-    private string ConvertFieldType(SOFieldType type)
-    {
-        string fieldType = type switch
-        {
-            SOFieldType.String => "string",
-            SOFieldType.Int => "int",
-            SOFieldType.Float => "float",
-            SOFieldType.Bool => "bool",
-            SOFieldType.Vector2 => "Vector2",
-            SOFieldType.Vector3 => "Vector3",
-            SOFieldType.Color => "Color",
-            SOFieldType.GameObject => "GameObject",
-            SOFieldType.MonoBehaviour => "MonoBehaviour",
-            SOFieldType.Transform => "Transform",
-            SOFieldType.Component => "Component",
-            SOFieldType.Sprite => "Sprite",
-            SOFieldType.Material => "Material",
-            SOFieldType.AudioClip => "AudioClip",
-            _ => "string"
-
-
-        };
-
-        return fieldType;
-    }
-
-    private string ConvertAccessModifier(FieldAccessModifier accessModifier)
-    {
-        return accessModifier switch
-        {
-            FieldAccessModifier.Public => "public",
-            FieldAccessModifier.Private => "private",
-            FieldAccessModifier.Protected => "protected",
-            FieldAccessModifier.Internal => "internal",
-            _ => "public"
-        };
-    }
-
-    private bool IsValidIdentifier(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-            return false;
-
-        // First character must be letter or underscore
-        if (!(char.IsLetter(name[0]) || name[0] == '_'))
-            return false;
-
-        // Remaining characters: letter, digit, underscore
-        for (int i = 1; i < name.Length; i++)
-        {
-            if (!(char.IsLetterOrDigit(name[i]) || name[i] == '_'))
-                return false;
-        }
-
-        return true;
-    }
-
+   
 
     private void DrawFieldDefinitions()
     {
@@ -513,7 +418,7 @@ public class ScriptableObjectCreator : EditorWindow
 
         if (!SOValidator.ValidateFile(scriptPath, out string fileErrror))
         {
-            EditorUtility.DisplayDialog( "Validation Error", $"{folderError}", "OK" );
+            EditorUtility.DisplayDialog( "Validation Error", $"{fileErrror}", "OK" );
             return false;
         }
 

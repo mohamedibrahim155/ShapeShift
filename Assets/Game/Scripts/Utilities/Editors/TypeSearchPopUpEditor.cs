@@ -8,20 +8,25 @@ using UnityEngine;
 
 public class TypeSearchPopUpEditor : EditorWindow
 {
+    [Header("UI Data")]
+    private const float RowHeight = 20f;
+    private const string SearchControlName = "TypeSearchField";
 
+    [Header("Runtime Data")]
     private Action<Type> onTypeSelected;
     private Vector2 scroll;
-    private string search = "";
-
-    private static List<Type> allTypes = null;
-
-    private List<Type> filteredTypes = new();
     private int selectedIndex = 0;
-    private const float RowHeight = 20f;
-    private TypeFilter currentFilter = TypeFilter.All;
-    private const string SearchControlName = "TypeSearchField";
+
+
+    [Header("Filtering Data")]
     private bool shouldFocusSearch = true;
+    private string search = "";
     private Vector2 lastMousePosition;
+    private TypeFilter currentFilter = TypeFilter.All;
+    private List<Type> filteredTypes = new();
+
+    [Header("Type Data")]
+    private static List<Type> allTypes = null;
     public enum TypeFilter
     {
         All,
