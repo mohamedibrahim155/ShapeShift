@@ -266,70 +266,6 @@ public class ScriptableObjectCreator : EditorWindow
 
         return true;
     }
-    private FieldValidationResult ValidateField(FieldDefinition fieldDef)
-    {
-        if (string.IsNullOrWhiteSpace(fieldDef.fieldName))
-        {
-            return new FieldValidationResult
-            {
-                Status = FieldValidationStatus.Error,
-                Message = "Field name is empty."
-            };
-        }
-
-        if (!IsValidIdentifier(fieldDef.fieldName))
-        {
-            return new FieldValidationResult
-            {
-                Status = FieldValidationStatus.Error,
-                Message = "Invalid C# field name."
-            };
-        }
-
-        if (fieldDef.fieldType == SOFieldType.CustomClass && fieldDef.customClassType == null)
-        {
-            return new FieldValidationResult
-            {
-                Status = FieldValidationStatus.Error,
-                Message = "Custom class type is missing."
-            };
-        }
-
-        if (fieldDef.fieldType == SOFieldType.Enum && fieldDef.customEnum == null)
-        {
-            return new FieldValidationResult
-            {
-                Status = FieldValidationStatus.Error,
-                Message = "enum type is missing."
-            };
-        }
-
-        string preview = GetFieldType(fieldDef);
-
-        if (string.IsNullOrWhiteSpace(preview))
-        {
-            return new FieldValidationResult
-            {
-                Status = FieldValidationStatus.Error,
-                Message = "Preview is empty."
-            };
-        }
-
-        if (!preview.TrimEnd().EndsWith(";"))
-        {
-            return new FieldValidationResult
-            {
-                Status = FieldValidationStatus.Error,
-                Message = "Field declaration must end with semicolon."
-            };
-        }
-
-        return new FieldValidationResult
-        {
-            Status = FieldValidationStatus.Valid,
-            Message = "Valid field."
-        };
-    }
 
 
     private void DrawFieldDefinitions()
@@ -344,7 +280,7 @@ public class ScriptableObjectCreator : EditorWindow
 
             fieldDef.isExpanded = EditorGUILayout.Foldout(
                 fieldDef.isExpanded,
-                string.IsNullOrEmpty(fieldDef.fieldName) ? $"Field {i + 1}" : GetFieldType(fieldDef),
+                string.IsNullOrEmpty(fieldDef.fieldName) ? $"Field {i + 1}" : SOCodeGenerator.GetFieldLine(fieldDef),
                 true
             );
 
@@ -467,22 +403,22 @@ public class ScriptableObjectCreator : EditorWindow
                 //EditorGUILayout.HelpBox(GetFieldType(fieldDef), MessageType.None);
 
 
-                FieldValidationResult validation = ValidateField(fieldDef);
+                bool  isFieldValid = SOValidator.ValidateField(fieldDef, out string errotField);
 
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField("Preview", EditorStyles.boldLabel, GUILayout.Width(80));
 
-                string icon = validation.IsValid ? "✅" : "❌";
+                string icon = isFieldValid ? "✅" : "❌";
                 GUILayout.Label(icon, GUILayout.Width(25));
 
                 EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.HelpBox(GetFieldType(fieldDef), MessageType.None);
+                EditorGUILayout.HelpBox(SOCodeGenerator.GetFieldLine(fieldDef), MessageType.None);
 
-                if (!validation.IsValid)
+                if (!isFieldValid)
                 {
-                    EditorGUILayout.HelpBox(validation.Message, MessageType.Error);
+                    EditorGUILayout.HelpBox(errotField, MessageType.Error);
                 }
 
 
@@ -538,169 +474,33 @@ public class ScriptableObjectCreator : EditorWindow
 
     }
 
-
-
- 
-
-    private string GenerateScriptContent(string className, string menuName, string namespaceName)
-    {
-        string usingStatements = GenerateUsings();
-        string fields = GenerateFields();
-
-        if (string.IsNullOrWhiteSpace(namespaceName))
-        {
-            return
-    $@"{usingStatements}
-
-[CreateAssetMenu(fileName = ""{className}"", menuName = ""{menuName}/{className}"")]
-public class {className} : ScriptableObject
-{{
-{fields}
-}}";
-        }
-
-        return
-    $@"{usingStatements}
-
-namespace {namespaceName}
-{{
-    [CreateAssetMenu(fileName = ""{className}"", menuName = ""{menuName}/{className}"")]
-    public class {className} : ScriptableObject
-    {{
-{fields}
-    }}
-}}";
-    }
-
-    private string GenerateUsings()
-    {
-        HashSet<string> usings = new HashSet<string>();
-
-        usings.Add("using UnityEngine;");
-
-        foreach (var field in fieldDefinitions)
-        {
-            if ( field.collectionType != SOFieldCollectionType.None)
-                usings.Add("using System.Collections.Generic;");
-
-            if (field.customClassType != null && !string.IsNullOrEmpty(field.customClassType.Namespace))
-            {
-                usings.Add($"using {field.customClassType.Namespace};");
-            }
-
-            if (field.customEnum != null && !string.IsNullOrEmpty(field.customEnum.Namespace))
-            {
-                usings.Add($"using {field.customEnum.Namespace};");
-            }
-        }
-
-        return string.Join("\n", usings);
-    }
-
-    private string GenerateFields()
-    {
-        System.Text.StringBuilder builder = new System.Text.StringBuilder();
-
-        foreach (var field in fieldDefinitions)
-        {
-            if (!ValidateField(field).IsValid)
-                continue; // skip invalid fields
-
-            builder.AppendLine($"        {GetFieldType(field)}");
-        }
-
-        if (builder.Length == 0)
-        {
-            builder.AppendLine("    // No fields defined");
-        }
-
-        return builder.ToString();
-    }
-
-    private bool IsValidNamespace(string namespaceName)
-    {
-        string[] parts = namespaceName.Split('.');
-
-        foreach (string part in parts)
-        {
-            if (!IsValidIdentifier(part))
-                return false;
-        }
-
-        return true;
-    }
     private bool ValidateBeforeCreate()
     {
-        if (string.IsNullOrWhiteSpace(className))
+
+      bool validation  = SOValidator.ValidateAll(
+            className,
+            namespaceName,
+            fieldDefinitions,
+            out string error
+        );
+        if (!validation)
         {
-            EditorUtility.DisplayDialog("Validation Error", "Class name is empty.", "OK");
+            EditorUtility.DisplayDialog("Validation Error", error, "OK");
             return false;
         }
 
-        if (!IsValidIdentifier(className))
+        //Script folder check
+        if (!SOValidator.ValidateFolder(scriptFolder, out string folderError) &&  !string.IsNullOrEmpty(folderError))
         {
-            EditorUtility.DisplayDialog("Validation Error", "Class name is not a valid C# class name.", "OK");
-            return false;
-        }
-
-        if (!string.IsNullOrWhiteSpace(namespaceName) && !IsValidNamespace(namespaceName))
-        {
-            EditorUtility.DisplayDialog("Validation Error", "Namespace is invalid.", "OK");
-            return false;
-        }
-
-        if (fieldDefinitions == null || fieldDefinitions.Length == 0)
-        {
-            bool createWithoutFields = EditorUtility.DisplayDialog(
-                "No Fields",
-                "No fields were added. Do you still want to create the ScriptableObject?",
-                "Create",
-                "Cancel"
-            );
-
-            if (!createWithoutFields)
-                return false;
-        }
-
-        HashSet<string> fieldNames = new HashSet<string>();
-
-        foreach (FieldDefinition field in fieldDefinitions)
-        {
-            FieldValidationResult result = ValidateField(field);
-
-            if (!result.IsValid)
-            {
-                EditorUtility.DisplayDialog(
-                    "Validation Error",
-                    $"Field '{field.fieldName}' is invalid.\n\n{result.Message}",
-                    "OK"
-                );
-
-                return false;
-            }
-
-            if (!fieldNames.Add(field.fieldName))
-            {
-                EditorUtility.DisplayDialog(
-                    "Validation Error",
-                    $"Duplicate field name found: {field.fieldName}",
-                    "OK"
-                );
-
-                return false;
-            }
-        }
-
-        if (!AssetDatabase.IsValidFolder(scriptFolder))
-        {
-            if (EditorUtility.DisplayDialog("Validation Error", $"Script folder path is invalid. Do you want to create folder at {scriptFolder}?", "Create", "Cancel"))
+            if (EditorUtility.DisplayDialog("Validation Error", $"Script folder path is invalid.. Do you want to create folder at {scriptFolder}?", "Create", "Cancel"))
             {
                 CreateFolderIfNeeded(scriptFolder);
             }
             return false;
         }
 
-        if (!AssetDatabase.IsValidFolder(assetFolder))
+        //Asset folder check
+        if (!SOValidator.ValidateFolder(assetFolder, out string assetFolderError) && !string.IsNullOrEmpty(assetFolderError))
         {
             if (EditorUtility.DisplayDialog("Validation Error", $"Asset folder path is invalid.. Do you want to create folder at {assetFolder}?", "Create", "Cancel"))
             {
@@ -711,14 +511,9 @@ namespace {namespaceName}
 
         string scriptPath = $"{scriptFolder}/{className}.cs";
 
-        if (System.IO.File.Exists(scriptPath))
+        if (!SOValidator.ValidateFile(scriptPath, out string fileErrror))
         {
-            EditorUtility.DisplayDialog(
-                "Validation Error",
-                $"A script with this class name already exists:\n{scriptPath}",
-                "OK"
-            );
-
+            EditorUtility.DisplayDialog( "Validation Error", $"{folderError}", "OK" );
             return false;
         }
 
@@ -759,17 +554,14 @@ namespace {namespaceName}
 
         string scriptPath = $"{scriptFolder}/{className}.cs";
 
-        if (System.IO.File.Exists(scriptPath))
+        if (!SOValidator.ValidateFile(scriptPath,out string error))
         {
-            EditorUtility.DisplayDialog(
-                "Error",
-                $"Script already exists:\n{scriptPath}",
-                "OK"
-            );
+            EditorUtility.DisplayDialog("Error", $"{error}", "OK");
             return;
         }
 
-        string scriptContent = GenerateScriptContent(className, menuName,namespaceName);
+       // string scriptContent = GenerateScriptContent(className, menuName,namespaceName);
+        string scriptContent = SOCodeGenerator.Generate(className, namespaceName, menuName, fieldDefinitions);
 
         System.IO.File.WriteAllText(scriptPath, scriptContent);
 
@@ -785,6 +577,8 @@ namespace {namespaceName}
 }
 
 
+//Scripts  that auto trigger after script compilation to check
+//if there is pending SO to create
 [InitializeOnLoad]
 public static class PendingScriptableObjectAssetCreator
 {
