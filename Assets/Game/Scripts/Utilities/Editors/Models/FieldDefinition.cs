@@ -15,8 +15,8 @@ public class FieldDefinition
     public bool isCustomClass;
     public Type customClassType;
 
-    public bool isCustomInterface;
-    public Type customInterfaceType;
+    public bool isCustomEnum;
+    public Type customEnum;
 
     public FieldDefinition Clone()
     {
@@ -29,8 +29,8 @@ public class FieldDefinition
             collectionType = this.collectionType,
             isCustomClass = this.isCustomClass,
             customClassType = this.customClassType,
-            isCustomInterface = this.isCustomInterface,
-            customInterfaceType = this.customInterfaceType,
+            isCustomEnum = this.isCustomEnum,
+            customEnum = this.customEnum,
         };
 
     }
@@ -61,7 +61,6 @@ public enum SOFieldType
     Color,
     Enum,
     CustomClass,
-    Interface,
     GameObject,
     MonoBehaviour,
     Transform,
@@ -71,12 +70,6 @@ public enum SOFieldType
     AudioClip,
 }
 
-public enum SOFieldTypeCategory
-{
-    Primitive,
-    UnityObject,
-    CustomClass,
-}
 
 public enum SOFieldCollectionType
 {

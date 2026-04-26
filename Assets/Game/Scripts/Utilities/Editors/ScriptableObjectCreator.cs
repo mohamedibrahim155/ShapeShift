@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-public class ScriiptableObjectCreator : EditorWindow
+public class ScriptableObjectCreator : EditorWindow
 {
     private string scriptableObjectName = "NewScriptableObject";
     private string namespaceName = "YourNamespace";
@@ -15,12 +15,18 @@ public class ScriiptableObjectCreator : EditorWindow
     private FieldDefinition[] fieldDefinitions = new FieldDefinition[0];
     private FieldDefinition copiedField;
 
-    private static ScriiptableObjectCreator currentWindow;
+    private static ScriptableObjectCreator currentWindow;
+
+    private GUIStyle headerStyle;
+    private GUIStyle sectionStyle;
+    private GUIContent createButtonContent;
+    private GUIStyle centeredButton;
 
     [MenuItem("Tools/Scriptable Object Generator")]
     public static void Open()
     {
-        currentWindow = GetWindow<ScriiptableObjectCreator>("SO Generator");
+        currentWindow = GetWindow<ScriptableObjectCreator>("SO Generator");
+        currentWindow.InitStyles();
     }
 
  
@@ -28,33 +34,152 @@ public class ScriiptableObjectCreator : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.Label("Create ScriptableObject Script + Asset", EditorStyles.boldLabel);
+        DrawHeader();
 
-        className = EditorGUILayout.TextField("Class Name", className);
-        namespaceName = EditorGUILayout.TextField("Namespace", namespaceName);
+        DrawMainSettings();
 
-        scriptFolder = EditorGUILayout.TextField("Script Folder", scriptFolder);
-        assetFolder = EditorGUILayout.TextField("Asset Folder", assetFolder);
-        GUILayout.Space(10);
+        GUILayout.Space(8);
 
         DrawFieldHeader();
 
         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
-
         DrawFieldDefinitions();
-
         EditorGUILayout.EndScrollView();
 
         GUILayout.FlexibleSpace();
 
-        DrawBottomButtons();
+        DrawBottomBar();
+        GUILayout.Space(10);
+
     }
 
+    private void InitStyles()
+    {
+        if (headerStyle == null)
+        {
+            headerStyle = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fontSize = 14,
+                alignment = TextAnchor.MiddleLeft
+            };
+        }
+
+        if (sectionStyle == null)
+        {
+            sectionStyle = new GUIStyle("box")
+            {
+                padding = new RectOffset(10, 10, 8, 8),
+                margin = new RectOffset(5, 5, 5, 5)
+            };
+        }
+
+        if (createButtonContent == null)
+        {
+            Texture icon = EditorGUIUtility.IconContent("ScriptableObject Icon").image;
+
+            if (icon == null)
+                icon = EditorGUIUtility.IconContent("d_CreateAddNew").image;
+
+            createButtonContent = new GUIContent(" Create ScriptableObject", icon);
+        }
+    }
+
+    private void DrawHeader()
+    {
+        EditorGUILayout.BeginVertical(sectionStyle);
+
+        EditorGUILayout.LabelField("ScriptableObject Generator", headerStyle);
+
+        EditorGUILayout.LabelField(
+            "Create ScriptableObject scripts and assets from custom field definitions.",
+            EditorStyles.miniLabel
+        );
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawMainSettings()
+    {
+        EditorGUILayout.BeginVertical(sectionStyle);
+
+        EditorGUILayout.LabelField("Create ScriptableObject Script + Asset", EditorStyles.boldLabel);
+
+        className = EditorGUILayout.TextField(
+            new GUIContent("Class Name", "Name of the generated ScriptableObject class."),
+            className
+        );
+
+        namespaceName = EditorGUILayout.TextField(
+            new GUIContent("Namespace", "Optional namespace for the generated class."),
+            namespaceName
+        );
+
+        scriptFolder = EditorGUILayout.TextField(
+            new GUIContent("Script Folder", "Folder where the .cs script will be created."),
+            scriptFolder
+        );
+
+        assetFolder = EditorGUILayout.TextField(
+            new GUIContent("Asset Folder", "Folder where the .asset file will be created."),
+            assetFolder
+        );
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawFieldHeader()
+    {
+        EditorGUILayout.BeginHorizontal(sectionStyle);
+
+        EditorGUILayout.LabelField("Field Definitions", EditorStyles.boldLabel);
+
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button(
+            new GUIContent(" Add Field", EditorGUIUtility.IconContent("Toolbar Plus").image),
+            GUILayout.Width(120),
+            GUILayout.Height(26)))
+        {
+            AddFieldDefinition();
+        }
+
+        EditorGUILayout.EndHorizontal();
+    }
+
+    private void DrawBottomBar()
+    {
+        EditorGUILayout.BeginVertical();
+
+        EditorGUILayout.BeginHorizontal();
+
+        GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button(
+            createButtonContent,
+            GUILayout.Height(36),
+            GUILayout.Width(260)))
+        {
+            CreateScriptableObjectScript();
+        }
+
+        GUILayout.FlexibleSpace();
+
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.EndVertical();
+    }
 
     private string GetFieldType(FieldDefinition sOFieldDefinition)
     {
+        string enumTypeName = sOFieldDefinition.isCustomEnum ? ConvertTypeToName(sOFieldDefinition.customEnum) : "";
+        string classTypeName = sOFieldDefinition.isCustomClass ? ConvertTypeToName(sOFieldDefinition.customClassType) : "";
 
-        string fieldType = ConvertFieldType(sOFieldDefinition.fieldType, ConvertTypeToName(sOFieldDefinition.customClassType));
+        string fieldType =  sOFieldDefinition.fieldType switch 
+        {
+            SOFieldType.Enum=> enumTypeName,
+            SOFieldType.CustomClass => classTypeName,
+            _ => ConvertFieldType(sOFieldDefinition.fieldType)
+        };
         string containerType = sOFieldDefinition.collectionType switch
         {
             SOFieldCollectionType.List => $"List<{fieldType}>",
@@ -85,7 +210,7 @@ public class ScriiptableObjectCreator : EditorWindow
         return type.Name;
     }
 
-    private string ConvertFieldType(SOFieldType type, string customTypeName)
+    private string ConvertFieldType(SOFieldType type)
     {
         string fieldType = type switch
         {
@@ -96,8 +221,6 @@ public class ScriiptableObjectCreator : EditorWindow
             SOFieldType.Vector2 => "Vector2",
             SOFieldType.Vector3 => "Vector3",
             SOFieldType.Color => "Color",
-            SOFieldType.Enum => "Enum",
-            SOFieldType.CustomClass => customTypeName,
             SOFieldType.GameObject => "GameObject",
             SOFieldType.MonoBehaviour => "MonoBehaviour",
             SOFieldType.Transform => "Transform",
@@ -172,6 +295,15 @@ public class ScriiptableObjectCreator : EditorWindow
             };
         }
 
+        if (fieldDef.fieldType == SOFieldType.Enum && fieldDef.customEnum == null)
+        {
+            return new FieldValidationResult
+            {
+                Status = FieldValidationStatus.Error,
+                Message = "enum type is missing."
+            };
+        }
+
         string preview = GetFieldType(fieldDef);
 
         if (string.IsNullOrWhiteSpace(preview))
@@ -199,21 +331,6 @@ public class ScriiptableObjectCreator : EditorWindow
         };
     }
 
-    private void DrawFieldHeader()
-    {
-        EditorGUILayout.BeginHorizontal();
-
-        GUILayout.Label("Field Definitions", EditorStyles.boldLabel);
-
-        GUILayout.FlexibleSpace();
-
-        if (GUILayout.Button("Add Field", GUILayout.Width(100)))
-        {
-            AddFieldDefinition();
-        }
-
-        EditorGUILayout.EndHorizontal();
-    }
 
     private void DrawFieldDefinitions()
     {
@@ -285,7 +402,7 @@ public class ScriiptableObjectCreator : EditorWindow
                         {
                             fieldDef.customClassType = selectedType;
                             Repaint();
-                        }, screenPosition);
+                        }, screenPosition, TypeSearchPopUpEditor.TypeFilter.Class);
                     }
 
                     EditorGUILayout.EndHorizontal();
@@ -293,7 +410,42 @@ public class ScriiptableObjectCreator : EditorWindow
                 else
                 {
                     fieldDef.isCustomClass = false;
-                    TypeSearchPopUpEditor.CloseWindow();
+                }
+
+
+                if (fieldDef.fieldType == SOFieldType.Enum)
+                {
+                    fieldDef.isCustomEnum = true;
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Custom Enum Name");
+
+
+
+                    string typeName = fieldDef.customEnum != null
+                        ? fieldDef.customEnum.Name
+                        : "Select Type";
+
+                    if (GUILayout.Button(typeName, EditorStyles.popup))
+                    {
+                        Rect buttonRect = GUILayoutUtility.GetLastRect();
+
+                        Vector2 screenPosition = GUIUtility.GUIToScreenPoint(
+                            new Vector2(buttonRect.x, buttonRect.yMax)
+                        );
+
+                        TypeSearchPopUpEditor.ShowWindow((selectedType) =>
+                        {
+                            fieldDef.customEnum = selectedType;
+                            Repaint();
+                        }, screenPosition, TypeSearchPopUpEditor.TypeFilter.Enum);
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                }
+                else
+                {
+                    fieldDef.isCustomEnum = false;
                 }
 
                 fieldDef.collectionType = (SOFieldCollectionType)EditorGUILayout.EnumPopup(
@@ -343,19 +495,6 @@ public class ScriiptableObjectCreator : EditorWindow
 
             EditorGUILayout.EndVertical();
         }
-    }
-    private void DrawBottomButtons()
-    {
-        EditorGUILayout.BeginHorizontal();
-
-        if (GUILayout.Button("Create ScriptableObject", GUILayout.Height(35), GUILayout.Width(220)))
-        {
-             CreateScriptableObjectScript();
-        }
-
-        GUILayout.FlexibleSpace();
-
-        EditorGUILayout.EndHorizontal();
     }
 
     private void ShowFieldContextMenu(int index)
@@ -441,17 +580,17 @@ namespace {namespaceName}
 
         foreach (var field in fieldDefinitions)
         {
-            string typeName = ConvertTypeToName(field.customClassType);
-
-            if (string.IsNullOrEmpty(typeName))
-                continue;
-
             if ( field.collectionType != SOFieldCollectionType.None)
                 usings.Add("using System.Collections.Generic;");
 
             if (field.customClassType != null && !string.IsNullOrEmpty(field.customClassType.Namespace))
             {
                 usings.Add($"using {field.customClassType.Namespace};");
+            }
+
+            if (field.customEnum != null && !string.IsNullOrEmpty(field.customEnum.Namespace))
+            {
+                usings.Add($"using {field.customEnum.Namespace};");
             }
         }
 
@@ -554,13 +693,19 @@ namespace {namespaceName}
 
         if (!AssetDatabase.IsValidFolder(scriptFolder))
         {
-            EditorUtility.DisplayDialog("Validation Error", "Script folder path is invalid.", "OK");
+            if (EditorUtility.DisplayDialog("Validation Error", $"Script folder path is invalid. Do you want to create folder at {scriptFolder}?", "Create", "Cancel"))
+            {
+                CreateFolderIfNeeded(scriptFolder);
+            }
             return false;
         }
 
         if (!AssetDatabase.IsValidFolder(assetFolder))
         {
-            EditorUtility.DisplayDialog("Validation Error", "Asset folder path is invalid.", "OK");
+            if (EditorUtility.DisplayDialog("Validation Error", $"Asset folder path is invalid.. Do you want to create folder at {assetFolder}?", "Create", "Cancel"))
+            {
+                CreateFolderIfNeeded(assetFolder);
+            }
             return false;
         }
 

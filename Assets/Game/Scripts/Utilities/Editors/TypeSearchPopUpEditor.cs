@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -12,30 +13,35 @@ public class TypeSearchPopUpEditor : EditorWindow
     private Vector2 scroll;
     private string search = "";
 
-    private List<Type> allTypes;
-    private static TypeSearchPopUpEditor Instance;
+    private static List<Type> allTypes = null;
 
     private List<Type> filteredTypes = new();
     private int selectedIndex = 0;
     private const float RowHeight = 20f;
-
-    public static void ShowWindow(Action<Type> onSelected, Vector2 windowPosition)
+    private TypeFilter currentFilter = TypeFilter.All;
+    private const string SearchControlName = "TypeSearchField";
+    private bool shouldFocusSearch = true;
+    private Vector2 lastMousePosition;
+    public enum TypeFilter
     {
-        //var window = GetWindow<TypeSearchPopUpEditor>();
-        //if (window != null)
-        //{
-        //    window.titleContent = new GUIContent("Select Type");
-        //    window.position = new Rect(windowPosition.x, windowPosition.y, 300, 400);
+        All,
+        UnityTypes,
+        Class,
+        SerializableTypes,
+        Enum,
+    }
 
-        //    window.onTypeSelected = onSelected;
-        //    window.Init();
-        //    window.ShowPopup();
-        //    return;
-        //}
+    private void OnEnable()
+    {
+        wantsMouseMove = true;
+    }
+
+    public static void ShowWindow(Action<Type> onSelected, Vector2 windowPosition, TypeFilter typeFilter = TypeFilter.All)
+    {
         var window = CreateInstance<TypeSearchPopUpEditor>();
         window.titleContent = new GUIContent("Select Type");
+        window.currentFilter = typeFilter;
         window.position = new Rect(windowPosition.x, windowPosition.y, 300, 400);
-        Instance = window;
         window.onTypeSelected = onSelected;
         window.Init();
         window.ShowPopup();
@@ -63,21 +69,14 @@ public class TypeSearchPopUpEditor : EditorWindow
         }
     }
 
-    public static void CloseWindow()
-    {
-        
-        
-
-    }
-
     private void Init()
     {
-
+        if (allTypes != null) return;
         allTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
         {
         try { return a.GetTypes(); }
         catch { return new Type[0]; } })
-            .Where(t => t.IsClass && !t.IsAbstract && !t.IsGenericType && 
+            .Where(t => (t.IsClass || t.IsEnum) && !t.IsAbstract && !t.IsGenericType && t.IsPublic &&
 
         //  REMOVE COMPILER GENERATED
         !t.Name.StartsWith("<") &&
@@ -91,11 +90,25 @@ public class TypeSearchPopUpEditor : EditorWindow
 
     }
 
+    private void OnLostFocus()
+    {
+        Close();
+    }
+
     private void OnGUI()
     {
         HandleKeyboardInput();
 
+
+        GUI.SetNextControlName(SearchControlName);
+
         string newSearch = EditorGUILayout.TextField(search);
+
+        if (shouldFocusSearch)
+        {
+            EditorGUI.FocusTextInControl(SearchControlName);
+            shouldFocusSearch = false;
+        }
 
         if (newSearch != search)
         {
@@ -107,6 +120,14 @@ public class TypeSearchPopUpEditor : EditorWindow
 
         scroll = EditorGUILayout.BeginScrollView(scroll);
 
+        Event e = Event.current;
+
+        bool mouseMoved = e.type == EventType.MouseMove && e.mousePosition != lastMousePosition;
+        if (mouseMoved)
+        {
+            lastMousePosition = e.mousePosition;
+        }
+
         if (allTypes != null)
         {
             if (filteredTypes != null)
@@ -115,26 +136,40 @@ public class TypeSearchPopUpEditor : EditorWindow
                 {
                     Type type = filteredTypes[i];
 
-                    Rect rowRect = EditorGUILayout.BeginHorizontal();
+                    Rect rowRect = GUILayoutUtility.GetRect(
+                        GUIContent.none,
+                        EditorStyles.label,
+                        GUILayout.Height(RowHeight),
+                        GUILayout.ExpandWidth(true)
+                    );
 
+                   
+
+                    bool isHovering = rowRect.Contains(e.mousePosition);
                     bool isSelected = i == selectedIndex;
 
-                    if (isSelected)
-                    {
-                        EditorGUI.DrawRect(rowRect, new Color(0.25f, 0.45f, 0.85f, 0.5f));
-                    }
-
-                    if (GUILayout.Button(type.Name, EditorStyles.label))
-                    {
-                        SelectType(type);
-                    }
-
-                    EditorGUILayout.EndHorizontal();
-
-                    if (Event.current.type == EventType.MouseMove && rowRect.Contains(Event.current.mousePosition))
+                    if (mouseMoved && isHovering && selectedIndex != i)
                     {
                         selectedIndex = i;
                         Repaint();
+                    }
+
+                    if (e.type == EventType.Repaint && isSelected)
+                    {
+                        EditorGUI.DrawRect(rowRect, new Color(0.24f, 0.48f, 0.90f, 0.45f));
+                    }
+
+                    GUI.Label(
+                        new Rect(rowRect.x + 6, rowRect.y, rowRect.width - 6, rowRect.height),
+                        type.Name,
+                        EditorStyles.label
+                    );
+
+                    if (isHovering && e.type == EventType.MouseDown && e.button == 0)
+                    {
+                        selectedIndex = i;
+                        SelectType(type);
+                        e.Use();
                     }
                 }
             }
@@ -193,6 +228,7 @@ public class TypeSearchPopUpEditor : EditorWindow
 
     private void UpdateFilteredTypes()
     {
+
         if (allTypes == null)
         {
             filteredTypes = new List<Type>();
@@ -202,11 +238,22 @@ public class TypeSearchPopUpEditor : EditorWindow
         string lowerSearch = search.ToLower();
 
         filteredTypes = allTypes
-            .Where(t =>
-                t != null &&
-                (string.IsNullOrEmpty(lowerSearch) ||
-                 t.Name.ToLower().Contains(lowerSearch)))
-            .ToList();
+        .Where(t => {
+            // Text Search Match
+            bool matchesSearch = string.IsNullOrEmpty(lowerSearch) || t.Name.ToLower().Contains(lowerSearch);
+            if (!matchesSearch) return false;
+
+            // Category Filter Match
+            return currentFilter switch
+            {
+                TypeFilter.UnityTypes => typeof(UnityEngine.Object).IsAssignableFrom(t),
+                TypeFilter.SerializableTypes => t.IsSerializable && !t.IsEnum,
+                TypeFilter.Class => t.IsClass,
+                TypeFilter.Enum => t.IsEnum && !t.IsClass,
+                _ => true // TypeFilter.All
+            };
+        })
+        .ToList();
 
         if (filteredTypes.Count == 0)
         {
