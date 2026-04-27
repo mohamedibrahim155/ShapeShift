@@ -76,6 +76,8 @@ namespace Scripts.Editor.ScriptableObjectGenerator
 
                 currentPath = nextPath;
             }
+
+            error = null;
         }
 
         public static bool ValidateFolder(string folderPath, out string error)
