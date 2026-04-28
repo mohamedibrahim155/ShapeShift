@@ -14,8 +14,11 @@ namespace Scripts.UI.Coins
         public CoinPool CoinPool { get; private set; }
         public CoinConfig CoinConfig { get; private set; }
 
-
-
+        [Inject]
+        public void Construct( CoinConfig coinConfig)
+        {            
+            CoinConfig = coinConfig;
+        }
 
         public void AddCoins(int amount)
         {
