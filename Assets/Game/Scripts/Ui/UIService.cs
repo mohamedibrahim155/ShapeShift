@@ -97,7 +97,7 @@ namespace Scripts.UI
             AddController(new MainMenuController(this, m_PlayerService));
             AddController(new LevelCompleteController(this, m_PlayerService, m_LevelService, m_Coinservice));
             AddController(new LevelFailedController(this, m_PlayerService, m_LevelService, m_AdService));
-            AddController(new SettingsController(this, m_HapticService, m_AudioService));
+            AddController(new SettingsController(this, m_HapticService, m_AudioService, m_AdService, m_Coinservice));
 
         }
 

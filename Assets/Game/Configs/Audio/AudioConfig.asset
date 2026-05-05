@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fcb0bc28e59d9b4cbdf1d69fe4690b3, type: 3}
   m_Name: AudioConfig
   m_EditorClassIdentifier: 
-  isMusicEnabled: 0
+  IsMusicEnabled: 0
   audioPolSize: 10
   audioPlayerViewPrefab: {fileID: 3143149274613004811, guid: b72f49aee07e68c44a0ef6f97b3244a7, type: 3}
   audioDatas:

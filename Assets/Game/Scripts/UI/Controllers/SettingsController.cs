@@ -1,6 +1,8 @@
+using Scripts.Ads;
 using Scripts.Audio;
 using Scripts.Haptics;
 using Scripts.Player;
+using Scripts.UI.Coins;
 using System;
 using Unity.Services.Core;
 using UnityEngine;
@@ -13,15 +15,23 @@ namespace Scripts.UI
         private readonly IUIService m_UIService;
         private readonly IHapticService m_HapticService;
         private readonly IAudioService m_AudioService;
+        private readonly IAdService m_AdService;
+        private readonly ICoinService m_CoinService;
 
 
         private SettingsWindow m_SettingWindow;
         private bool m_IsMusicEnabled  = true;
-        public SettingsController(IUIService uIService, IHapticService hapticService, IAudioService audioService )
+        public SettingsController(IUIService uIService, 
+            IHapticService hapticService, 
+            IAudioService audioService , 
+            IAdService adService,
+            ICoinService coinService)
         {
             m_UIService = uIService;
             m_HapticService = hapticService;
             m_AudioService = audioService;
+            m_AdService = adService;
+            m_CoinService = coinService;
         }
 
     
@@ -33,6 +43,7 @@ namespace Scripts.UI
             m_SettingWindow.OnFacebookShareButtonClicked        += HandleFacebookShareButtonClicked;
             m_SettingWindow.OnMusicSliderClicked                += HandleMusicButtonClicked;
             m_SettingWindow.OnHapticSliderClicked               += HandleHapticButtonClicked;
+            m_SettingWindow.OnAdButtonClicked                   += HandleAdButtonClicked;
 
 
             m_HapticService.Config.OnHapticEnabledChanged       += SetHapticUI;
@@ -48,12 +59,12 @@ namespace Scripts.UI
 
         private void SetMusicUI(bool isEnabled)
         {
-            m_SettingWindow.UpdateMusicSlider(isEnabled ? 1f : 0f);
+            m_SettingWindow.UpdateSlider(SettingsWindow.ESettingSliderType.MUSIC, isEnabled ? 1f : 0f);
         }
 
         private void SetHapticUI(bool isEnabled)
         {
-            m_SettingWindow.UpdateHapticSlider(isEnabled ? 1f : 0f);
+            m_SettingWindow.UpdateSlider(SettingsWindow.ESettingSliderType.HAPTIC, isEnabled ? 1f : 0f);
         }
 
         public void Cleanup()
@@ -64,6 +75,8 @@ namespace Scripts.UI
             m_SettingWindow.OnFacebookShareButtonClicked -= HandleFacebookShareButtonClicked;
             m_SettingWindow.OnMusicSliderClicked         -= HandleMusicButtonClicked;
             m_SettingWindow.OnHapticSliderClicked        -= HandleHapticButtonClicked;
+            m_SettingWindow.OnAdButtonClicked            -= HandleAdButtonClicked;
+
 
             m_HapticService.Config.OnHapticEnabledChanged -= SetHapticUI;
             m_AudioService.Config.OnMusicEnabledChanged   -= SetMusicUI;
@@ -91,6 +104,24 @@ namespace Scripts.UI
         private void HandleFacebookShareButtonClicked()
         {
             Debug.Log("Share facebook market here");
+        }
+
+        private void HandleAdButtonClicked()
+        {
+            Debug.Log("Ad button clicked");
+
+            if(m_AdService == null) return;
+
+            m_AdService.ShowAd(EAdType.Rewarded, 
+                (result) =>
+            {
+                if (result == RewardedAdResult.Completed)
+                {
+                    int coinsAdded = m_CoinService.CoinConfig.GetRandomCoinReward();
+                    m_CoinService.AddCoins(coinsAdded);
+                    Debug.Log("Coins added for AD: " + coinsAdded);
+                }
+            } ) ;
         }
 
         /// <summary>

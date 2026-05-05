@@ -17,38 +17,61 @@ namespace Scripts.UI
         [SerializeField] private Button CloseButton;
 
         [SerializeField] private Button facebookShareButton;
+        [SerializeField] private Button adButton;
 
         public event Action OnFacebookShareButtonClicked = delegate { };
+        public event Action OnAdButtonClicked = delegate { };
         public event Action OnCloseClicked = delegate { };
 
         public event Action OnMusicSliderClicked = delegate { };
         public event Action OnHapticSliderClicked = delegate { };
+
+        public enum ESettingSliderType
+        {
+            MUSIC = 0,
+            HAPTIC = 1,
+        }
+
         private void Awake()
         {
             CloseButton.onClick.AddListener(() => OnCloseClicked.Invoke());
             facebookShareButton.onClick.AddListener(() => OnFacebookShareButtonClicked.Invoke());
+            adButton.onClick.AddListener(() => OnAdButtonClicked.Invoke());
 
-            MusicSlider.OnKnobButtonClicked += () => OnMusicSliderClicked.Invoke();
-            HapticSlider.OnKnobButtonClicked += () => OnHapticSliderClicked.Invoke();
+            MusicSlider.OnKnobButtonClicked  += HandleOnMusicPressed;
+            HapticSlider.OnKnobButtonClicked += HandleOnHapticPressed;
         }
 
-        public void UpdateMusicSlider(float value)
+      
+
+        public void UpdateSlider(ESettingSliderType sliderType, float value)
         {
-            MusicSlider.SetSliderValue(value);
+            if (sliderType == ESettingSliderType.MUSIC)
+            {
+                MusicSlider.SetSliderValue(value);
+            }
+            else
+                HapticSlider.SetSliderValue(value);
         }
 
-        public void UpdateHapticSlider(float value)
+        private void HandleOnMusicPressed()
         {
-            HapticSlider.SetSliderValue(value);
+            OnMusicSliderClicked.Invoke();
+        }
+
+        private void HandleOnHapticPressed()
+        {
+            OnHapticSliderClicked.Invoke();
         }
 
         private void OnDestroy()
         {
             CloseButton.onClick.RemoveAllListeners();
             facebookShareButton.onClick.RemoveAllListeners();
+            adButton.onClick.RemoveAllListeners();
 
-            MusicSlider.OnKnobButtonClicked  -= () => OnMusicSliderClicked.Invoke();
-            HapticSlider.OnKnobButtonClicked -= () => OnHapticSliderClicked.Invoke();
+            MusicSlider.OnKnobButtonClicked  -= HandleOnMusicPressed;
+            HapticSlider.OnKnobButtonClicked -= HandleOnHapticPressed;
 
         }
 

@@ -14,6 +14,7 @@ namespace Scripts.Audio
         private readonly Dictionary<string, AudioData> _audioKeyData = new Dictionary<string, AudioData>(StringComparer.Ordinal);
 
         private AudioPlayerView musicPlayerSource;
+        private Transform musicPlayerTransform;
 
         [Inject]
         public void Contruct(AudioConfig config)
@@ -45,10 +46,18 @@ namespace Scripts.Audio
         }
         private void IntializePool()
         {
+            // creates a empty transform as Manager
+            musicPlayerTransform = new GameObject("Audio Manager").transform;
+
+            // creates a transform to hold Pooled Game objects
+            Transform poolHolder = new GameObject("AudioPool Holder").transform;
+            poolHolder.SetParent(musicPlayerTransform);
+
+            // creates pool
             m_AudioPool = new AudioPool.Builder()
                   .SetPrefab(Config.AudioPlayerViewPrefab)
                   .SetInitialPoolSize(10)
-                  .SetParent(new GameObject("AudioPool Holder").transform) // can cache  the transform
+                  .SetParent(poolHolder) // can cache  the transform
                   .Build();
 
             m_AudioPool.Initialize();
@@ -58,7 +67,7 @@ namespace Scripts.Audio
             if (musicPlayerSource == null)
             {
                 musicPlayerSource = m_AudioPool.GetAudio();
-                musicPlayerSource.transform.SetParent(null);
+                musicPlayerSource.transform.SetParent(musicPlayerTransform);
                 musicPlayerSource.name = " BGM_MUSIC";
             }
         }
