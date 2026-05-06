@@ -61,6 +61,16 @@ Assets/
   Plugins/           Third-party libraries and bundled plugins
 ```
 
+## Screenshots
+<img width="208" height="421" alt="Screenshot 2026-05-06 152234" src="https://github.com/user-attachments/assets/89f7a083-8b8f-4ee2-9136-5a8ab464b6d3" />
+<img width="208" height="421" alt="Screenshot 2026-05-06 151914" src="https://github.com/user-attachments/assets/9e5aeb5b-9096-47a1-a0df-68ed9f695acc" />
+<img width="208" height="421" alt="Screenshot 2026-05-06 151854" src="https://github.com/user-attachments/assets/3d395332-fc8b-409f-807b-d1955f05c127" />
+
+https://github.com/user-attachments/assets/c0c2f38f-dd44-4fbd-bceb-1e762708091e
+
+
+
+
 ## Architecture
 
 ShapeShift is structured around service-based gameplay systems and Zenject-powered dependency injection.
