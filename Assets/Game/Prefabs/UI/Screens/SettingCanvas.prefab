@@ -194,7 +194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3947544219736532122
 RectTransform:
   m_ObjectHideFlags: 0
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 4364669594937717246}
   - component: {fileID: 5757489682942767565}
   m_Layer: 5
-  m_Name: Button
+  m_Name: FaccBookButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -972,6 +972,7 @@ MonoBehaviour:
   HapticSlider: {fileID: 5899259785066415435}
   CloseButton: {fileID: 3040845267118904969}
   facebookShareButton: {fileID: 5757489682942767565}
+  adButton: {fileID: 707558729716404398}
 --- !u!1 &5543109538224982917
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,7 +1442,7 @@ GameObject:
   - component: {fileID: 1488682053210083146}
   - component: {fileID: 707558729716404398}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: AdButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1495,7 +1496,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2870524360630259796, guid: 7f9865cf6ac20f7468e13d5a5daff8ef, type: 3}
+  m_Sprite: {fileID: -8550149856088595828, guid: 7f9865cf6ac20f7468e13d5a5daff8ef, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

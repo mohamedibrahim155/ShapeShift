@@ -28,6 +28,8 @@ namespace Scripts.UI
         [SerializeField] private RectTransform CoinSourceRect;
         [SerializeField] private RectTransform CoinTargetRect;
 
+        [SerializeField] private RectTransform rewardBackground;
+
         // Events
         public Action OnNextLevelClicked = delegate { };
         public Action OnRemoveAdsClicked = delegate { };
@@ -39,6 +41,8 @@ namespace Scripts.UI
         {
             NextLevelButton.Button.onClick.AddListener(() => OnNextLevelClicked.Invoke());
             RemoveAdsButton.Button.onClick.AddListener(() => OnRemoveAdsClicked.Invoke());
+
+            PlayCoinbackgroundSpinner();
         }
         private IEnumerator DelayOpenCallback(float waitTime)
         {
@@ -65,6 +69,7 @@ namespace Scripts.UI
         {
             if (_previousCoinSequence != null && _previousCoinSequence.IsActive()) return;
 
+            PlayCoinbackgroundSpinner();
             _previousCoinSequence = coinRewardAnimationView.AddCoinAnimate(CoinSourceRect, CoinTargetRect,
                 (coins) =>
                 {
@@ -96,6 +101,13 @@ namespace Scripts.UI
         public void UpdateRewardCoins(int receivedCoins)
         {
             CoinRewardTextField.text = receivedCoins.ToString();
+        }
+
+        private void PlayCoinbackgroundSpinner()
+        {
+            rewardBackground.DOLocalRotate(new Vector3(0, 0, 360f), 1f, RotateMode.WorldAxisAdd)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Incremental);
         }
 
         //public void PlayCoinAnimation(int startAmount, int addAmount)
