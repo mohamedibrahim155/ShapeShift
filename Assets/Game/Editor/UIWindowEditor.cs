@@ -6,6 +6,8 @@ using UnityEngine;
 [CustomEditor(typeof(UIWindow),true)]
 public class UIWindowEditor : Editor
 {
+    private const int BUTTON_WIDTH = 150;
+    private const int BUTTON_HEIGHT = 20;
     public override void OnInspectorGUI()
     {
         // Draw default inspector (your fields)
@@ -16,14 +18,17 @@ public class UIWindowEditor : Editor
         UIWindow window = (UIWindow)target;
 
         GUI.enabled =  Application.isPlaying;
-        if (GUILayout.Button("Open Window"))
+
+        // draws open button
+        if (GUILayout.Button("Open Window", GUILayout.Width(BUTTON_WIDTH), GUILayout.Height(BUTTON_HEIGHT)))
         {
             window.Open();
 
             EditorUtility.SetDirty(window.gameObject);
         }
 
-        if (GUILayout.Button("Close Window"))
+        // draws Close button
+        if (GUILayout.Button("Close Window", GUILayout.Width(BUTTON_WIDTH), GUILayout.Height(BUTTON_HEIGHT)))
         {
             window.Close();
 
