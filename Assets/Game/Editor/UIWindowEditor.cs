@@ -3,8 +3,8 @@ using Scripts.UI;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(LevelFailedWindow))]
-public class LevelFailedWindowEditor : Editor
+[CustomEditor(typeof(UIWindow),true)]
+public class UIWindowEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -13,17 +13,21 @@ public class LevelFailedWindowEditor : Editor
 
         GUILayout.Space(10);
 
-        LevelFailedWindow script = (LevelFailedWindow)target;
+        UIWindow window = (UIWindow)target;
 
         GUI.enabled =  Application.isPlaying;
         if (GUILayout.Button("Open Window"))
         {
-            script.OpenLevelFailedWindowWithDelay();
+            window.Open();
+
+            EditorUtility.SetDirty(window.gameObject);
         }
 
         if (GUILayout.Button("Close Window"))
         {
-            script.Close();
+            window.Close();
+
+            EditorUtility.SetDirty(window.gameObject);
         }
     }
 }

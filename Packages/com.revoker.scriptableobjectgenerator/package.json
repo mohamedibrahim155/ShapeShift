@@ -1,0 +1,11 @@
+{
+  "name": "com.revoker.scriptableobjectgenerator",
+  "version": "1.0.0",
+  "displayName": "Scriptable Object Generator",
+  "description": "A Unity editor tool for quickly generating ScriptableObject scripts and assets.",
+  "unity": "2021.3",
+  "author": {
+    "name": "Mohamed Ibrahim",
+    "url": "https://ibrahimportfolio.framer.website"
+  }
+}
